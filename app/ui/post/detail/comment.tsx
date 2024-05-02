@@ -5,35 +5,79 @@ import Image from "next/image";
 import React, { useState } from "react";
 import { useFormState } from "react-dom";
 
-type CommentMainProps = {
+import { ToastContainer, toast } from 'react-toastify';
+
+import 'react-toastify/dist/ReactToastify.css';
+import { useDebouncedCallback } from "use-debounce";
+
+// minified version is also included
+// import 'react-toastify/dist/ReactToastify.min.css';
+
+// const Msg = ({ closeToast, toastProps }) => (
+//   <div>
+//     Lorem ipsum dolor {toastProps.position}
+//     <button>Retry</button>
+//     <button onClick={closeToast}>Close</button>
+//   </div>
+// );
+
+// function App() {
+//   const displayMsg = () => {
+//     toast(<Msg />);
+//     // toast(Msg) would also work
+//   };
+
+//   return (
+//     <div>
+//       <button onClick={displayMsg}>Click me</button>
+//       <ToastContainer />
+//     </div>
+//   );
+// }
+
+type NewCommentMainProps = {
     postId: number,
     userId: number,
     parentId: number
 }
-export function CommentMain({
+
+export function NewCommentMain({
     postId,
     userId,
     parentId
-} : CommentMainProps){
+} : NewCommentMainProps){
     const initialState = { message: null || "", errors: {} };
     const createCommentWithId = createNewComment.bind(null, postId, userId, parentId);
     const [state, dispatch] = useFormState(createCommentWithId, initialState);
 
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = useDebouncedCallback((e: React.FormEvent<HTMLFormElement>) => {
         if(!userId) {
             e.preventDefault();
+            toast("You need to log in to use this feature !");
         }
-    }
+    }, 1000)
     return (
         <form className="p-4" action={dispatch} onSubmit={e => handleSubmit(e)} id="form-submit-main-comment">
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+            />
             <label htmlFor="comment-main" className="sr-only">Your message</label>
             <div className="flex items-center px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700">
-                <button type="button" className="p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+                {/* <button type="button" className="p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
                     <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                         <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.408 7.5h.01m-6.876 0h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM4.6 11a5.5 5.5 0 0 0 10.81 0H4.6Z" />
                     </svg>
                     <span className="sr-only">Add emoji</span>
-                </button>
+                </button> */}
                 <textarea
                     id="comment-main"
                     name="content"
@@ -54,24 +98,33 @@ export function CommentMain({
 }
 
 export function InputReplySubComment() {
+    // const handleSubmit = useDebouncedCallback((e: React.FormEvent<HTMLFormElement>) => {
+    //     if(!userId) {
+    //         e.preventDefault();
+    //         toast("You need to log in to use this feature !");
+    //     }
+    // }, 1000)
     return (
-        <form className="ml-1">
+        <form 
+            className="ml-1" 
+            // action={dispatch} onSubmit={e => handleSubmit(e)}
+        >
             <label htmlFor="chat" className="sr-only">Your message</label>
             <div className="flex items-center px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700">
-            <button type="button" className="inline-flex justify-center p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+            {/* <button type="button" className="inline-flex justify-center p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
                 <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
                 <path fill="currentColor" d="M13 5.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0ZM7.565 7.423 4.5 14h11.518l-2.516-3.71L11 13 7.565 7.423Z" />
                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 1H2a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1Z" />
                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0ZM7.565 7.423 4.5 14h11.518l-2.516-3.71L11 13 7.565 7.423Z" />
                 </svg>
                 <span className="sr-only">Upload image</span>
-            </button>
-            <button type="button" className="p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
+            </button> */}
+            {/* <button type="button" className="p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
                 <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
                 <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.408 7.5h.01m-6.876 0h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM4.6 11a5.5 5.5 0 0 0 10.81 0H4.6Z" />
                 </svg>
                 <span className="sr-only">Add emoji</span>
-            </button>
+            </button> */}
             <textarea id="chat" rows={1} className="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Your message..." defaultValue={""} />
             <button type="submit" className="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600">
                 <svg className="w-5 h-5 rotate-90 rtl:-rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
@@ -84,7 +137,7 @@ export function InputReplySubComment() {
     )
 }
 
-export function CommentParentItem() {
+export function CommentItem() {
     
     // console.log("inputReplyMainComment:  ", inputReplyMainComment);
     // console.log("inputReplySubComment:  ",inputReplySubComment);
@@ -258,7 +311,7 @@ export default function CommentList() {
                 replyMainComment={replyMainComment}
                 replySubComment={replySubComment}
             /> */}
-            <CommentParentItem/>
+            <CommentItem/>
         </>
     )
 }

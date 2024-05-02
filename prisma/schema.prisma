@@ -18,7 +18,7 @@ generator client {
 // }
 
 model Employee {
-  id               Int           @id @default(autoincrement())
+  id               Int           @id  @default(autoincrement())
   first_name       String           @db.VarChar(30)
   last_name        String           @db.VarChar(30)
   email            String           @unique
@@ -139,26 +139,26 @@ model Post_Type {
 }
 
 model Like_Status {
-  id             Int @id @default(autoincrement())
+  id             Int    @id     @default(autoincrement())
   value String @db.VarChar(30) @unique
-  icon String
-  comment Comment[]
+  icon String?
+  // comment Comment[]
   @@index([id, value])
 }
 
 model Comment {
-  id         Int      @id @default(autoincrement())
+  id         Int      @id        @default(autoincrement())
   content        String 
   user         User   @relation(fields: [user_id], references: [id])
   user_id      Int
-  like_status  Like_Status   @relation(fields: [like_id], references: [id])
-  like_id      Int  @default(0)
+  // like_status  Like_Status   @relation(fields: [like_id], references: [id])
+  like_id      Int?
   like_count Int @default(0)
   post         Post   @relation(fields: [post_id], references: [id])
   post_id      Int
   parent   Comment?  @relation(name: "parent", fields: [parent_id], references: [id])
   parents  Comment[] @relation(name: "parent")
-  parent_id Int @default(0)
+  parent_id Int?
   created_at DateTime    @default(now())
   updated_at DateTime    @updatedAt
 }

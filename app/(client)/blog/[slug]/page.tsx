@@ -1,11 +1,18 @@
 import CommentList, {
-    CommentMain
+    NewCommentMain
 } from "@/app/ui/post/detail/comment";
 import ContentMainDetailPost from "@/app/ui/post/detail/content";
 import {
     TheBestViewPost,
     ManyViewsPosts
 } from "@/app/ui/post/detail/posts";
+import { 
+    CommentListSkeleton, 
+    NewCommentMainSkeleton,
+    ContentMainDetailPostSkeleton, 
+    ManyViewsPostsSkeleton, 
+    TheBestViewPostSkeleton 
+} from "@/app/ui/post/skeletons-post";
 import { auth } from "@/auth";
 import { User } from "@/helpers/definitions";
 import { getUserByEmail, getUserById } from "@/lib/actions-user";
@@ -24,14 +31,19 @@ export default async function Page({
     const post = await fetchPostBySlug(slug);
     
     if(!post) return;
-    const category = await fetchPostCategoryById(post.post_type_id || 1);
+    const datas = await Promise.all([
+        await fetchPostCategoryById(post.post_type_id),
+        await auth()
+    ]);
+    const category = datas[0];
+    const session = datas[1];
     
-    const session = await auth();
     const email = session?.user?.email;
     let user = {
         id: 0
     };
     
+    // check user logging to comment
     if(email) {
         user = await getUserByEmail(email) as User;
     }
@@ -40,10 +52,10 @@ export default async function Page({
         <>
             {/* Main */}
             <div className="grid grid-cols-3 gap-3">
-                <Suspense>
+                <Suspense fallback={<ContentMainDetailPostSkeleton/>}>
                     <ContentMainDetailPost category={category} post={post}/>
                 </Suspense>
-                <Suspense>
+                <Suspense fallback={<ManyViewsPostsSkeleton/>}>
                     <ManyViewsPosts postTypeId={post.post_type_id}/>
                 </Suspense>
             </div>
@@ -53,21 +65,22 @@ export default async function Page({
                 {/* Comment */}
                 <div className="col-start-1 col-end-3">
                     <h1 className="my-5 text-orange-600 text-2xl border-b-2 border-orange-200 inline-block p-1">Comments ({post.comment_count})</h1>
-                    <Suspense>
+                    <Suspense fallback={<NewCommentMainSkeleton/>}>
                         {
-                            user && <CommentMain 
-                                postId={post.id}
-                                userId={user.id || 0}
-                                parentId={0}
-                            />
+                            user &&
+                                <NewCommentMain
+                                    postId={post.id}
+                                    userId={user.id || 0}
+                                    parentId={0}
+                                />
                         }
                     </Suspense>
-                    <Suspense>
+                    <Suspense fallback={<CommentListSkeleton/>}>
                         <CommentList/>
                     </Suspense>
                 </div>
                 {/* Posts with other topics*/}
-                <Suspense>
+                <Suspense fallback={<TheBestViewPostSkeleton/>}>
                     <TheBestViewPost/>
                 </Suspense>
             </div>

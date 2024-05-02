@@ -19,9 +19,13 @@ export default async function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
-  const categories = await fetchAllPostCategories();
+  const datas = await Promise.all([
+    await fetchAllPostCategories(),
+    await auth()
+  ]);
+  const categories = datas[0];
+  const session = datas[1];
   if(!categories) return;
-  const session = await auth();
   if(session?.user?.role == 1) {
     redirect('/dashboard');
   }
