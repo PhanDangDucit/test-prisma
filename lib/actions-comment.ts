@@ -34,7 +34,6 @@ export async function createNewComment(
                 ...validatedFields.data,
                 user_id: userId,
                 like_count: 0,
-                like_id: 0,
                 post_id: postId,
                 parent_id: parentId,
                 updated_at: updatedAt

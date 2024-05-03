@@ -6,6 +6,7 @@ import {
     TheBestViewPost,
     ManyViewsPosts
 } from "@/app/ui/post/detail/posts";
+
 import { 
     CommentListSkeleton, 
     NewCommentMainSkeleton,
@@ -16,6 +17,7 @@ import {
 import { auth } from "@/auth";
 import { User } from "@/helpers/definitions";
 import { getUserByEmail, getUserById } from "@/lib/actions-user";
+import { getAllMainComments, getAllSubcommentsOfOneComment } from "@/lib/data-comment";
 import { 
     fetchPostBySlug, 
     fetchPostCategoryById 
@@ -31,12 +33,10 @@ export default async function Page({
     const post = await fetchPostBySlug(slug);
     
     if(!post) return;
-    const datas = await Promise.all([
+    const [category, session] = await Promise.all([
         await fetchPostCategoryById(post.post_type_id),
         await auth()
     ]);
-    const category = datas[0];
-    const session = datas[1];
     
     const email = session?.user?.email;
     let user = {
@@ -47,7 +47,9 @@ export default async function Page({
     if(email) {
         user = await getUserByEmail(email) as User;
     }
-
+    const postId = post.id;
+    const allMainComments = await getAllMainComments(postId);
+    console.log("all main comment::", allMainComments);
     return (
         <>
             {/* Main */}
@@ -69,14 +71,14 @@ export default async function Page({
                         {
                             user &&
                                 <NewCommentMain
-                                    postId={post.id}
+                                    postId={postId}
                                     userId={user.id || 0}
                                     parentId={0}
                                 />
                         }
                     </Suspense>
                     <Suspense fallback={<CommentListSkeleton/>}>
-                        <CommentList/>
+                        <CommentList allMainComments={allMainComments}/>
                     </Suspense>
                 </div>
                 {/* Posts with other topics*/}

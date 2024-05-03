@@ -91,14 +91,13 @@ export type SearchQuery = {
     'min-view':string,
 }
 
-export type Comment = {
+export type TComment = {
     id: number,
     content: string,
-    userId: number,
-    likeId: number,
-    likeCount: number,
-    postId: number,
-    parent_id: number,
-    createdAt: Date,
-    updatedAt: Date,
+    user_id: number,
+    like_count: number,
+    post_id: number,
+    parent_id: number|null,
+    created_at: Date,
+    updated_at: Date,
 }

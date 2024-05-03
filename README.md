@@ -177,3 +177,66 @@ it('renders homepage unchanged', () => {
 
 # Filter categories for posts
 - [Select data from date range between two dates](https://stackoverflow.com/questions/14208958/select-data-from-date-range-between-two-dates)
+
+
+```sql
+2	"like"
+3	"love"
+4	"haha"
+5	"wow"
+6	"sad"
+7	"angry"
+
+select * from "Like_Status";
+
+select * from "Post";
+
+select * from "Comment";
+
+insert into "Comment" (user_id, post_id, content) values
+(2, 1, 'Thank you for this post!'),
+(3, 1, 'I think my assets :)');
+
+insert into "Comment" (user_id, post_id, parent_id, content) values
+(3, 1, 1, 'Me too');
+
+insert into "Post" (comment_count) values
+(3);
+
+```
+
+
+```js
+[
+  {
+    id: 1,
+    content: 'Thank you for this post!',
+    user_id: 2,
+    like_count: 0,
+    post_id: 1,
+    parent_id: null,
+    created_at: 2024-05-03T07:32:09.892Z,
+    updated_at: 2024-05-03T07:32:09.892Z
+  },
+  {
+    id: 2,
+    content: 'I think my assets :)',
+    user_id: 3,
+    like_count: 0,
+    post_id: 1,
+    parent_id: null,
+    created_at: 2024-05-03T07:32:09.892Z,
+    updated_at: 2024-05-03T07:32:09.892Z
+  },
+  {
+    id: 3,
+    content: 'Me too',
+    user_id: 3,
+    like_count: 0,
+    post_id: 1,
+    parent_id: 1,
+    created_at: 2024-05-03T07:34:46.214Z,
+    updated_at: 2024-05-03T07:34:46.214Z
+  }
+]
+```

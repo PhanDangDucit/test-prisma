@@ -24,7 +24,7 @@ model Employee {
   email            String           @unique
   phone            String
   created_at       DateTime         @default(now())
-  updated_at       DateTime         @updatedAt
+  updated_at       DateTime         @default(now()) @updatedAt
   image_url        String
   department       Department       @relation(fields: [department_id], references: [id])
   department_id    Int
@@ -58,7 +58,7 @@ model User {
   password   String?     @db.VarChar(50)
   avatar     String?     @db.VarChar(255)
   created_at DateTime    @default(now())
-  updated_at DateTime    @updatedAt
+  updated_at DateTime    @default(now()) @updatedAt
   phone      Int?
   email      String @unique
 //   provider   String
@@ -70,6 +70,7 @@ model User {
   // employees Employee?
   comment Comment[]
   collection Collection[]
+  like_status Like_Status[]
 }
 
 model Address {
@@ -88,7 +89,7 @@ model Post {
   id             Int      @id @default(autoincrement())
   title          String      @db.VarChar(150)
   created_at     DateTime    @default(now())
-  updated_at     DateTime    @updatedAt
+  updated_at     DateTime    @default(now()) @updatedAt
   content        String
   thumbnail       String      @db.VarChar(255)
   // post_status    Post_Status @relation(fields: [post_status_id], references: [id])
@@ -140,10 +141,14 @@ model Post_Type {
 
 model Like_Status {
   id             Int    @id     @default(autoincrement())
-  value String @db.VarChar(30) @unique
-  icon String?
+  value_like_status String @db.VarChar(30) @unique
+  icon_status String
+  user   User   @relation(fields: [user_id], references: [id])
+  user_id Int
+  comment   Comment   @relation(fields: [comment_id], references: [id])
+  comment_id Int
   // comment Comment[]
-  @@index([id, value])
+  @@index([id, value_like_status])
 }
 
 model Comment {
@@ -151,16 +156,16 @@ model Comment {
   content        String 
   user         User   @relation(fields: [user_id], references: [id])
   user_id      Int
-  // like_status  Like_Status   @relation(fields: [like_id], references: [id])
-  like_id      Int?
   like_count Int @default(0)
   post         Post   @relation(fields: [post_id], references: [id])
   post_id      Int
   parent   Comment?  @relation(name: "parent", fields: [parent_id], references: [id])
   parents  Comment[] @relation(name: "parent")
   parent_id Int?
+  subcomment_count Int?
   created_at DateTime    @default(now())
-  updated_at DateTime    @updatedAt
+  updated_at DateTime    @default(now()) @updatedAt
+  like_status Like_Status[]
 }
 
 model Collection {
@@ -174,9 +179,10 @@ model Collection {
 model Post_Collection {
   id         Int      @id @default(autoincrement())
   created_at DateTime    @default(now())
-  updated_at DateTime    @updatedAt
+  updated_at DateTime    @default(now()) @updatedAt
   post  Post  @relation(fields: [post_id], references: [id])
   post_id      Int
   collection  Collection  @relation(fields: [collection_id], references: [id])
   collection_id      Int
 }
+
