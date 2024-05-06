@@ -12,13 +12,10 @@ export default async function ContentMainDetailPost ({
     post: PostType
 }) {
     console.log("============");
-    const datas = await Promise.all([
+    const [relatedPosts, author] = await Promise.all([
         await fetchNewPostRelated(post.post_type_id),
         await getAuthorOfPost(post.author_id) as User
     ])
-    console.log(datas);
-    const relatedPosts = datas[0];
-    const author = datas[1];
     return (
         <div className="col-start-1 col-end-3">
             <div className="flex justify-between">

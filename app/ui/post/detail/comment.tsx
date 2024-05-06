@@ -1,15 +1,16 @@
 'use client'
-import { TComment } from "@/helpers/definitions";
-// import { initialState } from "@/configs/constants";
+import { TCommentWithUser } from "@/helpers/definitions";
 import { createNewComment } from "@/lib/actions-comment";
+import { CornerDownRight } from "lucide-react";
 import Image from "next/image";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useFormState } from "react-dom";
-
+import conan from "@/public/conan.jpg";
 import { ToastContainer, toast } from 'react-toastify';
 
 import 'react-toastify/dist/ReactToastify.css';
 import { useDebouncedCallback } from "use-debounce";
+import { nanoid } from 'nanoid';
 
 type NewCommentMainProps = {
     postId: number,
@@ -26,44 +27,42 @@ export function NewCommentMain({
     const createCommentWithId = createNewComment.bind(null, postId, userId, parentId);
     const [state, dispatch] = useFormState(createCommentWithId, initialState);
 
-    const handleSubmit = useDebouncedCallback((e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        e.preventDefault();
         if(!userId) {
-            e.preventDefault();
-            toast("You need to log in to use this feature !");
+            toast("You need to log in to comment !");
         }
-    }, 1000)
+        const input:HTMLInputElement|null = document.querySelector("#comment-main");
+        if(input) {
+            input.value = "";
+        }
+        const listener = function () {
+            e.preventDefault();
+        };
+        const btn = document.querySelector("#btn-submit-main-comment");
+        // btn?.addEventListener("click", listener);
+        setTimeout(function() {
+            btn?.removeEventListener("click", listener);
+        }, 1000)
+    }
     
     return (
-        <form className="p-4" action={dispatch} onSubmit={e => handleSubmit(e)} id="form-submit-main-comment">
-            <ToastContainer
-                position="top-right"
-                autoClose={5000}
-                hideProgressBar={false}
-                newestOnTop={false}
-                closeOnClick
-                rtl={false}
-                pauseOnFocusLoss
-                draggable
-                pauseOnHover
-                theme="dark"
-            />
+        <form className="p-4" action={dispatch}>
             <label htmlFor="comment-main" className="sr-only">Your message</label>
             <div className="flex items-center px-3 py-2 rounded-lg bg-gray-100 dark:bg-gray-700">
-                {/* <button type="button" className="p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
-                    <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                        <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.408 7.5h.01m-6.876 0h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM4.6 11a5.5 5.5 0 0 0 10.81 0H4.6Z" />
-                    </svg>
-                    <span className="sr-only">Add emoji</span>
-                </button> */}
-                <textarea
+                <input
                     id="comment-main"
                     name="content"
-                    rows={1} 
                     className="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                     placeholder="Your message..." 
                     defaultValue={""}
                 />
-                <button type="submit" className="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600">
+                <button
+                    type="submit"
+                    id="btn-submit-main-comment"
+                    className="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600"
+                    onClick={e => handleSubmit(e)}
+                >
                     <svg className="w-5 h-5 rotate-90 rtl:-rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
                         <path d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z" />
                     </svg>
@@ -74,50 +73,71 @@ export function NewCommentMain({
     );
 }
 
-export function InputReplyComment() {
-    // const handleSubmit = useDebouncedCallback((e: React.FormEvent<HTMLFormElement>) => {
-    //     if(!userId) {
-    //         e.preventDefault();
-    //         toast("You need to log in to use this feature !");
-    //     }
-    // }, 1000)
+export function InputReplyComment({
+    value,
+    userId,
+    postId,
+    parentId,
+}:{
+    userId: number,
+    postId: number,
+    value: string,
+    parentId: number,
+}) {
+    const initialState = { message: null || "", errors: {} };
+    const createCommentWithId = createNewComment.bind(null, postId, userId, parentId);
+    const [state, dispatch] = useFormState(createCommentWithId, initialState);
+
+    const handleSubmit = useDebouncedCallback((e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        if(!userId) {
+            toast("You need to log in to comment !");
+            throw Error("You need to log in to comment");
+        }
+    }, 1000)
+
+    useEffect(
+        () => {
+            const input = document.querySelector("input");
+            if(input) {
+                input.value = value + " ";
+                input.focus();
+            }
+        }, [value]
+    )
+
     return (
         <form 
-            className="ml-1" 
-            // action={dispatch} onSubmit={e => handleSubmit(e)}
+            className="ml-1"
+            action={dispatch}
         >
-            <label htmlFor="chat" className="sr-only">Your message</label>
+            <label htmlFor="subcomment" className="sr-only">Your message</label>
             <div className="flex items-center px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700">
-            {/* <button type="button" className="inline-flex justify-center p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
-                <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 18">
-                <path fill="currentColor" d="M13 5.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0ZM7.565 7.423 4.5 14h11.518l-2.516-3.71L11 13 7.565 7.423Z" />
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M18 1H2a1 1 0 0 0-1 1v14a1 1 0 0 0 1 1h16a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1Z" />
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 5.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0ZM7.565 7.423 4.5 14h11.518l-2.516-3.71L11 13 7.565 7.423Z" />
-                </svg>
-                <span className="sr-only">Upload image</span>
-            </button> */}
-            {/* <button type="button" className="p-2 text-gray-500 rounded-lg cursor-pointer hover:text-gray-900 hover:bg-gray-100 dark:text-gray-400 dark:hover:text-white dark:hover:bg-gray-600">
-                <svg className="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 20">
-                <path stroke="currentColor" strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13.408 7.5h.01m-6.876 0h.01M19 10a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM4.6 11a5.5 5.5 0 0 0 10.81 0H4.6Z" />
-                </svg>
-                <span className="sr-only">Add emoji</span>
-            </button> */}
-            <textarea id="chat" rows={1} className="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" placeholder="Your message..." defaultValue={""} />
-            <button type="submit" className="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600">
-                <svg className="w-5 h-5 rotate-90 rtl:-rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
-                    <path d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z" />
-                </svg>
-                <span className="sr-only">Send message</span>
-            </button>
+                <input
+                    id="subcomment"
+                    className="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                    defaultValue={`${value}` + " "}
+                />
+                <button 
+                    type="submit" 
+                    className="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600"
+                    onClick={e => handleSubmit(e)}
+                >
+                    <svg className="w-5 h-5 rotate-90 rtl:-rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                        <path d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z" />
+                    </svg>
+                    <span className="sr-only">Send message</span>
+                </button>
             </div>
         </form>
     )
 }
 
 function MainComment({
-    replyMainComment
+    mainComment,
+    replyComment
 }:{
-    replyMainComment:() => void
+    mainComment:TCommentWithUser
+    replyComment: (commentListId: number, usernameReplyed:string) => void
 }) {
     return (
         <div>
@@ -125,18 +145,18 @@ function MainComment({
                 <div className="flex-shrink-0">
                     <Image 
                         className="w-8 h-8 rounded-full"
-                        src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wCEAAoHCBUVFRIVEhERERISEREREQ8QERERERERGBQZGRgUGBgcIS4lHB4rHxgYJjgmKzAxNTU1GiQ7QDszPy40NTEBDAwMEA8QGhISGDQhIyE0MTQ0MTE0MTQ3NDQ0NDQxMTQ0NDQ0NDQ0NDQ0NDQ0NDQ0NDQ0MTExNDQ0MTQ0MTQ0Mf/AABEIAKgBKwMBIgACEQEDEQH/xAAcAAABBQEBAQAAAAAAAAAAAAACAAEDBAYFBwj/xAA7EAACAQIEAwYCCAYCAwEAAAABAgADEQQSITEFQVEGImFxgZETsQcjMkJSocHRFGJyguHwU7Ki0vEV/8QAGQEBAQEBAQEAAAAAAAAAAAAAAAECAwQF/8QAIxEBAQACAgIBBAMAAAAAAAAAAAECERIhAzEEEyJBYTJRcf/aAAwDAQACEQMRAD8AjBhqYJEQlbS3igAwoCEcQTHBhHA7W4bMl/Cefz1Ti9LPTYeE8vrplZh0JkqVE4kEsNIDAJZIJEslECakZeQznIZfomRYmElonWRCC9cL4npBGiwb6S8DMY/EKp+y2QdF395Ud3OrO5vzLE/rDW28LjqPeWMM8827w2JHkTLWF4pXpnu1G/pfvj2MHJ6akIzJ8M7XL9nEJl/nS5X1XcfnNVh6quoZGV1OzKQRCy7OJOhkBEIGFWLQWWRo8kvARgMsIxCBXYRKsJoBNoQQjqZE7xI0G0p0ivGbWIGFMDAJktpG66wUzLAtJC0G8IsNGijgSsmWOI1oUoeNFEDAGoLqR4TzTjdHLVbxnp4Ewna/D5XDRUZuQOJPI6gmURiSrIZKkqJFl3DmUhLFJjy35SNRYqVDsty3gL2lrAcCq1O8EYg7E3VfczUdmOzoCCpVGZn7yIRsp+8fEzW0cKdraeU8nl+RxusXr8Xx+U3kwlHsk97u6L/KoJA+UN+yQ5P7oDp7zfHBe0rvhrfvOH1s3p+jhJ6ed4nszkvZxtpdT+842J4a6bi4HMaz0jH07gzO10tOmHmy/Lnl4MddMY9Pzk/DuJVKDZqbWF+8hvkYeI/Wdutg1YNprY2I0N5wMTRy3nqwz5PJn47i9I4PxRMSmZNGFs6HdT+3jL9p5fwPiLUKyMCQpIVxyKHr5bz08Pex6zozLs9o7GNeCxgOryQNIo2aFFUkRjmMYSgYQVMmI0kAGssZqwDpBMdY0jQhGZos0BjaFNbWHlj3hQp4YgiFDmYx4oN5Q8ZYrxpRMkzXbPD3TN01mkWc7j1LPSbyMlHmEGoJI62JHQkQGEjKvJEMAx0lRMJpux3Dfi1MzLmRBc32J5CZlZ6f2AwlqGa2rsPYD/M5eXLjjXbw48so1+Ew86C0PH8jGw6W5S7TS88Mx2+jctKXwpXxNLQn9Z1aqi2n7So9LMCRqNPlLcU5bZPH07j3nBxdLpymt4vhyvKw62nArKovcjXrMTqt73HAYWuJnMevebpc6afOaXGkcuXOZ3GoSSdLG89Phvby+edOUwnpPZ3E58PSJ3CBD5rp+k88df8A54za9jifgeVR/wBD+s9bxz20LQQZINZE4tEWnYxLGvHBgJjGJjkRrQEDAZY5MRgEu0YmK+kjLQJCZG7RwZG0G0iNHzQFEUKtiIGNEIQYgmPFaVA2ihGAZRIpgYlMyMPCODDU6QPK+KUslRx43lQzudqaOWpfrOHMsoGEZYdQQBKiZZ6v2SxiUsLRZiSzjup1I009p5QhnrfY/Bq1HCMwJK0rrfYFmJJt7e04+bXHt38G+XTvUu0Cbim7WGugU2vbYzsYbiyOvdXLptv8pz8dXpLclc7AW7lNnK/1ZQbes5VHHoWAUlPBgUPsdp5LeM6j2zG33WkxWKAUnwuBOdW4oVQhN95Zel9W7E65bjytMh/GgMVtqWIBOot1meVb4wGNoYmuTkZ7Xvq+k5eI4BWRc1SuWIvZTc28j+k1VHGOzLTpjJpZERPiV6pG5VSQEUc3bSZTi3aV3d6SUcTnQsrB/hMwK73VFFvedZys6crxmXbi1HZGyuQ2hAYSrVUH5x8PUao/eRt7EDr4jlDrJlLKdwbTU6rF7jnPTsSLes1vY4/UuOlU/wDUTK4m/wAp3MTT/hqKIjFqtTvk37qX3NvAWE7XPWnGePdv6a5TGcSnw13yJ8TVsoIa97iw/PX5S4TOmNlm4zljq6oFEe0G8cNKzD3jGJoJMAWhAQCYYMJBWkLCGpjNBQrHIjiMYU+0UFjAuYFsmMDGiEMpFMcGRiGIDkxjEYpQwhKYohKMp2yoaZvWY6ejdo6GamfIzzki0lZoKgkMncSAwjsdmMGtbE4ek+qPUGYdVUFiPW09dxGFtSK4UqirlVCQQFQ8hbbmJ5j9HwH8dQJ+6KzKOrCk9h/vSew/CIYhf5PfKNfnPJ8i9yPb8bH7bf24ON4Gr0kz4uouIudafeAQ37qJsm+4set7y7wDg1Okij4bMif8tyz72ut7DfpyE7NLDPubAdQIeIFrAnXkvM+c5ZZ3i9GOElQYh+4Ra1xaw0AExdW9OoHX7rX685scThXKk2a1idAdpk8dhWZiAbADXS+s4zcrr00NDEq6/EpZUd9XIRWJbxJ+U5ePo4mobZgAdS5QAke8HgToxKZ8rg2ZDtfqD0/aaBqZQbgi1x7Tryy053GbY3EcJSkua5NTdmO5MyuOa7E+s1vHKvdMxmKYmXx229s+SainVPzvOrwx2q1gHBNly7XG17fKcxpqOymIQZnKi1wCzXAVwALn/ec7Z+nHD+Tp4YZVRTcMjZSORBVrH2H5S0TIalbO+fLlDAldLXUaA28btJRN+Gfax5r9wSscCEscrOzjoIMYiIiOYEJEcQzI2hBExGR3kkBlMapEYmN4U0G8KBAsxxFFCHEcGDEZUGTHEER7wHvHjRoSosdTzIw8J5jjaeV2HjPUiLgjwnnfaGjlqnxilckyBpPInEiOt2UxYpYvDOdhVVWPRXupPs098DAtryVQR4gWM+bFPvytPdeC8RNfD4esCCz0stQLyqIbMD+U83yMfVev4uXuO/iMdlBO1pzcRjq60w9DDjEOx1BdabAX3F5E1NnYZr5dyJQ4pxp2LUqC3Ck02K2votzl/Ie88+Mtr1ZZYxZ4rx16SKXVgWQ6Bi4B6XEwrcTxlTO1NRTRidaoIdrcwOms7OfG5yyJ3VWx+uRfu2zWJ6AbyljsRWKj4mRmBv3XR2TTwOpvfnyE7TGRy5W/2r8Kw1dXL1WU3AHdJ63vNW2NZVAPMA/5mO//AGWUAVFta/eIFt9PK952MNj1dApOp1XqNbeo/cTnljl706Y54+lbjVTNsN7zN4hLTY4iinw7kjMFufcj5iZXiZA9ow6ujPubcpzpNPwGugw9qlsoLMt9mPQiZKo87PZMAvUDAHKqMt9cpJNyOk9Nw5TTyzycbvTU4UNlzP8AaIAA/Cg+yvtLKmRltI6NOkmpqOdu7upIi0YmR3mmRZoQgEQ0aAzQY7mBeANoSmM5jKYDtEscGC7QE7Qc0FjAhKvgxCRBoV4NpLxjGBjwHvFeNEJUPCgQ4CExna+h3g02QnB7UUMyX6QlYOBUEOM4kRDNz9GPEMtZ6TN3aiZlBP31I2HUqT7TDS1w/FNSqJUQ2dGDDppyPgRcesmePLGxrDLjlK934k5+DVKnvBCBvp1PlMrwHAVnZqudUo1KjHKqFnNicouSBYes6nDeKJiqBKm61EZHS9mRiLFT/vO86fZtUfDoqoABcEXN7g2ued545uSx7rq2WIq/AQUILu+YWLMyBgOmlpx8XwOhTTvuzAA9w1QB6ldTL/aHglY3eg2YAHuEkMp5Edf93nC4dwDEOQalRUVT3iuUO2gFr/v06zW5re2+d3rTkvwylWqZKdNrbNlZ7AeNzvLGKwgo1Fpi6oqqVuSxPI3J2P8Aia7DYVKSmwCgd48idDczAdo8bertyuGBOxF7Eev5xjlcumM9TVroHH3Di/3iL+AJmd4vibmwkQxRFzf0lCs5Y3POaxw72xl5Pt0B3mj7KL3qh6Ko/MzNIu55D5zX8EQUEQVRkau11LeXdU9DbWeiPPdu+NokjoYucqaS3kJ3ksjYSQoyY14EdZQV4DxERQI2MSmO6wLwiUNBaAWhK0ALx7QGh3gTAyQSG8INKiS8JTIbw1MCW8Rkd4QMArxwYBjgwCBlLitPNTYeEuQayXUjqDA8trJZmHQmRmX+L0stRvGUJGUDR1MdxBWVHW4NxZ8O+ZDcG2ZD9lh+h8Zs+A8cyElCcji4LEggZwSN7XsWnniS/gMVkIB2uSDroT5TGWMrrhnY9XrcfZqLFxZhfuk7lX1G+2UfOQYrjCKgyWAyAZlsLVCWzk+lph6uKqIStVWUkL3XUi+5Da+FveVq/E7jug6C2w00/MeHjOX047/WdfivGnDtZmAIOZegI3PztMxiMSzlRrppYkGwvew06mGQ9VzfU82NwAOsJEVNSQWI5cvWdJjI5W5Ze/SBxl31PTpBWmT57k/hHWSIhYiwLFjZVAJJPlPR+yXYe9qmKXTRlonmer/+vvH6jUm2f7MdnC2WtUQ5F1o02H22/Gw/D06yx20oZaIzbmouXrexJnqwwCrynk/0mY9Wriim1Fe/b/kaxt6C3uZrWot9H7P474tMXN3TuP1Ntj6idUzzzhuNei4ddRs68mWbPCcWpOBZ1BP3GNmHhK5x01MRkeePeAiYgYN4nMIMGIyINGzQu0jGQPCLwC0JT3ivAvCLQhExXg3g3gWohBBj3lQYkiyANJA0UgyYrwLxxAMNHBkUcGBMGhXkIMIGQYrtVQs95n5su1VC63mNhKCoJGJM4kEqJkM1P0fcPWtjEzjNTopUxDKdmyAZQf7ip9JlVM3X0U082LrINGqYDEIh/nzIbewMzfTWGuU22NZxikd3VSRUNhYbW0+UyfFuFkH6taajXkJoezlQhq1NgVdDqp0IYGxFp0cbhA47v2joAFzEny3Jnk5WV9DLGPK8bQdDq12O4Vf1kPDeE18TUFOlTLndvwqOrNyE9g4Z2Aar3sVenT3+EpHxag/nb7o8Br5TYYTgFGigShTSkg5INz1J3J8TPThLZ28uVx37YHgXZVMKAxX4lYjvVWH2fBB90fnNpw6gQus6CcPA31k3wrcp0k0u44Habii4XDVa7WJRbIv46jaIvv8AlefPeIqM7u7ks7szux+8zG5PuZv/AKUeMfGrDD02+rwxOe2z1yLE/wBo08y0wq0pm0sV8kB0t7zoJSlTEauRyTu+vP8A3wkS4rfD+MVKVgSXT8LHUeRnfodoaBtdmQ9GQ2HqJk8sFkmmbi9BSqGAZSGU6gjUGOTMBRruhujuLcgxt7bTsYXtGw0qpf8AmTQ+oMJppo0q0Meji6OreF7MPSTFoBtIzHzSJnhKPNBLyItHDQmxq8fNBMizQWr4Me8AmODNINYYkSmHeQFDUyIGEDAMmKCTFeAYjhoAMe8CnxqnmpnwnnrrYkdDPS8QmZGHhPP8bhjnYAc5Czai0BUJOgvOimC6mXUoqvKTbWPit9ubQwR3bTwmm7FYkUMbhan2VWsqMeqv9WR/5TkvrGr1CgUr9pWV/wC5TcfmI26zCSPojjHZmnWcVqbfBriwZ1FxUXo68zbY7zpYDhtOiO6Mzc3bVvToPKFgq+anTcX76I9ueqgyax5xwx3vXblcsrNW9JM14ohEDOjJiJne2fHRg8O7gj4r/V0FPNyPtW6KLn0A5zSWnh30i8a/icSyqb0sOWpJbZmB77epFvJRJa3hN1jqpLEkkkk3JJuSTuTEqwrQ1E5u5j3VLHkCfacyiulzudT5nUzo47Sm/iLe+kqU9hCX2jZYBEsFYDLCWIDGMlKwSnSGdISvp4zo4PjFRLBvrF6Me8B4H95XTDk+El+CFhOLQ4PiKVBocrc0fRvTr6SZzMo5Ekw2NZDoSV5oToR4dJpLi0pMYGV8PiVcZlPmOYPQyUmHOpiYEZTCgXI4iilDgxwYooD3jqYooBRRRSBXhAxRShq1QKpJ2AmTrnOxbQC+giima7eMwHSRO0eKR0oUXadPs9w9sRi6FNEWplcVHRyQhRDc5iOW0aKWe0v8X0XTVgouAGC7KO6DbYSglQKtmqs5yMzDLluBzvy30GkUU28v5dKgCVF9DYXkwWKKC+2e7c8b/hMJUdWtVf6qh1+IwPeH9Iu3oJ4CdPKNFMZO/h9EBDQR4pHVBxM/Vt6f9hIUpEJmOgAub6G0UUM33f8AAhwdjfyhFIooJ6DkkipaNFCibQXO8rO940UM5ImMC8UU0xUuDxRRww22YdRNIjhgCDcEAg9RFFEYqQGFmiihl//Z"
-                        alt="Neil image"
+                        src={mainComment.user.avatar || conan}
+                        alt={mainComment.user.username||""}
                         width={32}
                         height={32}
                     />
                 </div>
                 <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                        Neil Sims
+                        {mainComment.user.username!}
                     </p>
                     <p className="text-sm text-gray-500 truncate dark:text-gray-400">
-                        Hello.....
+                        {mainComment.content}
                     </p>
                 </div>
             </div>
@@ -158,7 +178,7 @@ function MainComment({
                     <li className="flex cursor-pointer px-4 hover:text-orange-500">
                         <button 
                             className=""
-                            onClick={replyMainComment}
+                            onClick={(e) => replyComment(mainComment.id, mainComment.user.username!)}
                         >
                             Reply
                         </button>
@@ -175,28 +195,32 @@ function MainComment({
 }
 
 function SubComment({
-    replySubComment
+    subcomment,
+    replyComment,
+    mainComment
 }:{
-    replySubComment:() => void
+    subcomment:TCommentWithUser
+    replyComment:(commentListId: number, usernameReplyed:string) => void,
+    mainComment:TCommentWithUser
 }) {
     return (
-        <div id="sub-comment-item-2" className="pb-3 sm:pb-4 pl-4 py-4">
+        <div className="pb-3 sm:pb-4 pl-4 py-4">
             <div className="flex items-center space-x-4 rtl:space-x-reverse">
                 <div className="flex-shrink-0">
                     <Image 
                         className="w-8 h-8 rounded-full"
-                        src="data:image/jpeg;base64,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"
-                        alt="Neil image"
+                        src={subcomment.user.avatar || conan}
+                        alt={subcomment.user.username||""}
                         width={32}
                         height={32}
                     />
                 </div>
                 <div className="flex-1 min-w-0">
                     <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
-                    Neil Sims
+                        {subcomment.user.username!}
                     </p>
                     <p className="text-sm text-gray-500 truncate dark:text-gray-400">
-                        Hi...
+                        {subcomment.content}
                     </p>
                 </div>
             </div>
@@ -219,7 +243,7 @@ function SubComment({
                     <li className="flex cursor-pointer px-4 hover:text-orange-500">
                         <button 
                             className=""
-                            onClick={replySubComment}
+                            onClick={(e) => replyComment(mainComment.id, subcomment.user.username!)}
                         >
                             Reply
                         </button>
@@ -234,92 +258,169 @@ function SubComment({
         </div>
     )
 }
-export function CommentItem() {
-    // const allSUbcommentOfOneComment = await getAllSubcommentsOfOneComment();
+
+export function CommentItem({
+    subcommentCount,
+    mainComment,
+    replyComment,
+}:{
+    subcommentCount: number|null,
+    mainComment: TCommentWithUser,
+    replyComment: (commentListId: number, usernameReplyed:string) => void,
+}) {
+    const mainCommentId:number = mainComment.id;
+
+    const [subcomments, setSubcommnets] = useState<TCommentWithUser[]>([]);
     
-    // console.log("inputReplyMainComment:  ", inputReplyMainComment);
-    // console.log("inputReplySubComment:  ",inputReplySubComment);
-    // const inputReplyMainCommentRef = useRef();
-    // const replyMainComment = () => {
-    //     const inputResponseMainCommentArea = document.getElementById("sub-comment-item-2");
-    //     const inputResponseMainComment = document.createElement("textarea");
-    //     inputResponseMainComment.className = "ml-1 w-full bg-white border-1 border-orange-400 outline p-4 min-h-12";
-    //     if(inputResponseMainCommentArea && inputResponseMainCommentArea.parentNode) {
-    //         const boxParentComment = inputResponseMainCommentArea.parentNode;
-    //         boxParentComment.insertBefore(inputResponseMainComment, inputResponseMainCommentArea);
-    //     }
-    // }
+    // Get comment through fetch Api
+    const handleShowComment = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        setShowSubcomments(true);
+        const result =  fetch(`http://localhost:3000/api/comments/subcomments?comment-main=${mainCommentId}`, {
+            method: "get",
+            headers: {
+                "Content-Type": "application/json",
+            },
+        })
 
-    // const replySubComment = () => {
-    //     const inputResponseMainCommentArea = document.getElementById("sub-comment-item-2");
-    //     const inputResponseMainComment = document.createElement("textarea");
-    //     inputResponseMainComment.className = "ml-1 w-full bg-white border-1 border-orange-400 outline p-4 min-h-12";
-    //     if(inputResponseMainCommentArea) {
-    //        inputResponseMainCommentArea.after(inputResponseMainComment);
-    //     }
-    // }
-
-    const [inputReplyMainComment, setInputReplyMainComment] = useState<React.ReactNode[]>([]);
-    const [inputReplySubComment, setInputReplySubComment] = useState<React.ReactNode[]>([]);
-    // console.log("inputReplyMainComment:  ", inputReplyMainComment);
-    // console.log("inputReplySubComment:  ", inputReplySubComment);
+        result
+            .then(res => res.json())
+            .then((arr) => setSubcommnets(JSON.parse(arr)))
+            .catch(error => console.log(`error`));
+    }
     
-    const replyMainComment = () => {
-        if(inputReplyMainComment.length == 0) {
-            setInputReplyMainComment(inputReplyMainComment.concat(<InputReplyComment key={inputReplyMainComment.length}/>));
-            setInputReplySubComment([]);
-        }
-    }
-
-    const replySubComment = () => {
-        if(inputReplySubComment.length === 0) {
-            setInputReplySubComment(inputReplySubComment.concat(<InputReplyComment key={inputReplySubComment.length}/>));
-            setInputReplyMainComment([]);
-        }
-    }
-    const [listComments, setCommentList] = useState<React.ReactNode[]>([]);
+    const [isShowSubcomments, setShowSubcomments] = useState(false);
 
     return (
-        <div className="max-w-md divide-y divide-gray-200 dark:divide-gray-700">
-            {/* Parent comment box */}
-            <div className="pb-3 sm:pb-4">
-                <MainComment replyMainComment={replyMainComment}/>
-                {/* List-subcomment */}
-                <div className="pl-24 mt-2">
-                   <div id="list-sub-comment" className="border-l-2 border-gray-400">
-                        {/* Sub-comment-item */}
-                        {/* {inputReplyMainComment} */}
-                        <SubComment replySubComment={replySubComment}/>
-                        {inputReplySubComment}
-                        <SubComment replySubComment={replySubComment}/>
-                        {inputReplySubComment}
-                        
-                   </div>
-                </div>
+        <div className="max-w-md">
+            <MainComment
+                mainComment={mainComment}
+                replyComment={replyComment}
+            />
+            {/* List-subcomment */}
+            <div className="pl-24 mt-2">
+                {
+                    subcommentCount && !isShowSubcomments ? (
+                        <button 
+                            type="button"
+                            onClick={e => handleShowComment(e)}
+                            className="flex my-4"
+                        >
+                            <CornerDownRight className="w-6 h-6"/>
+                            <p>{subcommentCount} responses</p>
+                        </button>
+                    ) : (
+                        <>
+                            {
+                                isShowSubcomments && subcomments.length === 0 ? (
+                                    <div 
+                                        className="border-l-2 border-gray-400"
+                                        key={nanoid()}
+                                    >
+                                        <div className="relative items-center block max-w-sm p-6">
+                                            <div role="status" className="absolute -translate-x-1/2 -translate-y-1/2 top-2/4 left-1/2">
+                                                <svg aria-hidden="true" className="w-8 h-8 text-gray-200 animate-spin dark:text-gray-600 fill-blue-600" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M100 50.5908C100 78.2051 77.6142 100.591 50 100.591C22.3858 100.591 0 78.2051 0 50.5908C0 22.9766 22.3858 0.59082 50 0.59082C77.6142 0.59082 100 22.9766 100 50.5908ZM9.08144 50.5908C9.08144 73.1895 27.4013 91.5094 50 91.5094C72.5987 91.5094 90.9186 73.1895 90.9186 50.5908C90.9186 27.9921 72.5987 9.67226 50 9.67226C27.4013 9.67226 9.08144 27.9921 9.08144 50.5908Z" fill="currentColor" /><path d="M93.9676 39.0409C96.393 38.4038 97.8624 35.9116 97.0079 33.5539C95.2932 28.8227 92.871 24.3692 89.8167 20.348C85.8452 15.1192 80.8826 10.7238 75.2124 7.41289C69.5422 4.10194 63.2754 1.94025 56.7698 1.05124C51.7666 0.367541 46.6976 0.446843 41.7345 1.27873C39.2613 1.69328 37.813 4.19778 38.4501 6.62326C39.0873 9.04874 41.5694 10.4717 44.0505 10.1071C47.8511 9.54855 51.7191 9.52689 55.5402 10.0491C60.8642 10.7766 65.9928 12.5457 70.6331 15.2552C75.2735 17.9648 79.3347 21.5619 82.5849 25.841C84.9175 28.9121 86.7997 32.2913 88.1811 35.8758C89.083 38.2158 91.5421 39.6781 93.9676 39.0409Z" fill="currentFill" /></svg>
+                                                <span className="sr-only">Loading...</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <>
+                                        {
+                                            subcomments.map((subcomment) => (
+                                                <div 
+                                                    className="border-l-2 border-gray-400" 
+                                                    key={subcomment.id}
+                                                >
+                                                    <SubComment
+                                                        subcomment={subcomment} 
+                                                        replyComment={replyComment}
+                                                        mainComment={mainComment}
+                                                    />
+                                                </div>
+                                            ))
+                                        }
+                                    </>
+                                )
+                            }
+                        </>
+                    )
+                }
             </div>
         </div>
     );
 }
 
 export default function CommentList({
-    allMainComments
+    allMainComments,
+    userId,
+    postId
 } : {
-    allMainComments:TComment[]
+    allMainComments:TCommentWithUser[],
+    userId: number,
+    postId: number
 }) {
-    // const [commentList, setCommentList] = useState<React.ReactNode[]>([]);
-    const [commentId, setCommentId] = useState(0);
-    
+    const [inputReplyComment, setInputReplyComment] = useState<React.ReactNode[]>([]);
+    const [position, setPosition] = useState<number>();
+    // let usernameRef = useRef("");
+    console.log("inputReplyComment::", inputReplyComment);
+    const handleAddInputComment = 
+        (
+            commentId: number,
+            usernameReplyed: string,
+        ) => {
+            setInputReplyComment([]);
+            console.log("usernameReplyed::", usernameReplyed);
+            // usernameRef.current = usernameReplyed;
+            console.log("commentId::" + commentId);
+            setPosition(commentId);
+            setInputReplyComment([
+                <div key={nanoid()}>
+                    <InputReplyComment
+                        value={usernameReplyed}
+                        userId={userId}
+                        postId={postId}
+                        parentId={commentId}
+                    />
+                </div>
+            ]);
+        }
     return (
         <>
+            <ToastContainer
+                position="top-right"
+                autoClose={5000}
+                hideProgressBar={false}
+                newestOnTop={false}
+                closeOnClick
+                rtl={false}
+                pauseOnFocusLoss
+                draggable
+                pauseOnHover
+                theme="dark"
+            />
             {
                 allMainComments && allMainComments.map(
                     (comment) => 
                         (
-                            <div key={comment.id}>
-                                <CommentItem commentMainId={comment.parent_id}/>
+                            <div key={comment.id} className="mb-2">
+                                <CommentItem
+                                    mainComment={comment}
+                                    subcommentCount={comment.subcomment_count}
+                                    replyComment={handleAddInputComment}
+                                />
+                                <div className="max-w-md">
+                                    <div className="pl-24">
+                                        <div className="border-l-2 border-gray-400">
+                                            {
+                                                position === comment.id && inputReplyComment
+                                            }
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
                         )
-            )}
+                )
+            }
         </>
     )
 }

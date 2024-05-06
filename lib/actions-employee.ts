@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import prisma from "@/prisma/client";
 import {
     CreateEmployee,
-    State,
     UpdateEmployee,
     validatedEmployee 
 } from '@/validators/validate-employee';

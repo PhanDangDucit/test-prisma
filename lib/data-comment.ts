@@ -1,4 +1,4 @@
-import { TComment } from "@/helpers/definitions";
+import { TCommentWithUser } from "@/helpers/definitions";
 import prisma from "@/prisma/client";
 
 /**
@@ -6,13 +6,28 @@ import prisma from "@/prisma/client";
  * @param postId
  * @returns
  */
-export async function getAllMainComments(postId: number): Promise<TComment[]> {
+export async function getAllMainComments(postId: number): Promise<TCommentWithUser[]> {
     try {
         const allComments = await prisma.comment.findMany({
             where: {
                 AND: {
                     post_id: postId,
                     parent_id: null
+                },
+            },
+            select: {
+                id: true,
+                content:true,
+                like_count: true,
+                post_id: true,
+                parent_id: true,
+                created_at: true,
+                subcomment_count:true,
+                user: {
+                    select: {
+                        avatar: true,
+                        username:true
+                    }
                 }
             }
         });
@@ -29,11 +44,26 @@ export async function getAllMainComments(postId: number): Promise<TComment[]> {
  * @param commentId
  * @returns 
  */
-export async function getAllSubcommentsOfOneComment(commentId: number): Promise<TComment[]>{
+export async function getAllSubcommentsOfOneComment(parentId: number): Promise<TCommentWithUser[]>{
     try {
         const allComments = await prisma.comment.findMany({
             where: {
-                id: commentId
+                parent_id: parentId
+            },
+            select: {
+                id: true,
+                content:true,
+                like_count: true,
+                post_id: true,
+                parent_id: true,
+                created_at: true,
+                subcomment_count:true,
+                user: {
+                    select: {
+                        avatar: true,
+                        username:true
+                    }
+                }
             }
         });
         await prisma.$disconnect();

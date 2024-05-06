@@ -51,6 +51,7 @@ export type CommentState = {
  * @returns 
  */
 export function validatedComment(action: typeof CreateComment | typeof UpdateComment, formData: FormData) {
+    console.log("add subcomment");
     return action.safeParse({
         content: formData.get('content')
     });

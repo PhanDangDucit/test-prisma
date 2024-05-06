@@ -203,6 +203,7 @@ insert into "Comment" (user_id, post_id, parent_id, content) values
 insert into "Post" (comment_count) values
 (3);
 
+update "Comment" set subcomment_count = 0 where id = 1;
 ```
 
 

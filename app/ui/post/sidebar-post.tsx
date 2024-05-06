@@ -61,7 +61,6 @@ const SidebarPost = ({
                             </svg>
                             <span className="sr-only">Loading...</span>
                         </div>
-
                     )
                 }
             <input
