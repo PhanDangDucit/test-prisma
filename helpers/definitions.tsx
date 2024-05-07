@@ -46,7 +46,8 @@ export type PostType = {
     post_type_id:number;
     slug:string;
     is_show: string,
-    author_id: number
+    author_id: number,
+    comment_count:number
 }
 
 export type PostCategoriesType = {
@@ -94,12 +95,12 @@ export type SearchQuery = {
 export type TComment = {
     id: number,
     content: string,
-    user_id: number,
+    user_id: number,//
     like_count: number,
     post_id: number,
     parent_id: number|null,
     created_at: Date,
-    updated_at: Date,
+    updated_at: Date,//
     subcomment_count: number|null
 }
 

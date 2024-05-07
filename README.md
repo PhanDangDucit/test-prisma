@@ -241,3 +241,34 @@ update "Comment" set subcomment_count = 0 where id = 1;
   }
 ]
 ```
+
+# Utilities Type of TS
+- [How the TypeScript Partial Type Works](https://dev.to/smpnjn/how-the-typescript-partial-type-works-2klj)
+
+- The `Partial` type in TypeScript is a utility type which does the opposite of `Required`.
+
+- If we want to avoid that error, we have to change firstUser's type to Partial<User>. That will tell TypeScript to set every property in the type User to optional:
+```ts
+type User = {
+  firstName: string,
+  lastName: string
+}
+
+let firstUser:Partial<User> = {
+  firstName: "John"
+}
+```
+
+- This is ultimately the same as redefining the User type to:
+```ts
+type User = {
+    firstName?: string,
+    lastName?: string
+}
+```
+
+# Content
+- [Auto-growing inputs](https://remysharp.com/2020/03/06/auto-growing-inputs)
+- [Auto-Growing Inputs & Textareas](https://css-tricks.com/auto-growing-inputs-textareas/)
+
+- contentEditable

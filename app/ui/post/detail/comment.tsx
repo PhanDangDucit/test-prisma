@@ -1,9 +1,9 @@
 'use client'
-import { TCommentWithUser } from "@/helpers/definitions";
+import { PostType, TComment, TCommentWithUser, User } from "@/helpers/definitions";
 import { createNewComment } from "@/lib/actions-comment";
 import { CornerDownRight } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useFormState } from "react-dom";
 import conan from "@/public/conan.jpg";
 import { ToastContainer, toast } from 'react-toastify';
@@ -15,37 +15,90 @@ import { nanoid } from 'nanoid';
 type NewCommentMainProps = {
     postId: number,
     userId: number,
-    parentId: number
+    parentId: number,
+    handleAddMainComments: (newMainComment: TCommentWithUser) => void,
+    user: User,
+    handleUpdateCommentCount: () => void,
 }
 
 export function NewCommentMain({
     postId,
     userId,
-    parentId
+    parentId,
+    handleAddMainComments,
+    user,
+    handleUpdateCommentCount,
 } : NewCommentMainProps){
-    const initialState = { message: null || "", errors: {} };
+    const initialState = { message: null || "", errors: {}, data: {}};
     const createCommentWithId = createNewComment.bind(null, postId, userId, parentId);
     const [state, dispatch] = useFormState(createCommentWithId, initialState);
 
+    // handleSubmit function is used to submit "newMainComment" form
     const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        e.preventDefault();
-        if(!userId) {
-            toast("You need to log in to comment !");
-        }
         const input:HTMLInputElement|null = document.querySelector("#comment-main");
-        if(input) {
-            input.value = "";
-        }
-        const listener = function () {
+        
+        // check if user is logged in
+        if(!userId) {
             e.preventDefault();
-        };
-        const btn = document.querySelector("#btn-submit-main-comment");
-        // btn?.addEventListener("click", listener);
-        setTimeout(function() {
-            btn?.removeEventListener("click", listener);
-        }, 1000)
+            toast("You need to log in to comment !");
+            return;
+        
+        // length of comment must greater than 0 (user must type least a character)
+        } else if(input?.value.length == 0) {
+            e.preventDefault();
+        }
     }
-    
+    const handleChangeInputValue = (e:React.KeyboardEvent<HTMLDivElement>) => {
+        const input:HTMLInputElement|null = document.querySelector("#comment-main");
+        const divToExpendHeight:HTMLElement|null = document.querySelector("#div-comment-main");
+        if(input && divToExpendHeight) {
+            input.value = divToExpendHeight.innerText;
+            console.log("input type::", input.value);
+        }
+    }
+    // use useEffect with dependency is state.error
+        // this dependency trigger operations inside body of userEffect hook when error propeties of state is changed
+        // when validate data through submiting form at newMainComment.
+    useEffect(() => {
+        // Check if state is error
+            // if error doen't exists, client will clean value of input
+        if(state.errors) {
+            const input:HTMLInputElement|null = document.querySelector("#comment-main");
+            const divToExpendHeight:HTMLElement|null = document.querySelector("#div-comment-main");
+            if(input && divToExpendHeight) {
+                input.value = '';
+                divToExpendHeight.innerText = '';
+                console.log("input type::", input.value);
+            }
+        }
+        console.log("state::", state);
+        console.log("state error::", state.errors);
+        console.log("state error content::", state.errors?.content);
+
+        // Check if state is error
+            // if error doen't exists, client will update UI
+            // this operation is only happening on client
+        if(!state.errors?.content) {
+            console.log("data::", state.data);
+            if(state?.data?.comment) {
+                const data:Partial<TComment> = state.data.comment;
+                delete data.user_id;
+                delete data.updated_at;
+                const newMainComment = {
+                    ...data, 
+                    user:{
+                        avatar:user.avatar, 
+                        username:user.username
+                    }
+                } as TCommentWithUser;
+
+                // two function below initializated at "CommentPart" component
+                handleAddMainComments(newMainComment);
+                handleUpdateCommentCount();
+            }
+        }
+    }, [state.errors]);
+
     return (
         <form className="p-4" action={dispatch}>
             <label htmlFor="comment-main" className="sr-only">Your message</label>
@@ -53,10 +106,17 @@ export function NewCommentMain({
                 <input
                     id="comment-main"
                     name="content"
-                    className="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                     placeholder="Your message..." 
-                    defaultValue={""}
+                    defaultValue={''}
+                    hidden
                 />
+                <div
+                    className="block min-h-12 mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                    contentEditable={true}
+                    role="textbox"
+                    id="div-comment-main"
+                    onKeyUp={(e) => handleChangeInputValue(e)}
+                ></div>
                 <button
                     type="submit"
                     id="btn-submit-main-comment"
@@ -90,6 +150,8 @@ export function InputReplyComment({
     const createCommentWithId = createNewComment.bind(null, postId, userId, parentId);
     const [state, dispatch] = useFormState(createCommentWithId, initialState);
 
+    // This function is called when user logged in or authenticated
+        // user submit a form which has least a character
     const hanldeIsAuthUser = useDebouncedCallback((e: React.FormEvent<HTMLFormElement>) => {
         const input:HTMLInputElement|null = document.querySelector("#subcomment");
         if(input) {
@@ -98,10 +160,14 @@ export function InputReplyComment({
         toast("You need to log in to comment !");
     }, 1000)
 
+    // "hanleSubmitFormAction" function will be called with conditions follow:
+        // user is authenticated
+        // user submit a form which has least a character
     const hanleSubmitFormAction = useDebouncedCallback(()=> {
         removeInputComment()
     }, 1000)
 
+    // handleSubmit handle logic of form submission
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
         if(!userId) {
             e.preventDefault();
@@ -114,6 +180,7 @@ export function InputReplyComment({
         }
     }
 
+    // "useEffect" hook is used to handle value of input which is used to user type their own comment
     useEffect(
         () => {
             const input:HTMLInputElement|null = document.querySelector("#subcomment");
@@ -138,7 +205,7 @@ export function InputReplyComment({
                         id="subcomment"
                         name="content"
                         // ref={inputRef}
-                        className="block mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                        className="block min-h-12 mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                         defaultValue={`${value}` + " "}
                     />
                     <button 
@@ -168,7 +235,7 @@ function MainComment({
 }) {
     return (
         <div>
-            <div className="flex items-center space-x-4 rtl:space-x-reverse py-4">
+            <div className="flex space-x-4 rtl:space-x-reverse py-4">
                 <div className="flex-shrink-0">
                     <Image 
                         className="w-8 h-8 rounded-full"
@@ -179,10 +246,10 @@ function MainComment({
                     />
                 </div>
                 <div className="flex-1 min-w-0">
-                    <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
+                    <p className="text-sm font-medium text-gray-900 dark:text-white">
                         {mainComment.user.username!}
                     </p>
-                    <p className="text-sm text-gray-500 truncate dark:text-gray-400">
+                    <p className="text-sm text-gray-500 dark:text-gray-400">
                         {mainComment.content}
                     </p>
                 </div>
@@ -377,7 +444,8 @@ export function CommentItem({
     );
 }
 
-export default function CommentList({
+// Comment list
+export function CommentList({
     allMainComments,
     userId,
     postId
@@ -390,6 +458,8 @@ export default function CommentList({
     const [position, setPosition] = useState<number>();
     // let usernameRef = useRef("");
     console.log("inputReplyComment::", inputReplyComment);
+    
+    //handle add input comment when user click reply
     const handleAddInputComment = 
         (
             commentId: number,
@@ -412,9 +482,11 @@ export default function CommentList({
                 </div>
             ]);
         }
+    // Remove input comment when user typed comment and post it.
     const removeInputComment = () => {
         setInputReplyComment([]);
     }
+   
     return (
         <>
             <ToastContainer
@@ -453,5 +525,54 @@ export default function CommentList({
                 )
             }
         </>
+    )
+}
+
+// CommentPart component
+export default function CommentPart({
+    post,
+    userInfo,
+    allMainComments,
+} : {
+    post:PostType,
+    userInfo:User,
+    allMainComments:TCommentWithUser[]
+}) {
+    const [mainComments, setMainComments] = useState<TCommentWithUser[]>(allMainComments);
+    
+    // handle add main comment when user logged in
+        // new main comment is created at "NewCommentMain" component
+    const handleAddMainComments = (newMainComment: TCommentWithUser) => {
+        setMainComments([...mainComments, newMainComment]);
+    }
+
+    // Sort all main comment
+        // It happens from the first request and after new main comment is created
+    mainComments.sort((firstComment, secondComment) => Number(secondComment.created_at) - Number(firstComment.created_at));
+    const [commentCount, setCommentCount] = useState<number>(post.comment_count);
+    const postId = post.id;
+    const userId = userInfo.id;
+
+    // handle update comment count for post
+    const handleUpdateCommentCount = () => {
+        setCommentCount(commentCount + 1);
+    }
+    return (
+        <div>
+            <h1 className="my-5 text-orange-600 text-2xl border-b-2 border-orange-200 inline-block p-1">Comments ({commentCount})</h1>
+            <NewCommentMain
+                postId={postId}
+                userId={userId}
+                parentId={0}
+                handleAddMainComments={handleAddMainComments}
+                user={userInfo}
+                handleUpdateCommentCount={handleUpdateCommentCount}
+            />
+            <CommentList
+                userId={userId}
+                postId={postId}
+                allMainComments={mainComments}
+            />
+        </div>
     )
 }

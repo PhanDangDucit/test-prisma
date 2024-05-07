@@ -16,14 +16,15 @@ import {
 } from "@/app/ui/post/skeletons-post";
 import { auth } from "@/auth";
 import { User } from "@/helpers/definitions";
-import { getUserByEmail, getUserById } from "@/lib/actions-user";
+import { getUserByEmail } from "@/lib/actions-user";
 import { getAllMainComments } from "@/lib/data-comment";
 import { 
     fetchPostBySlug, 
     fetchPostCategoryById 
 } from "@/lib/data-post";
 import { Suspense } from "react";
-import { nanoid } from "nanoid";
+import CommentPart from "@/app/ui/post/detail/comment";
+import { user } from "@/configs/constants";
 export default async function Page({ 
     params 
 } : { 
@@ -40,17 +41,12 @@ export default async function Page({
     ]);
     
     const email = session?.user?.email;
-    let user = {
-        id: 0
-    };
-    
+    let userInfo:User = user;
     // check user logging to comment
     if(email) {
-        user = await getUserByEmail(email) as User;
+        userInfo = await getUserByEmail(email) as User;
     }
 
-    allMainComments.sort((firstComment, secondComment) => Number(secondComment.created_at) - Number(firstComment.created_at));
-    console.log("all main comment::", allMainComments);
     return (
         <>
             {/* Main */}
@@ -67,26 +63,11 @@ export default async function Page({
             <div className="grid grid-cols-3 gap-3 mt-5 pt-6">
                 {/* Comment */}
                 <div className="col-start-1 col-end-3">
-                    <h1 className="my-5 text-orange-600 text-2xl border-b-2 border-orange-200 inline-block p-1">Comments ({post.comment_count})</h1>
-                    <Suspense fallback={<NewCommentMainSkeleton/>}>
-                        {
-                            user &&
-                                <div key={nanoid()}>
-                                    <NewCommentMain
-                                        postId={postId}
-                                        userId={user.id || 0}
-                                        parentId={0}
-                                    />
-                                </div>
-                        }
-                    </Suspense>
-                    <Suspense fallback={<CommentListSkeleton/>}>
-                        <CommentList
-                            userId={user.id || 0}
-                            postId={postId}
-                            allMainComments={allMainComments}
-                        />
-                    </Suspense>
+                    <CommentPart
+                        post={post}
+                        userInfo={userInfo}
+                        allMainComments={allMainComments}
+                    />
                 </div>
                 {/* Posts with other topics*/}
                 <Suspense fallback={<TheBestViewPostSkeleton/>}>

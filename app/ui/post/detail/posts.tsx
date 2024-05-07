@@ -14,8 +14,8 @@ export const PostRelated = ({
         <div className="bg-gray-100 p-4 mt-12">
             {
                 posts && posts.map((post, index)=> (
-                    <>
-                        <div className="flex p-4 bg-white rounded-2xl relative" key={post.id}>
+                    <div key={post.id}>
+                        <div className="flex p-4 bg-white rounded-2xl relative">
                             <div className="w-48 h-48 relative">
                                 <Image
                                     src={post.thumbnail || icon}
@@ -39,7 +39,7 @@ export const PostRelated = ({
                         {
                             index % 2 == 0 && <hr className="w-3/4 h-1 mx-auto my-1 bg-gray-300 border-0 rounded md:my-1 dark:bg-gray-300"/>
                         }
-                    </>
+                    </div>
                 ))
             }
         </div>

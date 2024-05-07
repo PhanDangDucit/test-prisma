@@ -1,3 +1,4 @@
+import { PostType, TComment, TCommentWithUser } from "@/helpers/definitions";
 import { z } from "zod";
 
 const FormSchema = z.object({
@@ -41,6 +42,10 @@ export type CommentState = {
         content?: string[]
     };
     message?: string | null;
+    data?: {
+        comment?: TComment|null;
+        post?: PostType|null;
+    }
 }
 
 

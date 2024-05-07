@@ -1,4 +1,5 @@
 "use server"
+import { PostType, TComment, TCommentWithUser } from "@/helpers/definitions";
 import prisma from "@/prisma/client";
 import { 
     CommentState,
@@ -27,24 +28,44 @@ export async function createNewComment(
         return {
             errors: validatedFields.error.flatten().fieldErrors,
             message: 'Missing Fields. Failed to create comment',
+            data: {
+                comment: null,
+                post: null
+            }
         };
     }
     console.log("Submit new main comment!");
     // create time follow UTC time zone to save data for database
     const updatedAt = new Date();
+    const result:{comment:TComment, post:PostType} = {
+        comment: {
+            id: 0,
+            content: '',
+            user_id: 0,
+            like_count: 0,
+            post_id: 0,
+            parent_id: 0,
+            created_at: new Date(),
+            updated_at: new Date(),
+            subcomment_count: 0
+        },
+        post: {
+            id:0,
+            title:'',
+            created_at:new Date(),
+            updated_at:new Date(),
+            content:'',
+            thumbnail:'',
+            post_type_id:0,
+            slug:'',
+            is_show: '',
+            author_id: 0
+        }
+    };
     try {
-        await prisma.post.update({
-            where: {
-                id: postId
-            },
-            data:{
-                comment_count: {
-                    increment: 1,
-                },
-            }
-        })
         if(parentId === 0) {
-            await prisma.comment.create({
+            // create a new main comment
+            const result1 = await prisma.comment.create({
                 data: {
                     ...validatedFields.data,
                     user_id: userId,
@@ -53,18 +74,23 @@ export async function createNewComment(
                     updated_at: updatedAt
                 }
             })
-        } else {
-            await prisma.comment.update({
+            result.comment = result1;
+            console.log("result create new main comment::", result1);
+            const result2 = await prisma.post.update({
                 where: {
-                    id: parentId,
+                    id: postId
                 },
                 data:{
-                    subcomment_count: {
+                    comment_count: {
                         increment: 1,
                     },
                 }
             })
-            await prisma.comment.create({
+            result.post = result2;
+            console.log("result update comment_count for post::", result2);
+        } else {
+            // create a new subcomment
+            const result3 = await prisma.comment.create({
                 data: {
                     ...validatedFields.data,
                     user_id: userId,
@@ -74,13 +100,27 @@ export async function createNewComment(
                     parent_id: parentId
                 }
             })
+            console.log("result create new subcomment::", result3);
+            const result4 = await prisma.comment.update({
+                where: {
+                    id: parentId,
+                },
+                data:{
+                    subcomment_count: {
+                        increment: 1,
+                    },
+                }
+            })
+            console.log("result update subcomment_count for main comment::", result4);
         }
-        return prevState;
+        console.log("result::---> ", result)
+        return { ...prevState, data:{...result}};
     } catch (error) {
         console.error("error::", error);
-        return {
-            message:`Create a comment failed:  + ${error}`
-        }
+        // return {
+        //     message:`Create a comment failed:  + ${error}`
+        // }
+        return prevState;
     }
     
     // revalidatePath('/manage-blog/posts');
