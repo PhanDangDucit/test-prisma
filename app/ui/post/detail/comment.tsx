@@ -3,7 +3,7 @@ import { PostType, TComment, TCommentWithUser, User } from "@/helpers/definition
 import { createNewComment } from "@/lib/actions-comment";
 import { CornerDownRight } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { useFormState } from "react-dom";
 import conan from "@/public/conan.jpg";
 import { ToastContainer, toast } from 'react-toastify';
@@ -11,6 +11,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useDebouncedCallback } from "use-debounce";
 import { nanoid } from 'nanoid';
+import { processStringContentAddition } from "@/utils/posts.util";
 
 type NewCommentMainProps = {
     postId: number,
@@ -29,26 +30,47 @@ export function NewCommentMain({
     user,
     handleUpdateCommentCount,
 } : NewCommentMainProps){
+    const timeClickCreateCommentRef = useRef<number>(0);
     const initialState = { message: null || "", errors: {}, data: {}};
     const createCommentWithId = createNewComment.bind(null, postId, userId, parentId);
     const [state, dispatch] = useFormState(createCommentWithId, initialState);
 
+    // open popup if user isn't logged in
+    const handleUnauthenticatedUser = useDebouncedCallback(() => {
+        toast("You need to log in to comment !");
+    }, 1000)
+    
     // handleSubmit function is used to submit "newMainComment" form
     const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+        console.log("What is problem?");
         const input:HTMLInputElement|null = document.querySelector("#comment-main");
         
         // check if user is logged in
         if(!userId) {
             e.preventDefault();
-            toast("You need to log in to comment !");
+            handleUnauthenticatedUser();
             return;
         
         // length of comment must greater than 0 (user must type least a character)
         } else if(input?.value.length == 0) {
             e.preventDefault();
         }
+        console.log("What is problem?");
+        const btn:HTMLButtonElement | null = document.querySelector("#btn-submit-main-comment");
+        // if(btn) {
+        //     console.log("Button:::", btn);
+        //     btn.disabled = true;
+        // }
+        timeClickCreateCommentRef.current++;
+        if(timeClickCreateCommentRef.current > 1 && btn) {
+            console.log("Time::", timeClickCreateCommentRef.current);
+            btn.disabled = true;
+        }
+        console.log("Time1::", timeClickCreateCommentRef.current);
     }
-    const handleChangeInputValue = (e:React.KeyboardEvent<HTMLDivElement>) => {
+
+    // Add content of comment when user types text.
+    const handleChangeInputValue = () => {
         const input:HTMLInputElement|null = document.querySelector("#comment-main");
         const divToExpendHeight:HTMLElement|null = document.querySelector("#div-comment-main");
         if(input && divToExpendHeight) {
@@ -56,6 +78,7 @@ export function NewCommentMain({
             console.log("input type::", input.value);
         }
     }
+
     // use useEffect with dependency is state.error
         // this dependency trigger operations inside body of userEffect hook when error propeties of state is changed
         // when validate data through submiting form at newMainComment.
@@ -71,6 +94,7 @@ export function NewCommentMain({
                 console.log("input type::", input.value);
             }
         }
+
         console.log("state::", state);
         console.log("state error::", state.errors);
         console.log("state error content::", state.errors?.content);
@@ -81,6 +105,7 @@ export function NewCommentMain({
         if(!state.errors?.content) {
             console.log("data::", state.data);
             if(state?.data?.comment) {
+                // process field for "TCommentWithUser" type
                 const data:Partial<TComment> = state.data.comment;
                 delete data.user_id;
                 delete data.updated_at;
@@ -96,6 +121,12 @@ export function NewCommentMain({
                 handleAddMainComments(newMainComment);
                 handleUpdateCommentCount();
             }
+        }
+        
+        const btn:HTMLButtonElement | null = document.querySelector("#btn-submit-main-comment");
+        if(btn) {
+            timeClickCreateCommentRef.current = 0;
+            btn.disabled = false;
         }
     }, [state.errors]);
 
@@ -115,7 +146,7 @@ export function NewCommentMain({
                     contentEditable={true}
                     role="textbox"
                     id="div-comment-main"
-                    onKeyUp={(e) => handleChangeInputValue(e)}
+                    onKeyUp={handleChangeInputValue}
                 ></div>
                 <button
                     type="submit"
@@ -163,9 +194,9 @@ export function InputReplyComment({
     // "hanleSubmitFormAction" function will be called with conditions follow:
         // user is authenticated
         // user submit a form which has least a character
-    const hanleSubmitFormAction = useDebouncedCallback(()=> {
-        removeInputComment()
-    }, 1000)
+    // const hanleSubmitFormAction = useDebouncedCallback(()=> {
+    //     removeInputComment()
+    // }, 1000)
 
     // handleSubmit handle logic of form submission
     const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -176,7 +207,8 @@ export function InputReplyComment({
         }
         const btn = document.querySelector('#btnSubmit');
         if(btn) {
-            hanleSubmitFormAction();
+            removeInputComment()
+            // hanleSubmitFormAction();
         }
     }
 
@@ -233,6 +265,11 @@ function MainComment({
     mainComment:TCommentWithUser
     replyComment: (commentListId: number, usernameReplyed:string) => void
 }) {
+    const [isShowContentAddition, setIsShowContentAddition] = useState<boolean>(false);
+    const handleShowContentAddition = () => {
+        setIsShowContentAddition(true);
+    }
+    const contentLengthRequired = 200;
     return (
         <div>
             <div className="flex space-x-4 rtl:space-x-reverse py-4">
@@ -249,9 +286,35 @@ function MainComment({
                     <p className="text-sm font-medium text-gray-900 dark:text-white">
                         {mainComment.user.username!}
                     </p>
-                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                        {mainComment.content}
-                    </p>
+                        {
+                            mainComment.content.length < contentLengthRequired ? (
+                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                    {mainComment.content}
+                                </p>
+                            ) : (
+                                <>
+                                    {
+                                        isShowContentAddition ? (
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                {mainComment.content}
+                                            </p>
+                                        ) : (
+                                            <>
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                    {processStringContentAddition(mainComment.content, 200)}
+                                                </p>
+                                                <button
+                                                    type="button"
+                                                    onClick={handleShowContentAddition}
+                                                >
+                                                    learn more
+                                                </button>
+                                            </>
+                                        )
+                                    }
+                                </>
+                            )
+                        }
                 </div>
             </div>
             {/* action of main-comment*/}
@@ -385,7 +448,9 @@ export function CommentItem({
     const [isShowSubcomments, setShowSubcomments] = useState(false);
 
     return (
-        <div className="max-w-md">
+        <div
+            // className="max-w-md"
+        >
             <MainComment
                 mainComment={mainComment}
                 replyComment={replyComment}

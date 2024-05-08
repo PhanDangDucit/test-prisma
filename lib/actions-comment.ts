@@ -1,4 +1,5 @@
 "use server"
+import { comment, post } from "@/configs/constants";
 import { PostType, TComment, TCommentWithUser } from "@/helpers/definitions";
 import prisma from "@/prisma/client";
 import { 
@@ -37,30 +38,12 @@ export async function createNewComment(
     console.log("Submit new main comment!");
     // create time follow UTC time zone to save data for database
     const updatedAt = new Date();
-    const result:{comment:TComment, post:PostType} = {
-        comment: {
-            id: 0,
-            content: '',
-            user_id: 0,
-            like_count: 0,
-            post_id: 0,
-            parent_id: 0,
-            created_at: new Date(),
-            updated_at: new Date(),
-            subcomment_count: 0
-        },
-        post: {
-            id:0,
-            title:'',
-            created_at:new Date(),
-            updated_at:new Date(),
-            content:'',
-            thumbnail:'',
-            post_type_id:0,
-            slug:'',
-            is_show: '',
-            author_id: 0
-        }
+    const result : {
+        comment:TComment,
+        post:PostType
+    } = {
+        comment,
+        post
     };
     try {
         if(parentId === 0) {
@@ -71,7 +54,8 @@ export async function createNewComment(
                     user_id: userId,
                     like_count: 0,
                     post_id: postId,
-                    updated_at: updatedAt
+                    updated_at: updatedAt,
+                    subcomment_count: 0
                 }
             })
             result.comment = result1;
@@ -89,6 +73,7 @@ export async function createNewComment(
             result.post = result2;
             console.log("result update comment_count for post::", result2);
         } else {
+            console.log("ParentId:", parentId);
             // create a new subcomment
             const result3 = await prisma.comment.create({
                 data: {
@@ -112,8 +97,20 @@ export async function createNewComment(
                 }
             })
             console.log("result update subcomment_count for main comment::", result4);
+            const result5 = await prisma.post.update({
+                where: {
+                    id: postId
+                },
+                data:{
+                    comment_count: {
+                        increment: 1,
+                    },
+                }
+            })
+            // result.post = result5;
+            console.log("result update comment_count for post::", result5);
         }
-        console.log("result::---> ", result)
+        // console.log("result::---> ", result)
         return { ...prevState, data:{...result}};
     } catch (error) {
         console.error("error::", error);

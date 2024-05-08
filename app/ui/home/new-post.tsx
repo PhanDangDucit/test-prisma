@@ -12,6 +12,7 @@ import conan from "@/public/conan.jpg";
 //     LatestPostBusinessSkeleton
 // } from "@/app/ui/home/skeletons-home";
 import { getLatestOnePostForEachPostType } from "@/lib/data-post";
+import { formatDateFollowHour } from "@/utils/functions";
 
 export default async function LatestPost() {
     const datas = await Promise.all([
@@ -117,7 +118,7 @@ export async function LatestPostBusiness({businessPost}: {businessPost:PostType}
                 <h2 className="card-title text-gray-600 text-base">{businessPost.title}</h2>
                 <div className="text-gray-500 text-sm"  dangerouslySetInnerHTML={{ __html: processContentAddition(businessPost.content, 80)}}/>
             </div>
-            <p className="ml-3 text-gray-400 text-xs">{moment(businessPost.created_at).startOf('hour').fromNow()}</p>
+            <p className="ml-3 text-gray-400 text-xs">{formatDateFollowHour(businessPost?.created_at)}</p>
             <Link href={`/blog/${businessPost.slug}/`} className="absolute inset-0">{''}</Link>
         </div>
     )

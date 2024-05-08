@@ -8,8 +8,6 @@ import {
 } from "@/app/ui/post/detail/posts";
 
 import { 
-    CommentListSkeleton, 
-    NewCommentMainSkeleton,
     ContentMainDetailPostSkeleton, 
     ManyViewsPostsSkeleton, 
     TheBestViewPostSkeleton 
@@ -26,7 +24,7 @@ import { Suspense } from "react";
 import CommentPart from "@/app/ui/post/detail/comment";
 import { user } from "@/configs/constants";
 export default async function Page({ 
-    params 
+    params
 } : { 
     params: { slug: string }
 }) {

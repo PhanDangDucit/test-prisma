@@ -39,8 +39,8 @@ yarn-error.log*
 next-env.d.ts
 
 # # Test unit
-test.js
-__tests__
+# test.js
+# __tests__
 
 /.swc/
 __trash
