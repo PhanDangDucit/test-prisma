@@ -48,6 +48,13 @@ export type CommentState = {
     }
 }
 
+export type CommentStateAvailability = {
+    data: {
+        comment: TComment;
+        post: PostType;
+    }
+}
+
 
 /**
  * Validate employee by zod

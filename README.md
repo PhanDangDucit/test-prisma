@@ -204,6 +204,8 @@ insert into "Post" (comment_count) values
 (3);
 
 update "Comment" set subcomment_count = 0 where id = 1;
+
+TRUNCATE TABLE "Comment" CASCADE;
 ```
 
 

@@ -3,37 +3,21 @@ import { PostType, TComment, TCommentWithUser, User } from "@/helpers/definition
 import { createNewComment } from "@/lib/actions-comment";
 import { CornerDownRight } from "lucide-react";
 import Image from "next/image";
-import React, { useEffect, useRef, useState } from "react";
-import { useFormState } from "react-dom";
+import React, { useCallback, useEffect, useRef, useState } from "react";
+import { useFormState, useFormStatus } from "react-dom";
 import conan from "@/public/conan.jpg";
 import { ToastContainer, toast } from 'react-toastify';
-
 import 'react-toastify/dist/ReactToastify.css';
 import { useDebouncedCallback } from "use-debounce";
 import { nanoid } from 'nanoid';
 import { processStringContentAddition } from "@/utils/posts.util";
 
-type NewCommentMainProps = {
-    postId: number,
-    userId: number,
-    parentId: number,
-    handleAddMainComments: (newMainComment: TCommentWithUser) => void,
-    user: User,
-    handleUpdateCommentCount: () => void,
-}
-
-export function NewCommentMain({
-    postId,
-    userId,
-    parentId,
-    handleAddMainComments,
-    user,
-    handleUpdateCommentCount,
-} : NewCommentMainProps){
-    const timeClickCreateCommentRef = useRef<number>(0);
-    const initialState = { message: null || "", errors: {}, data: {}};
-    const createCommentWithId = createNewComment.bind(null, postId, userId, parentId);
-    const [state, dispatch] = useFormState(createCommentWithId, initialState);
+export function ButtonSubmitNewMainComment ({
+    userId
+}:{
+    userId: number
+}) {
+    const statusForm = useFormStatus();
 
     // open popup if user isn't logged in
     const handleUnauthenticatedUser = useDebouncedCallback(() => {
@@ -42,7 +26,6 @@ export function NewCommentMain({
     
     // handleSubmit function is used to submit "newMainComment" form
     const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-        console.log("What is problem?");
         const input:HTMLInputElement|null = document.querySelector("#comment-main");
         
         // check if user is logged in
@@ -55,19 +38,39 @@ export function NewCommentMain({
         } else if(input?.value.length == 0) {
             e.preventDefault();
         }
-        console.log("What is problem?");
-        const btn:HTMLButtonElement | null = document.querySelector("#btn-submit-main-comment");
-        // if(btn) {
-        //     console.log("Button:::", btn);
-        //     btn.disabled = true;
-        // }
-        timeClickCreateCommentRef.current++;
-        if(timeClickCreateCommentRef.current > 1 && btn) {
-            console.log("Time::", timeClickCreateCommentRef.current);
-            btn.disabled = true;
-        }
-        console.log("Time1::", timeClickCreateCommentRef.current);
     }
+    return (
+        <button
+            type="submit"
+            id="btn-submit-main-comment"
+            className="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600"
+            onClick={e => handleSubmit(e)}
+            disabled={statusForm.pending}
+        >
+            <svg className="w-5 h-5 rotate-90 rtl:-rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                <path d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z" />
+            </svg>
+            <span className="sr-only">Send MainComment</span>
+        </button>
+    )
+}
+
+type NewCommentMainProps = {
+    postId: number,
+    userId: number,
+    parentId: number,
+    handleAddMainComments: (comment: Partial<TComment>) => void,
+}
+
+export function NewCommentMain({
+    postId,
+    userId,
+    parentId,
+    handleAddMainComments,
+} : NewCommentMainProps){
+    const initialState = { message: null || "", errors: {}, data: {}};
+    const createCommentWithId = createNewComment.bind(null, postId, userId, parentId);
+    const [state, dispatch] = useFormState(createCommentWithId, initialState);
 
     // Add content of comment when user types text.
     const handleChangeInputValue = () => {
@@ -78,8 +81,8 @@ export function NewCommentMain({
             console.log("input type::", input.value);
         }
     }
-
-    // use useEffect with dependency is state.error
+    
+    // use useEffect with dependency is state
         // this dependency trigger operations inside body of userEffect hook when error propeties of state is changed
         // when validate data through submiting form at newMainComment.
     useEffect(() => {
@@ -98,37 +101,18 @@ export function NewCommentMain({
         console.log("state::", state);
         console.log("state error::", state.errors);
         console.log("state error content::", state.errors?.content);
-
         // Check if state is error
             // if error doen't exists, client will update UI
             // this operation is only happening on client
         if(!state.errors?.content) {
             console.log("data::", state.data);
             if(state?.data?.comment) {
-                // process field for "TCommentWithUser" type
-                const data:Partial<TComment> = state.data.comment;
-                delete data.user_id;
-                delete data.updated_at;
-                const newMainComment = {
-                    ...data, 
-                    user:{
-                        avatar:user.avatar, 
-                        username:user.username
-                    }
-                } as TCommentWithUser;
-
                 // two function below initializated at "CommentPart" component
-                handleAddMainComments(newMainComment);
-                handleUpdateCommentCount();
+                handleAddMainComments(state.data.comment!);
+                console.log("handleAddMainComments run time::");
             }
         }
-        
-        const btn:HTMLButtonElement | null = document.querySelector("#btn-submit-main-comment");
-        if(btn) {
-            timeClickCreateCommentRef.current = 0;
-            btn.disabled = false;
-        }
-    }, [state.errors]);
+    }, [state, handleAddMainComments]);
 
     return (
         <form className="p-4" action={dispatch}>
@@ -148,17 +132,7 @@ export function NewCommentMain({
                     id="div-comment-main"
                     onKeyUp={handleChangeInputValue}
                 ></div>
-                <button
-                    type="submit"
-                    id="btn-submit-main-comment"
-                    className="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600"
-                    onClick={e => handleSubmit(e)}
-                >
-                    <svg className="w-5 h-5 rotate-90 rtl:-rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
-                        <path d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z" />
-                    </svg>
-                    <span className="sr-only">Send message</span>
-                </button>
+                <ButtonSubmitNewMainComment userId={userId}/>
             </div>
         </form>
     );
@@ -525,7 +499,7 @@ export function CommentList({
     console.log("inputReplyComment::", inputReplyComment);
     
     //handle add input comment when user click reply
-    const handleAddInputComment = 
+    const handleAddReplyComment = 
         (
             commentId: number,
             usernameReplyed: string,
@@ -570,11 +544,11 @@ export function CommentList({
                 allMainComments && allMainComments.map(
                     (comment) => 
                         (
-                            <div key={comment.id} className="mb-2">
+                            <div key={nanoid()} className="mb-2">
                                 <CommentItem
                                     mainComment={comment}
                                     subcommentCount={comment.subcomment_count}
-                                    replyComment={handleAddInputComment}
+                                    replyComment={handleAddReplyComment}
                                 />
                                 <div className="max-w-md">
                                     <div className="pl-24">
@@ -604,24 +578,54 @@ export default function CommentPart({
     allMainComments:TCommentWithUser[]
 }) {
     const [mainComments, setMainComments] = useState<TCommentWithUser[]>(allMainComments);
-    
-    // handle add main comment when user logged in
-        // new main comment is created at "NewCommentMain" component
-    const handleAddMainComments = (newMainComment: TCommentWithUser) => {
-        setMainComments([...mainComments, newMainComment]);
-    }
-
-    // Sort all main comment
-        // It happens from the first request and after new main comment is created
-    mainComments.sort((firstComment, secondComment) => Number(secondComment.created_at) - Number(firstComment.created_at));
     const [commentCount, setCommentCount] = useState<number>(post.comment_count);
     const postId = post.id;
     const userId = userInfo.id;
-
+    const stopUpdateRef = useRef(0);
+    const stopAddRef = useRef(0);
+    let a = 2;
     // handle update comment count for post
-    const handleUpdateCommentCount = () => {
-        setCommentCount(commentCount + 1);
-    }
+    const handleUpdateCommentCount = useCallback(() => {
+        console.log("::Time 2::");
+        console.log("::commentCount::", commentCount);
+        if(stopUpdateRef.current == 0) {
+            stopUpdateRef.current++;
+            setCommentCount(commentCount + 1);
+            handleUpdateCommentCount();
+        } else {
+            stopUpdateRef.current = 0;
+        }
+    }, [commentCount])
+
+    // handle add main comment when user logged in
+        // new main comment is created at "NewCommentMain" component
+    const handleAddMainComments = useCallback(
+        (
+            comment: Partial<TComment>
+        ) => {
+            console.log("::Time 1::");
+            if(stopAddRef.current == 0) {// process field for "TCommentWithUser" type
+                delete comment.user_id;
+                delete comment.updated_at;
+                const newMainComment = {
+                    ...comment,
+                    user:{
+                        avatar:userInfo.avatar, 
+                        username:userInfo.username
+                    }
+                } as TCommentWithUser;
+                stopAddRef.current++;
+                setMainComments([...mainComments, newMainComment]);
+                handleUpdateCommentCount();
+            } else {
+                stopAddRef.current = 0;
+            }
+        }, [handleUpdateCommentCount, userInfo.avatar, userInfo.username, mainComments]
+    )
+    // Sort all main comment
+        // It happens from the first request and after new main comment is created
+    mainComments.sort((firstComment, secondComment) => Number(secondComment.created_at) - Number(firstComment.created_at));
+    
     return (
         <div>
             <h1 className="my-5 text-orange-600 text-2xl border-b-2 border-orange-200 inline-block p-1">Comments ({commentCount})</h1>
@@ -630,8 +634,6 @@ export default function CommentPart({
                 userId={userId}
                 parentId={0}
                 handleAddMainComments={handleAddMainComments}
-                user={userInfo}
-                handleUpdateCommentCount={handleUpdateCommentCount}
             />
             <CommentList
                 userId={userId}
