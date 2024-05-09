@@ -1,6 +1,3 @@
-import CommentList, {
-    NewCommentMain
-} from "@/app/ui/post/detail/comment";
 import ContentMainDetailPost from "@/app/ui/post/detail/content";
 import {
     TheBestViewPost,

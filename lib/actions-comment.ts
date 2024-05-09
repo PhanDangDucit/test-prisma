@@ -85,6 +85,7 @@ export async function createNewComment(
                     parent_id: parentId
                 }
             })
+            result.comment = result3;
             console.log("result create new subcomment::", result3);
             const result4 = await prisma.comment.update({
                 where: {
@@ -107,7 +108,7 @@ export async function createNewComment(
                     },
                 }
             })
-            // result.post = result5;
+            result.post = result5;
             console.log("result update comment_count for post::", result5);
         }
         // console.log("result::---> ", result)

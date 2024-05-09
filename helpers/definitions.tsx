@@ -111,7 +111,7 @@ export type TCommentWithUser = {
     post_id: number,
     parent_id: number|null,
     created_at: Date,
-    subcomment_count: number|null,
+    subcomment_count: number,
     user: {
         avatar: string|null,
         username: string|null

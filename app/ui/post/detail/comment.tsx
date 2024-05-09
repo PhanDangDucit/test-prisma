@@ -39,6 +39,7 @@ export function ButtonSubmitNewMainComment ({
             e.preventDefault();
         }
     }
+
     return (
         <button
             type="submit"
@@ -131,6 +132,7 @@ export function NewCommentMain({
                     role="textbox"
                     id="div-comment-main"
                     onKeyUp={handleChangeInputValue}
+                    title="new main comment"
                 ></div>
                 <ButtonSubmitNewMainComment userId={userId}/>
             </div>
@@ -138,26 +140,18 @@ export function NewCommentMain({
     );
 }
 
-export function InputReplyComment({
+export function ButtonSubmitNewSubcomment({
+    userId, 
     value,
-    userId,
-    postId,
-    parentId,
-    removeInputComment
 }:{
-    userId: number,
-    postId: number,
+    userId:number, 
     value: string,
-    parentId: number,
-    removeInputComment:() => void
 }) {
-    const initialState = { message: null || "", errors: {} };
-    const createCommentWithId = createNewComment.bind(null, postId, userId, parentId);
-    const [state, dispatch] = useFormState(createCommentWithId, initialState);
+    const statusSubmit = useFormStatus();
 
     // This function is called when user logged in or authenticated
         // user submit a form which has least a character
-    const hanldeIsAuthUser = useDebouncedCallback((e: React.FormEvent<HTMLFormElement>) => {
+    const hanldeIsAuthUser = useDebouncedCallback(() => {
         const input:HTMLInputElement|null = document.querySelector("#subcomment");
         if(input) {
             input.value = value + " ";
@@ -165,27 +159,49 @@ export function InputReplyComment({
         toast("You need to log in to comment !");
     }, 1000)
 
-    // "hanleSubmitFormAction" function will be called with conditions follow:
-        // user is authenticated
-        // user submit a form which has least a character
-    // const hanleSubmitFormAction = useDebouncedCallback(()=> {
-    //     removeInputComment()
-    // }, 1000)
-
     // handleSubmit handle logic of form submission
-    const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    const handleSubmit = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         if(!userId) {
             e.preventDefault();
-            hanldeIsAuthUser(e);
+            hanldeIsAuthUser();
             return;
         }
-        const btn = document.querySelector('#btnSubmit');
-        if(btn) {
-            removeInputComment()
-            // hanleSubmitFormAction();
-        }
     }
+    useEffect(() => {
+        
+    })
+    return (
+        <button 
+            type="submit" 
+            className="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600"
+            onClick={e => handleSubmit(e)}
+            disabled={statusSubmit.pending}
+        >
+            <svg className="w-5 h-5 rotate-90 rtl:-rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
+                <path d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z" />
+            </svg>
+            <span className="sr-only">Send message</span>
+        </button>
+    )
+}
+export function InputReplyComment({
+    value,
+    userId,
+    postId,
+    parentId,
+    handleAddSubcomment
+}:{
+    userId: number,
+    postId: number,
+    value: string,
+    parentId: number,
+    handleAddSubcomment:(comment: Partial<TComment>) => void,
 
+}) {
+    const initialState = { message: null || "", errors: {}, data: {}};
+    const createCommentWithId = createNewComment.bind(null, postId, userId, parentId);
+    const [state, dispatch] = useFormState(createCommentWithId, initialState);
+    
     // "useEffect" hook is used to handle value of input which is used to user type their own comment
     useEffect(
         () => {
@@ -196,6 +212,19 @@ export function InputReplyComment({
             }
         }, [value]
     )
+    
+    useEffect(() => {
+        // Check if state is error
+            // if error doen't exists, client will update UI
+            // this operation is only happening on client
+        if(!state.errors?.content) {
+            console.log("data::", state.data);
+            if(state?.data?.comment) {
+                // two function below initializated at "CommentPart" component
+                handleAddSubcomment(state.data.comment!)
+            }
+        }
+    }, [state, handleAddSubcomment]);
 
     return (
         <>
@@ -203,7 +232,6 @@ export function InputReplyComment({
                 className="ml-1"
                 action={dispatch}
                 id="form-submit-subcomment"
-                onSubmit={e => handleSubmit(e)}
             >
                 <label htmlFor="subcomment" className="sr-only">Your message</label>
                 <div className="flex items-center px-3 py-2 rounded-lg bg-gray-50 dark:bg-gray-700">
@@ -214,17 +242,10 @@ export function InputReplyComment({
                         className="block min-h-12 mx-4 p-2.5 w-full text-sm text-gray-900 bg-white rounded-lg border border-gray-300 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-800 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                         defaultValue={`${value}` + " "}
                     />
-                    <button 
-                        type="submit" 
-                        className="inline-flex justify-center p-2 text-blue-600 rounded-full cursor-pointer hover:bg-blue-100 dark:text-blue-500 dark:hover:bg-gray-600"
-                        // onClick={e => handleSubmit(e)}
-                        id="btnSubmit"
-                    >
-                        <svg className="w-5 h-5 rotate-90 rtl:-rotate-90" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 18 20">
-                            <path d="m17.914 18.594-8-18a1 1 0 0 0-1.828 0l-8 18a1 1 0 0 0 1.157 1.376L8 18.281V9a1 1 0 0 1 2 0v9.281l6.758 1.689a1 1 0 0 0 1.156-1.376Z" />
-                        </svg>
-                        <span className="sr-only">Send message</span>
-                    </button>
+                    <ButtonSubmitNewSubcomment 
+                        userId={userId} 
+                        value={value}
+                    />
                 </div>
             </form>
             {/* <a href="cskncja" onClick={e => handleSubmit(e)} className="text-black">what?</a> */}
@@ -395,13 +416,15 @@ export function CommentItem({
     mainComment,
     replyComment,
 }:{
-    subcommentCount: number|null,
+    subcommentCount: number,
     mainComment: TCommentWithUser,
     replyComment: (commentListId: number, usernameReplyed:string) => void,
 }) {
     const mainCommentId:number = mainComment.id;
 
     const [subcomments, setSubcommnets] = useState<TCommentWithUser[]>([]);
+
+    const [isShowSubcomments, setShowSubcomments] = useState(false);
     
     // Get comment through fetch Api
     const handleShowComment = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -418,8 +441,6 @@ export function CommentItem({
             .then((arr) => setSubcommnets(JSON.parse(arr)))
             .catch(error => console.log(`error`));
     }
-    
-    const [isShowSubcomments, setShowSubcomments] = useState(false);
 
     return (
         <div
@@ -432,7 +453,7 @@ export function CommentItem({
             {/* List-subcomment */}
             <div className="pl-24 mt-2">
                 {
-                    subcommentCount && !isShowSubcomments ? (
+                    subcommentCount > 0 && !isShowSubcomments && subcomments.length === 0 ? (
                         <button 
                             type="button"
                             onClick={e => handleShowComment(e)}
@@ -487,45 +508,76 @@ export function CommentItem({
 export function CommentList({
     allMainComments,
     userId,
-    postId
+    postId,
+    userInfo,
+    updateCommmentCountFromSubcomment
 } : {
     allMainComments:TCommentWithUser[],
     userId: number,
-    postId: number
+    postId: number,
+    userInfo: User,
+    updateCommmentCountFromSubcomment:() => void
 }) {
     const [inputReplyComment, setInputReplyComment] = useState<React.ReactNode[]>([]);
     const [position, setPosition] = useState<number>();
     // let usernameRef = useRef("");
     console.log("inputReplyComment::", inputReplyComment);
-    
+    const [subcomments, setSubcommnets] = useState<TCommentWithUser[]>([]);
+    // const [subCommentCount, setSubcommentCount] = useState<number>(0);
+    const subCommentCountRef = useRef();
     //handle add input comment when user click reply
     const handleAddReplyComment = 
-        (
-            commentId: number,
-            usernameReplyed: string,
-        ) => {
-            setInputReplyComment([]);
-            console.log("usernameReplyed::", usernameReplyed);
-            // usernameRef.current = usernameReplyed;
-            console.log("commentId::" + commentId);
-            setPosition(commentId);
-            setInputReplyComment([
-                <div key={nanoid()}>
-                    <InputReplyComment
-                        value={usernameReplyed}
-                        userId={userId}
-                        postId={postId}
-                        parentId={commentId}
-                        removeInputComment={removeInputComment}
-                    />
-                </div>
-            ]);
-        }
-    // Remove input comment when user typed comment and post it.
-    const removeInputComment = () => {
+    (
+        commentId: number,
+        usernameReplyed: string,
+    ) => {
         setInputReplyComment([]);
+        console.log("usernameReplyed::", usernameReplyed);
+        // usernameRef.current = usernameReplyed;
+        console.log("commentId::" + commentId);
+        setPosition(commentId);
+        setInputReplyComment([
+            <div key={nanoid()}>
+                <InputReplyComment
+                    value={usernameReplyed}
+                    userId={userId}
+                    postId={postId}
+                    parentId={commentId}
+                    handleAddSubcomment={handleAddSubcomment}
+                />
+            </div>
+        ]);
     }
-   
+
+    // Add subcommets from input reply
+    const handleAddSubcomment = (comment: Partial<TComment>) => {
+        // TCommentWithUser[]
+        delete comment.user_id;
+        delete comment.updated_at;
+        const newSubcomment = {
+            ...comment,
+            user:{
+                avatar:userInfo.avatar, 
+                username:userInfo.username
+            }
+        } as TCommentWithUser;
+        // stopAddRef.current++;
+        setSubcommnets([...subcomments, newSubcomment]);
+        setInputReplyComment([]);
+        updateCommmentCountFromSubcomment();
+        updateSubCommentCount(newSubcomment.parent_id!);
+    }
+
+    // Update subcomment count
+    const updateSubCommentCount = (parentId:number) => {
+        console.log("parentId::", parentId)
+        const parentComment = allMainComments.find((parentComment)=>{
+            return parentComment.id == parentId;
+        }) as TCommentWithUser;
+        console.log("parentComment::", parentComment);
+        parentComment.subcomment_count ++;
+    }
+
     return (
         <>
             <ToastContainer
@@ -542,12 +594,16 @@ export function CommentList({
             />
             {
                 allMainComments && allMainComments.map(
-                    (comment) => 
-                        (
+                    (comment) =>
+                       {
+                        const subcommentCount = comment.subcomment_count
+                        // updateSubCommentCount(subcommentCount);
+                        // subCommentCountRef.current = comment.subcomment_count;
+                        return (
                             <div key={nanoid()} className="mb-2">
                                 <CommentItem
                                     mainComment={comment}
-                                    subcommentCount={comment.subcomment_count}
+                                    subcommentCount={subcommentCount}
                                     replyComment={handleAddReplyComment}
                                 />
                                 <div className="max-w-md">
@@ -561,6 +617,7 @@ export function CommentList({
                                 </div>
                             </div>
                         )
+                    }
                 )
             }
         </>
@@ -581,21 +638,7 @@ export default function CommentPart({
     const [commentCount, setCommentCount] = useState<number>(post.comment_count);
     const postId = post.id;
     const userId = userInfo.id;
-    const stopUpdateRef = useRef(0);
     const stopAddRef = useRef(0);
-    let a = 2;
-    // handle update comment count for post
-    const handleUpdateCommentCount = useCallback(() => {
-        console.log("::Time 2::");
-        console.log("::commentCount::", commentCount);
-        if(stopUpdateRef.current == 0) {
-            stopUpdateRef.current++;
-            setCommentCount(commentCount + 1);
-            handleUpdateCommentCount();
-        } else {
-            stopUpdateRef.current = 0;
-        }
-    }, [commentCount])
 
     // handle add main comment when user logged in
         // new main comment is created at "NewCommentMain" component
@@ -616,12 +659,17 @@ export default function CommentPart({
                 } as TCommentWithUser;
                 stopAddRef.current++;
                 setMainComments([...mainComments, newMainComment]);
-                handleUpdateCommentCount();
+
+                // handle update comment count for post
+                setCommentCount(commentCount + 1);
             } else {
                 stopAddRef.current = 0;
             }
-        }, [handleUpdateCommentCount, userInfo.avatar, userInfo.username, mainComments]
+        }, [userInfo.avatar, userInfo.username, mainComments, commentCount]
     )
+    const updateCommmentCountFromSubcomment = () => {
+        setCommentCount(commentCount + 1);
+    }
     // Sort all main comment
         // It happens from the first request and after new main comment is created
     mainComments.sort((firstComment, secondComment) => Number(secondComment.created_at) - Number(firstComment.created_at));
@@ -638,7 +686,9 @@ export default function CommentPart({
             <CommentList
                 userId={userId}
                 postId={postId}
+                userInfo={userInfo}
                 allMainComments={mainComments}
+                updateCommmentCountFromSubcomment={updateCommmentCountFromSubcomment}
             />
         </div>
     )
