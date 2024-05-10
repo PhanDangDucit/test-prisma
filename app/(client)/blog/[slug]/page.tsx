@@ -20,6 +20,7 @@ import {
 import { Suspense } from "react";
 import CommentPart from "@/app/ui/post/detail/comment";
 import { user } from "@/configs/constants";
+
 export default async function Page({ 
     params
 } : { 
