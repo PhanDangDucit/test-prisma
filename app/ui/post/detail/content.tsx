@@ -16,6 +16,7 @@ export default async function ContentMainDetailPost ({
         await fetchNewPostRelated(post.post_type_id),
         await getAuthorOfPost(post.author_id) as User
     ])
+    console.log("content of post component is re-rendered!");
     return (
         <div className="col-start-1 col-end-3">
             <div className="flex justify-between">

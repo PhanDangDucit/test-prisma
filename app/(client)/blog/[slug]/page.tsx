@@ -42,7 +42,6 @@ export default async function Page({
     if(email) {
         userInfo = await getUserByEmail(email) as User;
     }
-
     return (
         <>
             {/* Main */}
