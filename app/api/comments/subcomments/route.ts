@@ -1,5 +1,5 @@
 
-import { TComment } from "@/helpers/definitions";
+import { TCommentWithUser } from "@/helpers/definitions";
 import { getAllSubcommentsOfOneComment } from "@/lib/data-comment";
 
 export async function GET(request: Request) {
@@ -9,7 +9,7 @@ export async function GET(request: Request) {
     const params = new URLSearchParams(url.search);
     const commentMainId:number = Number(params.get('comment-main'));
 
-    const subcomments:TComment[] = await getAllSubcommentsOfOneComment(commentMainId);
+    const subcomments:TCommentWithUser[] = await getAllSubcommentsOfOneComment(commentMainId);
     // console.log("commentMainId::", commentMainId);
     // console.log("Param::", params);
     // console.log("url", url);
