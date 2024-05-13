@@ -30,10 +30,14 @@ export default async function Page({
     const post = await fetchPostBySlug(slug);
     if(!post) return;
     const postId = post.id;
-    const [category, session, allMainComments] = await Promise.all([
+    const [
+        category, 
+        session, 
+        // allMainComments
+    ] = await Promise.all([
         await fetchPostCategoryById(post.post_type_id),
         await auth(),
-        await getAllMainComments(postId)
+        // await getAllMainComments(postId)
     ]);
     
     const email = session?.user?.email;
@@ -61,7 +65,7 @@ export default async function Page({
                     <CommentPart
                         post={post}
                         userInfo={userInfo}
-                        allMainComments={allMainComments}
+                        // allMainComments={allMainComments}
                     />
                 </div>
                 {/* Posts with other topics*/}

@@ -3,7 +3,7 @@ import { PostType, TComment, TCommentWithUser, User } from "@/helpers/definition
 import { createNewComment } from "@/lib/actions-comment";
 import { CornerDownRight } from "lucide-react";
 import Image from "next/image";
-import React, { memo, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import React, { memo, useEffect, useState } from "react";
 import { useFormState, useFormStatus } from "react-dom";
 import conan from "@/public/conan.jpg";
 import { ToastContainer, toast } from 'react-toastify';
@@ -11,7 +11,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useDebouncedCallback } from "use-debounce";
 import { nanoid } from 'nanoid';
 import { processStringContentAddition } from "@/utils/posts.util";
-import { SubcommentsContext, SubcommentsProvider, SubcommentsWithParentId, useSubcommentsContext } from "@/app/store/subcomment-context";
+import { SubcommentsProvider, SubcommentsWithParentId, useSubcommentsContext } from "@/app/store/subcomment-context";
+import { MainCommentContextProvider, useMainCommentsContext } from "@/app/store/maincomment-context";
+import { sortMainComments } from "@/utils/comment.util";
 
 export function ButtonSubmitNewMainComment ({
     userId
@@ -61,15 +63,22 @@ type NewCommentMainProps = {
     postId: number,
     userId: number,
     parentId: number,
-    handleAddMainComments: (comment: Partial<TComment>) => void,
+    userInfo:User
+    // handleAddMainComments: (comment: Partial<TComment>) => void,
 }
 
-export function NewCommentMain({
+export const NewCommentMain = memo(function NewCommentMain({
     postId,
     userId,
     parentId,
-    handleAddMainComments,
+    userInfo
+    // handleAddMainComments,
 } : NewCommentMainProps){
+    const {
+        mainComments,
+        setMainComments
+    } = useMainCommentsContext();
+
     const initialState = { message: null || "", errors: {}, data: {}};
     const createCommentWithId = createNewComment.bind(null, postId, userId, parentId);
     const [state, dispatch] = useFormState(createCommentWithId, initialState);
@@ -109,12 +118,20 @@ export function NewCommentMain({
         if(!state.errors?.content) {
             console.log("data::", state.data);
             if(state?.data?.comment) {
-                // two function below initializated at "CommentPart" component
-                handleAddMainComments(state.data.comment!);
-                console.log("handleAddMainComments run time::");
+                const comment:Partial<TComment> =  state.data.comment!;
+                delete comment.user_id;
+                delete comment.updated_at;
+                const newMainComment = {
+                    ...comment,
+                    user:{
+                        avatar:userInfo.avatar, 
+                        username:userInfo.username
+                    }
+                } as TCommentWithUser;
+                setMainComments(sortMainComments([...mainComments, newMainComment]));
             }
         }
-    }, [state, handleAddMainComments]);
+    }, [state]);
 
     return (
         <form className="p-4" action={dispatch}>
@@ -139,7 +156,7 @@ export function NewCommentMain({
             </div>
         </form>
     );
-}
+})
 
 export function ButtonSubmitNewSubcomment({
     userId, 
@@ -431,7 +448,10 @@ const CommentItem = ({
     //     subcommentsWithParentIdList, 
     //     setSubcommentsWithParentIdList
     // } = useContext(SubcommentsContext) as SubcommentsProvider;
-    const {subcommentsWithParentIdList, setSubcommentsWithParentIdList} = useSubcommentsContext();
+    const {
+        subcommentsWithParentIdList, 
+        setSubcommentsWithParentIdList
+    } = useSubcommentsContext();
 
     const [isShowSubcomments, setShowSubcomments] = useState(false);
 
@@ -557,13 +577,13 @@ const CommentItem = ({
 
 // Comment list
 export function CommentList({
-    allMainComments,
+    // allMainComments,
     userId,
     postId,
     userInfo,
     updateCommmentCountFromSubcomment
 } : {
-    allMainComments:TCommentWithUser[],
+    // allMainComments:TCommentWithUser[],
     userId: number,
     postId: number,
     userInfo: User,
@@ -571,6 +591,10 @@ export function CommentList({
 }) {
     const [inputReplyComment, setInputReplyComment] = useState<React.ReactNode[]>([]);
     const [position, setPosition] = useState<number>();
+    const {
+        mainComments,
+        setMainComment
+    } = useMainCommentsContext()
     // let usernameRef = useRef("");
     // console.log("inputReplyComment::", inputReplyComment);
     // const [subcomments, setSubcomments] = useState<TCommentWithUser[]>([]);
@@ -675,7 +699,7 @@ export function CommentList({
     // Update subcomment count: O(n)
     const updateSubCommentCount = (parentId:number) => {
         console.log("parentId::", parentId)
-        const parentComment = allMainComments.find((parentComment)=>{
+        const parentComment = mainComments.find((parentComment)=>{
             return parentComment.id == parentId;
         }) as TCommentWithUser;
         console.log("parentComment::", parentComment);
@@ -697,7 +721,7 @@ export function CommentList({
                 theme="dark"
             />
             {
-                allMainComments && allMainComments.map(
+                mainComments && mainComments.map(
                     (comment) =>
                        {
                         const subcommentCount = comment.subcomment_count;
@@ -734,19 +758,20 @@ export function CommentList({
 export default function CommentPart({
     post,
     userInfo,
-    allMainComments
+    // allMainComments
 } : {
     post:PostType,
     userInfo:User,
-    allMainComments:TCommentWithUser[]
+    // allMainComments:TCommentWithUser[]
 }) {
-    const [mainComments, setMainComments] = useState<TCommentWithUser[]>(allMainComments);
+    // const [mainComments, setMainComments] = useState<TCommentWithUser[]>(allMainComments);
     const [commentCount, setCommentCount] = useState<number>(post.comment_count);
     const postId = post.id;
     const userId = userInfo.id;
-    const stopAddRef = useRef(0);
+    // const stopAddRef = useRef(0);
 
     console.log("Comment Part is re-rendered!");
+
     // handle add main comment when user logged in
         // new main comment is created at "NewCommentMain" component
     // const handleAddMainComments = useCallback(
@@ -765,7 +790,6 @@ export default function CommentPart({
     //                 }
     //             } as TCommentWithUser;
     //             stopAddRef.current++;
-    //             setMainComments([...mainComments, newMainComment]);
 
     //             // handle update comment count for post
     //             setCommentCount(commentCount + 1);
@@ -774,30 +798,6 @@ export default function CommentPart({
     //         }
     //     }, [userInfo.avatar, userInfo.username, mainComments, commentCount]
     // )
-    const handleAddMainComments = 
-        (
-            comment: Partial<TComment>
-        ) => {
-            console.log("::Time 1::");
-            if(stopAddRef.current == 0) {// process field for "TCommentWithUser" type
-                delete comment.user_id;
-                delete comment.updated_at;
-                const newMainComment = {
-                    ...comment,
-                    user:{
-                        avatar:userInfo.avatar, 
-                        username:userInfo.username
-                    }
-                } as TCommentWithUser;
-                stopAddRef.current++;
-                setMainComments([...mainComments, newMainComment]);
-
-                // handle update comment count for post
-                setCommentCount(commentCount + 1);
-            } else {
-                stopAddRef.current = 0;
-            }
-        }
 
     // Update comment count from creating a subcomment
     const updateCommmentCountFromSubcomment = () => {
@@ -806,28 +806,31 @@ export default function CommentPart({
 
     // Sort all main comment
         // It happens from the first request and after new main comment is created
-    mainComments.sort(
-        (firstComment, secondComment) => Number(secondComment.created_at) - Number(firstComment.created_at)
-    );
+    // mainComments.sort(
+    //     (firstComment, secondComment) => Number(secondComment.created_at) - Number(firstComment.created_at)
+    // );
     
     return (
         <div>
             <h1 className="my-5 text-orange-600 text-2xl border-b-2 border-orange-200 inline-block p-1">Comments ({commentCount})</h1>
-            <NewCommentMain
-                postId={postId}
-                userId={userId}
-                parentId={0}
-                handleAddMainComments={handleAddMainComments}
-            />
-            <SubcommentsProvider>
-                <CommentList
-                    userId={userId}
+            <MainCommentContextProvider postId={postId}>
+                <NewCommentMain
                     postId={postId}
+                    userId={userId}
+                    parentId={0}
                     userInfo={userInfo}
-                    allMainComments={mainComments}
-                    updateCommmentCountFromSubcomment={updateCommmentCountFromSubcomment}
+                    // handleAddMainComments={handleAddMainComments}
                 />
-            </SubcommentsProvider>
+                <SubcommentsProvider>
+                    <CommentList
+                        userId={userId}
+                        postId={postId}
+                        userInfo={userInfo}
+                        // allMainComments={mainComments}
+                        updateCommmentCountFromSubcomment={updateCommmentCountFromSubcomment}
+                    />
+                </SubcommentsProvider>
+            </MainCommentContextProvider>
         </div>
     )
 }
