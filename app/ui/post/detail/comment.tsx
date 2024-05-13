@@ -73,6 +73,7 @@ export function NewCommentMain({
     const initialState = { message: null || "", errors: {}, data: {}};
     const createCommentWithId = createNewComment.bind(null, postId, userId, parentId);
     const [state, dispatch] = useFormState(createCommentWithId, initialState);
+    // const stopSideEffectFromUseEffect = useRef(0);
 
     // Add content of comment when user types text.
     const handleChangeInputValue = () => {
@@ -100,18 +101,23 @@ export function NewCommentMain({
             }
         }
 
-        console.log("state::", state);
-        console.log("state error::", state.errors);
-        console.log("state error content::", state.errors?.content);
+        // console.log("state::", state);
+        // console.log("state error::", state.errors);
+        // console.log("state error content::", state.errors?.content);
         // Check if state is error
             // if error doen't exists, client will update UI
             // this operation is only happening on client
         if(!state.errors?.content) {
             console.log("data::", state.data);
             if(state?.data?.comment) {
-                // two function below initializated at "CommentPart" component
-                handleAddMainComments(state.data.comment!);
-                console.log("handleAddMainComments run time::");
+                // if(stopSideEffectFromUseEffect.current == 0) {
+                    // two function below initializated at "CommentPart" component
+                    handleAddMainComments(state.data.comment!);
+                    console.log("handleAddMainComments run time::");
+                    // stopSideEffectFromUseEffect.current++;
+                // } else {
+                    // stopSideEffectFromUseEffect.current = 0;
+                // }
             }
         }
     }, [state, handleAddMainComments]);
@@ -168,9 +174,7 @@ export function ButtonSubmitNewSubcomment({
             return;
         }
     }
-    useEffect(() => {
-        
-    })
+
     return (
         <button 
             type="submit" 
@@ -185,6 +189,7 @@ export function ButtonSubmitNewSubcomment({
         </button>
     )
 }
+
 export function InputReplyComment({
     value,
     userId,
@@ -219,7 +224,7 @@ export function InputReplyComment({
             // if error doen't exists, client will update UI
             // this operation is only happening on client
         if(!state.errors?.content) {
-            console.log("data::", state.data);
+            console.log("data at input reply::", state.data);
             if(state?.data?.comment) {
                 // two function below initializated at "CommentPart" component
                 handleAddSubcomment(state.data.comment!)
@@ -356,6 +361,11 @@ function SubComment({
     replyComment:(commentListId: number, usernameReplyed:string) => void,
     mainComment:TCommentWithUser
 }) {
+    const [isShowContentAddition, setIsShowContentAddition] = useState<boolean>(false);
+    const handleShowContentAddition = () => {
+        setIsShowContentAddition(true);
+    }
+    const contentLengthRequired = 200;
     // console.log("-----------------------------");
     // console.log("subcomment ---->>>>>", subcomment);
     // console.log("-----------------------------");
@@ -375,9 +385,35 @@ function SubComment({
                     <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
                         {subcomment.user.username!}
                     </p>
-                    <p className="text-sm text-gray-500 truncate dark:text-gray-400">
-                        {subcomment.content}
-                    </p>
+                    {
+                        subcomment.content.length < contentLengthRequired ? (
+                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                {subcomment.content}
+                            </p>
+                        ) : (
+                            <>
+                                {
+                                    isShowContentAddition ? (
+                                        <p className="text-sm text-gray-500 dark:text-gray-400">
+                                            {subcomment.content}
+                                        </p>
+                                    ) : (
+                                        <>
+                                            <p className="text-sm text-gray-500 dark:text-gray-400">
+                                                {processStringContentAddition(subcomment.content, 200)}
+                                            </p>
+                                            <button
+                                                type="button"
+                                                onClick={handleShowContentAddition}
+                                            >
+                                                learn more
+                                            </button>
+                                        </>
+                                    )
+                                }
+                            </>
+                        )
+                    }
                 </div>
             </div>
             {/*  */}
@@ -484,7 +520,7 @@ const CommentItem = ({
         subcomments = subcommentsList.subcomments
     }
     // {console.log("subcomments:::", subcomments)}
-    console.log("subcommentsList <----->", subcommentsList);
+    // console.log("subcommentsList <----->", subcommentsList);
     // console.log("CommentItem is re-render::", mainComment.id);
     // console.log("isShowSubcomments::", isShowSubcomments);
     // {console.log("-------------------------")}
@@ -535,7 +571,8 @@ const CommentItem = ({
                                     subcomments.map((subcomment) => (
                                         <div
                                             className="border-l-2 border-gray-400" 
-                                            key={subcomment.id}
+                                            // key={subcomment.id}
+                                            key={nanoid()}
                                         >
                                             <SubComment
                                                 subcomment={subcomment} 
@@ -581,8 +618,8 @@ export function CommentList({
     //     subcommentsWithParentIdList, 
     //     setSubcommentsWithParentIdList
     // } = useContext(SubcommentsContext) as SubcommentsProvider;
-    console.log("typeof setSubcommentsWithParentIdList the three ::", setSubcommentsWithParentIdList)
-    console.log("why conetxt subcommentsWithParentIdList doesn't work?", subcommentsWithParentIdList);
+    // console.log("typeof setSubcommentsWithParentIdList the three ::", setSubcommentsWithParentIdList)
+    // console.log("why conetxt subcommentsWithParentIdList doesn't work?", subcommentsWithParentIdList);
     
     //handle add input comment when user click reply
     const handleAddInputReplyComment = 
@@ -637,7 +674,7 @@ export function CommentList({
 
         let subcommentsList:SubcommentsWithParentId|undefined;
         if(!subcommentsWithParentIdList) {
-            console.log("typeof setSubcommentsWithParentIdList ::", setSubcommentsWithParentIdList)
+            // console.log("typeof setSubcommentsWithParentIdList ::", setSubcommentsWithParentIdList)
             setSubcommentsWithParentIdList([
                 {
                     parentId: mainCommentId!,
@@ -665,8 +702,8 @@ export function CommentList({
                 }
             ])
         }
-        console.log("subcommentsListWithParentId::>", subcommentsWithParentIdList);
-        console.log("subcommentsList ---> []", subcommentsList);
+        // console.log("subcommentsListWithParentId::>", subcommentsWithParentIdList);
+        // console.log("subcommentsList ---> []", subcommentsList);
         setInputReplyComment([]);
         updateCommmentCountFromSubcomment();
         updateSubCommentCount(newSubcomment.parent_id!);
@@ -674,13 +711,15 @@ export function CommentList({
 
     // Update subcomment count: O(n)
     const updateSubCommentCount = (parentId:number) => {
-        console.log("parentId::", parentId)
+        // console.log("parentId::", parentId)
         const parentComment = allMainComments.find((parentComment)=>{
             return parentComment.id == parentId;
         }) as TCommentWithUser;
-        console.log("parentComment::", parentComment);
+        // console.log("parentComment::", parentComment);
         parentComment.subcomment_count ++;
     }
+
+    console.log("all main comment::", allMainComments);
 
     return (
         <>
@@ -705,7 +744,7 @@ export function CommentList({
                         // subCommentCountRef.current = comment.subcomment_count;
                         
                         return (
-                            <div key={comment.id} className="mb-2">
+                            <div key={nanoid()} className="mb-2">
                                 <CommentItem
                                     mainComment={comment}
                                     subcommentCount={subcommentCount}

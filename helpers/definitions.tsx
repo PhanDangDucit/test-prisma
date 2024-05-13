@@ -101,7 +101,7 @@ export type TComment = {
     parent_id: number|null,
     created_at: Date,
     updated_at: Date,//
-    subcomment_count: number|null
+    subcomment_count: number
 }
 
 export type TCommentWithUser = {
