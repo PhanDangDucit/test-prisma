@@ -78,10 +78,8 @@ export const NewCommentMain = memo(function NewCommentMain({
 
     const {post, setPost} = usePostContext();
 
-    const postId = post.id;
-
     const initialState = { message: null || "", errors: {}, data: {}};
-    const createCommentWithId = createNewComment.bind(null, postId, userId, parentId);
+    const createCommentWithId = createNewComment.bind(null, post.id, userId, parentId);
     const [state, dispatch] = useFormState(createCommentWithId, initialState);
 
     // Add content of comment when user types text.
@@ -90,7 +88,6 @@ export const NewCommentMain = memo(function NewCommentMain({
         const divToExpendHeight:HTMLElement|null = document.querySelector("#div-comment-main");
         if(input && divToExpendHeight) {
             input.value = divToExpendHeight.innerText;
-            console.log("input type::", input.value);
         }
     }
     
@@ -106,18 +103,13 @@ export const NewCommentMain = memo(function NewCommentMain({
             if(input && divToExpendHeight) {
                 input.value = '';
                 divToExpendHeight.innerText = '';
-                console.log("input type::", input.value);
             }
         }
 
-        console.log("state::", state);
-        console.log("state error::", state.errors);
-        console.log("state error content::", state.errors?.content);
         // Check if state is error
             // if error doen't exists, client will update UI
             // this operation is only happening on client
         if(!state.errors?.content) {
-            console.log("data::", state.data);
             if(state?.data?.comment) {
                 const comment:Partial<TComment> =  state.data.comment!;
                 delete comment.user_id;
@@ -134,9 +126,10 @@ export const NewCommentMain = memo(function NewCommentMain({
                     ...post, 
                     comment_count: post.comment_count + 1
                 });
+                delete state?.data?.comment;
             }
         }
-    }, [state]);
+    }, [state, mainComments, post, setMainComments, setPost, userInfo.avatar, userInfo.username]);
 
     return (
         <form className="p-4" action={dispatch}>
@@ -190,9 +183,6 @@ export function ButtonSubmitNewSubcomment({
             return;
         }
     }
-    useEffect(() => {
-        
-    })
     return (
         <button 
             type="submit" 
@@ -208,22 +198,25 @@ export function ButtonSubmitNewSubcomment({
     )
 }
 export function InputReplyComment({
+    userInfo,
     value,
-    userId,
     postId,
     parentId,
     handleAddSubcomment
 }:{
-    userId: number,
+    userInfo: User,
     postId: number,
     value: string,
     parentId: number,
-    handleAddSubcomment:(comment: Partial<TComment>) => void,
-
+    handleAddSubcomment:(newSubcomment: TCommentWithUser) => void,
 }) {
     const initialState = { message: null || "", errors: {}, data: {}};
-    const createCommentWithId = createNewComment.bind(null, postId, userId, parentId);
+    const createCommentWithId = createNewComment.bind(null, postId, userInfo.id, parentId);
     const [state, dispatch] = useFormState(createCommentWithId, initialState);
+    const {
+        subcommentsWithParentIdList, 
+        setSubcommentsWithParentIdList
+    } = useSubcommentsContext();
     
     // "useEffect" hook is used to handle value of input which is used to user type their own comment
     useEffect(
@@ -241,10 +234,57 @@ export function InputReplyComment({
             // if error doen't exists, client will update UI
             // this operation is only happening on client
         if(!state.errors?.content) {
-            console.log("data::", state.data);
             if(state?.data?.comment) {
+                const comment:Partial<TComment> = state.data.comment!;
                 // two function below initializated at "CommentPart" component
-                handleAddSubcomment(state.data.comment!)
+                delete comment.user_id;
+                delete comment.updated_at;
+                const newSubcomment = {
+                    ...comment,
+                    user:{
+                        avatar:userInfo.avatar,
+                        username:userInfo.username
+                    }
+                } as TCommentWithUser;
+                const mainCommentId = newSubcomment.parent_id;
+
+                // If Maincomment in subcommentsWithParentIdList is existed
+                    // return object in subcommentsWithParentIdList if it is existed 
+                console.log("cut subcommentsWithParentIdList::1", subcommentsWithParentIdList);
+                const subcommentsWithParentId = subcommentsWithParentIdList.find(
+                    (subcommentsWithParentId, index) => {
+                        const prepare = mainCommentId == subcommentsWithParentId.parentId;
+                        if(prepare) {
+                            subcommentsWithParentIdList.splice(index, 1);
+                            return true;
+                        }
+                    }
+                )
+                console.log("cut subcommentsWithParentIdList", subcommentsWithParentIdList);
+                console.log("cut subcommentsWithParentId <--------->", subcommentsWithParentId);
+                if(subcommentsWithParentId) {
+                    setSubcommentsWithParentIdList([
+                        ...subcommentsWithParentIdList,
+                        {
+                            parentId: mainCommentId!,
+                            subcomments: [
+                                ...subcommentsWithParentId.subcomments,
+                                newSubcomment
+                            ]
+                        }
+                    ])
+                } else {
+                    setSubcommentsWithParentIdList([
+                        ...subcommentsWithParentIdList,
+                        {
+                            parentId: mainCommentId!,
+                            subcomments: [newSubcomment]
+                        }
+                    ])
+                }
+                
+                handleAddSubcomment(newSubcomment);
+                delete state?.data?.comment;
             }
         }
     }, [state, handleAddSubcomment]);
@@ -266,12 +306,11 @@ export function InputReplyComment({
                         defaultValue={`${value}` + " "}
                     />
                     <ButtonSubmitNewSubcomment 
-                        userId={userId} 
+                        userId={userInfo.id} 
                         value={value}
                     />
                 </div>
             </form>
-            {/* <a href="cskncja" onClick={e => handleSubmit(e)} className="text-black">what?</a> */}
         </>
     )
 }
@@ -378,9 +417,6 @@ function SubComment({
     replyComment:(commentListId: number, usernameReplyed:string) => void,
     mainComment:TCommentWithUser
 }) {
-    // console.log("-----------------------------");
-    // console.log("subcomment ---->>>>>", subcomment);
-    // console.log("-----------------------------");
     return (
         <div className="pb-3 sm:pb-4 pl-4 py-4">
             <div className="flex items-center space-x-4 rtl:space-x-reverse">
@@ -437,17 +473,16 @@ function SubComment({
     )
 }
 
-const CommentItem = ({
+const CommentItem = memo(function CommentItem({
     subcommentCount,
     mainComment,
     replyComment,
-    // subcommentAdded
 }:{
     subcommentCount: number,
     mainComment: TCommentWithUser,
     replyComment: (commentListId: number, usernameReplyed:string) => void,
-    // subcommentAdded: TCommentWithUser[]
-}) => {
+}) {
+    console.log("Comment Item is re-rendered!");
     const mainCommentId:number = mainComment.id;
     const {
         subcommentsWithParentIdList, 
@@ -455,15 +490,14 @@ const CommentItem = ({
     } = useSubcommentsContext();
 
     const [isShowSubcomments, setShowSubcomments] = useState(false);
+    const [subcommentsList, setSubcommentsList] = useState<SubcommentsWithParentId>();
 
-    // const [subcommentsChildren, setSubcomments] = useState<TCommentWithUser[]>(subcomments);
-    let subcommentsList:SubcommentsWithParentId|undefined;
-
-    if(subcommentsWithParentIdList){
-        subcommentsList = subcommentsWithParentIdList.find((subcommentsWithParentId) => {
-        return subcommentsWithParentId.parentId === mainCommentId;
-    })}
-
+    useEffect(() => {
+        console.log("subcommentsWithParentIdList", subcommentsWithParentIdList);
+        setSubcommentsList(subcommentsWithParentIdList.find(
+            (subcommentsWithParentIdList) => mainComment.id == subcommentsWithParentIdList.parentId
+        ))
+    }, [subcommentsWithParentIdList])
     // Get comment through fetch Api
     const handleShowComment = (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
         setShowSubcomments(true);
@@ -473,34 +507,33 @@ const CommentItem = ({
                 "Content-Type": "application/json",
             },
         })
-
         result
-            .then(res => res.json())
-            .then((arr) => {
-                if(subcommentsList){
-                    setSubcommentsWithParentIdList([
-                        ...subcommentsWithParentIdList,
-                        {
-                            parentId: mainComment.id,
-                            subcomments: [...subcommentsList.subcomments, ...JSON.parse(arr)]
+        .then(res => res.json())
+        .then((arr) => {
+                const subcommentsWithParentId = subcommentsWithParentIdList.find(
+                    (subcommentsWithParentId, index) => {
+                        // return mainCommentId == subcommentsWithParentId.parentId;
+
+                        const prepare = mainCommentId == subcommentsWithParentId.parentId;
+                        if(prepare) {
+                            subcommentsWithParentIdList.splice(index, 1);
+                            return true;
                         }
-                    ])
-                } else {
-                    setSubcommentsWithParentIdList([
-                        ...subcommentsWithParentIdList,
-                        {
-                            parentId: mainComment.id,
-                            subcomments: [...JSON.parse(arr)]
-                        }
-                    ])
-                }
+                    }
+                )
+                console.log("cut subcommentsWithParentIdList", subcommentsWithParentIdList);
+                console.log("cut subcommentsWithParentId <--------->", subcommentsWithParentId);
+                setSubcommentsWithParentIdList([
+                    ...subcommentsWithParentIdList,
+                    {
+                        parentId: mainCommentId!,
+                        subcomments: JSON.parse(arr)
+                    }
+                ])
             })
             .catch(error => console.log(`error`));
     }
-    let subcomments: TCommentWithUser[] = [];
-    if(subcommentsList) {
-        subcomments = subcommentsList.subcomments
-    }
+
     return (
         <div
             // className="max-w-md"
@@ -545,10 +578,10 @@ const CommentItem = ({
                         isShowSubcomments && subcommentsList && (
                             <>
                                 {
-                                    subcomments.map((subcomment) => (
+                                    subcommentsList.subcomments.map((subcomment) => (
                                         <div
                                             className="border-l-2 border-gray-400" 
-                                            key={subcomment.id}
+                                            key={nanoid()}
                                         >
                                             <SubComment
                                                 subcomment={subcomment} 
@@ -566,7 +599,7 @@ const CommentItem = ({
             }
         </div>
     );
-}
+})
 
 // Comment list
 export function CommentList({
@@ -574,22 +607,15 @@ export function CommentList({
 } : {
     userInfo: User,
 }) {
-    console.log("What about?");
     const [inputReplyComment, setInputReplyComment] = useState<React.ReactNode[]>([]);
     const [position, setPosition] = useState<number>();
     const {
         mainComments
     } = useMainCommentsContext();
     const { post, setPost } = usePostContext();
-    console.log("post 2::", post);
 
     console.log("CommentList is re-rendered!");
 
-    const {
-        subcommentsWithParentIdList, 
-        setSubcommentsWithParentIdList
-    } = useSubcommentsContext();
-    
     //handle add input comment when user click reply
     const handleAddInputReplyComment = 
     (
@@ -602,7 +628,7 @@ export function CommentList({
             <div key={nanoid()}>
                 <InputReplyComment
                     value={usernameReplyed}
-                    userId={userInfo.id}
+                    userInfo={userInfo}
                     postId={post.id}
                     parentId={commentId}
                     handleAddSubcomment={handleAddSubcomment}
@@ -612,50 +638,7 @@ export function CommentList({
     }
 
     // Add subcommets from input reply
-    const handleAddSubcomment = (comment: Partial<TComment>) => {
-        // TCommentWithUser[]
-        delete comment.user_id;
-        delete comment.updated_at;
-        const newSubcomment = {
-            ...comment,
-            user:{
-                avatar:userInfo.avatar,
-                username:userInfo.username
-            }
-        } as TCommentWithUser;
-        const mainCommentId = newSubcomment.parent_id;
-
-        let subcommentsList:SubcommentsWithParentId|undefined;
-        if(!subcommentsWithParentIdList) {
-            setSubcommentsWithParentIdList([
-                {
-                    parentId: mainCommentId!,
-                    subcomments: [newSubcomment]
-                }
-            ])
-        }
-        if(subcommentsWithParentIdList){
-            subcommentsList = subcommentsWithParentIdList.find((subcommentsWithParentId) => {
-                return subcommentsWithParentId.parentId === mainCommentId;
-            })
-        }
-        if(subcommentsList) {
-            subcommentsList.subcomments = [...subcommentsList.subcomments, newSubcomment]
-            setSubcommentsWithParentIdList([
-                ...subcommentsWithParentIdList,
-                subcommentsList
-            ]);
-        } else {
-            setSubcommentsWithParentIdList([
-                ...subcommentsWithParentIdList,
-                {
-                    parentId: mainCommentId!,
-                    subcomments: [newSubcomment]
-                }
-            ])
-        }
-        console.log("subcommentsListWithParentId::>", subcommentsWithParentIdList);
-        console.log("subcommentsList ---> []", subcommentsList);
+    const handleAddSubcomment = (newSubcomment: TCommentWithUser) => {
         setInputReplyComment([]);
         setPost({
             ...post,
@@ -666,11 +649,9 @@ export function CommentList({
 
     // Update subcomment count: O(n)
     const updateSubCommentCount = (parentId:number) => {
-        console.log("parentId::", parentId)
         const parentComment = mainComments.find((parentComment)=>{
             return parentComment.id == parentId;
         }) as TCommentWithUser;
-        console.log("parentComment::", parentComment);
         parentComment.subcomment_count ++;
     }
 
@@ -692,17 +673,12 @@ export function CommentList({
                 mainComments && mainComments.map(
                     (comment) =>
                        {
-                        const subcommentCount = comment.subcomment_count;
-                        // updateSubCommentCount(subcommentCount);
-                        // subCommentCountRef.current = comment.subcomment_count;
-                        
                         return (
                             <div key={comment.id} className="mb-2">
                                 <CommentItem
                                     mainComment={comment}
-                                    subcommentCount={subcommentCount}
+                                    subcommentCount={comment.subcomment_count}
                                     replyComment={handleAddInputReplyComment}
-                                    // subcommentAdded={subcommentAdded}
                                 />
                                 <div className="max-w-md">
                                     <div className="pl-24">
@@ -729,9 +705,7 @@ export default function CommentPart({
     userInfo:User,
 }) {
     const { post } = usePostContext();
-    console.log("post::", post);
     const [commentCount, setCommentCount] = useState<number>(0);
-
     useEffect(() => {
         if(!post) return;
         setCommentCount(post.comment_count);

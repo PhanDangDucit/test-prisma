@@ -44,7 +44,6 @@ export const SubcommentsProvider = function({
  // ---> Create a individual cope
 export function useSubcommentsContext () {
     const context = useContext(SubcommentsContext) as SubcommentsProvider;
-    console.log("typeof setSubcommentsWithParentIdList the two::", context.setSubcommentsWithParentIdList)
     if(!context) {
         throw new Error ("Subcomments context in subcomment-context file isn't exist!");
         

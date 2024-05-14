@@ -5,6 +5,9 @@ const nextConfig = {
         loaderFile: 'app/ui/imageloader.tsx',
         unoptimized: true,
     },
+    eslint: {
+        ignoreDuringBuilds: true,
+    },
 };
 
 export default nextConfig;

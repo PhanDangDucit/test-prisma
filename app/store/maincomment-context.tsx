@@ -19,8 +19,8 @@ export const MainCommentContextProvider = function({
 }) {
     // Call api to fetch all main comments for one post
     const [mainComments, setMainComments] = useState<TCommentWithUser[]>();
-    console.log("mainComment::", mainComments);
-    console.log("postId at MainCommentContextProvider::", postId);
+    // console.log("mainComment::", mainComments);
+    // console.log("postId at MainCommentContextProvider::", postId);
     useEffect(
         () => {
             // document.addEventListener("DOMContentLoaded", function() {
