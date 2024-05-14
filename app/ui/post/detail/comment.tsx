@@ -14,6 +14,7 @@ import { processStringContentAddition } from "@/utils/posts.util";
 import { SubcommentsProvider, SubcommentsWithParentId, useSubcommentsContext } from "@/app/store/subcomment-context";
 import { MainCommentContextProvider, useMainCommentsContext } from "@/app/store/maincomment-context";
 import { sortMainComments } from "@/utils/comment.util";
+import { PostContext, usePostContext } from "@/app/store/post-context";
 
 export function ButtonSubmitNewMainComment ({
     userId
@@ -60,24 +61,24 @@ export function ButtonSubmitNewMainComment ({
 }
 
 type NewCommentMainProps = {
-    postId: number,
     userId: number,
     parentId: number,
     userInfo:User
-    // handleAddMainComments: (comment: Partial<TComment>) => void,
 }
 
 export const NewCommentMain = memo(function NewCommentMain({
-    postId,
     userId,
     parentId,
     userInfo
-    // handleAddMainComments,
 } : NewCommentMainProps){
     const {
         mainComments,
         setMainComments
     } = useMainCommentsContext();
+
+    const {post, setPost} = usePostContext();
+
+    const postId = post.id;
 
     const initialState = { message: null || "", errors: {}, data: {}};
     const createCommentWithId = createNewComment.bind(null, postId, userId, parentId);
@@ -129,6 +130,10 @@ export const NewCommentMain = memo(function NewCommentMain({
                     }
                 } as TCommentWithUser;
                 setMainComments(sortMainComments([...mainComments, newMainComment]));
+                setPost({
+                    ...post, 
+                    comment_count: post.comment_count + 1
+                });
             }
         }
     }, [state]);
@@ -444,10 +449,6 @@ const CommentItem = ({
     // subcommentAdded: TCommentWithUser[]
 }) => {
     const mainCommentId:number = mainComment.id;
-    // const {
-    //     subcommentsWithParentIdList, 
-    //     setSubcommentsWithParentIdList
-    // } = useContext(SubcommentsContext) as SubcommentsProvider;
     const {
         subcommentsWithParentIdList, 
         setSubcommentsWithParentIdList
@@ -496,18 +497,10 @@ const CommentItem = ({
             })
             .catch(error => console.log(`error`));
     }
-    // console.log("subcomments ++>::", subcomments);
-    // {console.log("-------------------------")}
-    // {console.log("subcommentsList:::",)}
     let subcomments: TCommentWithUser[] = [];
     if(subcommentsList) {
         subcomments = subcommentsList.subcomments
     }
-    // {console.log("subcomments:::", subcomments)}
-    console.log("subcommentsList <----->", subcommentsList);
-    // console.log("CommentItem is re-render::", mainComment.id);
-    // console.log("isShowSubcomments::", isShowSubcomments);
-    // {console.log("-------------------------")}
     return (
         <div
             // className="max-w-md"
@@ -577,36 +570,25 @@ const CommentItem = ({
 
 // Comment list
 export function CommentList({
-    // allMainComments,
-    userId,
-    postId,
     userInfo,
-    updateCommmentCountFromSubcomment
 } : {
-    // allMainComments:TCommentWithUser[],
-    userId: number,
-    postId: number,
     userInfo: User,
-    updateCommmentCountFromSubcomment:() => void
 }) {
+    console.log("What about?");
     const [inputReplyComment, setInputReplyComment] = useState<React.ReactNode[]>([]);
     const [position, setPosition] = useState<number>();
     const {
-        mainComments,
-        setMainComment
-    } = useMainCommentsContext()
-    // let usernameRef = useRef("");
-    // console.log("inputReplyComment::", inputReplyComment);
-    // const [subcomments, setSubcomments] = useState<TCommentWithUser[]>([]);
+        mainComments
+    } = useMainCommentsContext();
+    const { post, setPost } = usePostContext();
+    console.log("post 2::", post);
+
     console.log("CommentList is re-rendered!");
 
-    const {subcommentsWithParentIdList, setSubcommentsWithParentIdList} = useSubcommentsContext();
-    // const {
-    //     subcommentsWithParentIdList, 
-    //     setSubcommentsWithParentIdList
-    // } = useContext(SubcommentsContext) as SubcommentsProvider;
-    // console.log("typeof setSubcommentsWithParentIdList the three ::", setSubcommentsWithParentIdList)
-    // console.log("why conetxt subcommentsWithParentIdList doesn't work?", subcommentsWithParentIdList);
+    const {
+        subcommentsWithParentIdList, 
+        setSubcommentsWithParentIdList
+    } = useSubcommentsContext();
     
     //handle add input comment when user click reply
     const handleAddInputReplyComment = 
@@ -615,33 +597,19 @@ export function CommentList({
         usernameReplyed: string,
     ) => {
         setInputReplyComment([]);
-        // console.log("usernameReplyed::", usernameReplyed);
-        // usernameRef.current = usernameReplyed;
-        // console.log("commentId::" + commentId);
         setPosition(commentId);
         setInputReplyComment([
             <div key={nanoid()}>
                 <InputReplyComment
                     value={usernameReplyed}
-                    userId={userId}
-                    postId={postId}
+                    userId={userInfo.id}
+                    postId={post.id}
                     parentId={commentId}
                     handleAddSubcomment={handleAddSubcomment}
                 />
             </div>
         ]);
     }
-
-    // const getAddedSubcomments = (newSubcomment:TCommentWithUser) => {
-    //     return newSubcomment;
-    // }
-    // const subcommentAdded = [];
-    
-    // const returnAddedSubcomments = {
-    //     getAddedSubcomments()
-    // }
-
-    // console.log("subcomments::", subcomments);
 
     // Add subcommets from input reply
     const handleAddSubcomment = (comment: Partial<TComment>) => {
@@ -655,13 +623,10 @@ export function CommentList({
                 username:userInfo.username
             }
         } as TCommentWithUser;
-        // concatSubcomments(newSubcomment);
-        // getAddedSubcomments(newSubcomment);
         const mainCommentId = newSubcomment.parent_id;
 
         let subcommentsList:SubcommentsWithParentId|undefined;
         if(!subcommentsWithParentIdList) {
-            console.log("typeof setSubcommentsWithParentIdList ::", setSubcommentsWithParentIdList)
             setSubcommentsWithParentIdList([
                 {
                     parentId: mainCommentId!,
@@ -692,7 +657,10 @@ export function CommentList({
         console.log("subcommentsListWithParentId::>", subcommentsWithParentIdList);
         console.log("subcommentsList ---> []", subcommentsList);
         setInputReplyComment([]);
-        updateCommmentCountFromSubcomment();
+        setPost({
+            ...post,
+            comment_count: post.comment_count + 1
+        });
         updateSubCommentCount(newSubcomment.parent_id!);
     }
 
@@ -756,78 +724,34 @@ export function CommentList({
 
 // CommentPart component
 export default function CommentPart({
-    post,
     userInfo,
-    // allMainComments
 } : {
-    post:PostType,
     userInfo:User,
-    // allMainComments:TCommentWithUser[]
 }) {
-    // const [mainComments, setMainComments] = useState<TCommentWithUser[]>(allMainComments);
-    const [commentCount, setCommentCount] = useState<number>(post.comment_count);
-    const postId = post.id;
-    const userId = userInfo.id;
-    // const stopAddRef = useRef(0);
+    const { post } = usePostContext();
+    console.log("post::", post);
+    const [commentCount, setCommentCount] = useState<number>(0);
 
+    useEffect(() => {
+        if(!post) return;
+        setCommentCount(post.comment_count);
+    }, [post])
+
+    if(!post) return;
     console.log("Comment Part is re-rendered!");
-
-    // handle add main comment when user logged in
-        // new main comment is created at "NewCommentMain" component
-    // const handleAddMainComments = useCallback(
-    //     (
-    //         comment: Partial<TComment>
-    //     ) => {
-    //         console.log("::Time 1::");
-    //         if(stopAddRef.current == 0) {// process field for "TCommentWithUser" type
-    //             delete comment.user_id;
-    //             delete comment.updated_at;
-    //             const newMainComment = {
-    //                 ...comment,
-    //                 user:{
-    //                     avatar:userInfo.avatar, 
-    //                     username:userInfo.username
-    //                 }
-    //             } as TCommentWithUser;
-    //             stopAddRef.current++;
-
-    //             // handle update comment count for post
-    //             setCommentCount(commentCount + 1);
-    //         } else {
-    //             stopAddRef.current = 0;
-    //         }
-    //     }, [userInfo.avatar, userInfo.username, mainComments, commentCount]
-    // )
-
-    // Update comment count from creating a subcomment
-    const updateCommmentCountFromSubcomment = () => {
-        setCommentCount(commentCount + 1);
-    }
-
-    // Sort all main comment
-        // It happens from the first request and after new main comment is created
-    // mainComments.sort(
-    //     (firstComment, secondComment) => Number(secondComment.created_at) - Number(firstComment.created_at)
-    // );
     
     return (
         <div>
             <h1 className="my-5 text-orange-600 text-2xl border-b-2 border-orange-200 inline-block p-1">Comments ({commentCount})</h1>
-            <MainCommentContextProvider postId={postId}>
+            <MainCommentContextProvider postId={post.id}>
                 <NewCommentMain
-                    postId={postId}
-                    userId={userId}
+                    userId={userInfo.id}
                     parentId={0}
                     userInfo={userInfo}
-                    // handleAddMainComments={handleAddMainComments}
                 />
                 <SubcommentsProvider>
                     <CommentList
-                        userId={userId}
-                        postId={postId}
                         userInfo={userInfo}
-                        // allMainComments={mainComments}
-                        updateCommmentCountFromSubcomment={updateCommmentCountFromSubcomment}
                     />
                 </SubcommentsProvider>
             </MainCommentContextProvider>

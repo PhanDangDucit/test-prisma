@@ -1,6 +1,6 @@
 "use client"
 import { PostType } from "@/helpers/definitions";
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
 
 export type PostContextProvider = {
     post: PostType,
@@ -10,19 +10,57 @@ export type PostContextProvider = {
 export const PostContext = createContext<PostType|{}>({});
 
 export const PostContextProvider = function({
-    children
+    children,
+    slug
 }:{
-    children:React.ReactNode
+    children:React.ReactNode,
+    slug:string
 }) {
+    // const getPost = () => {
+    //     let post:PostType;
+    //     const result = fetch(`http://localhost:3000/api/posts/post?slug=${slug}`, {
+    //         method: "get",
+    //         headers: {
+    //             "Content-Type": "application/json",
+    //         },
+    //     })
+    //     result
+    //         .then(res => res.json())
+    //         .then((post) => {
+    //             post = JSON.parse(post);
+    //             console.log(post);
+    //         })
+    //         .catch(error => console.log(`Get post is failed!`));
+    //     return post!;
+    // }
+    // const [post, setPost] = useState<PostType>(getPost());
+    
+    const [post, setPost] = useState<PostType>();
 
-    const [mainComments, setMainComments] = useState<PostType>();
-    // console.log("typeof setSubcommentsWithParentIdList the first::", setSubcommentsWithParentIdList)
+    useEffect(
+        () => {
+            const result =  fetch(`http://localhost:3000/api/posts/post?slug=${slug}`, {
+                method: "get",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+            })
+
+            result
+                .then(res => res.json())
+                .then((post) => {
+                    console.log("post from post-context::", JSON.parse(post));
+                    setPost(JSON.parse(post));
+                })
+                .catch(error => console.log(`Get post is failed!`));
+        }, [slug]
+    )
 
     return (
         <PostContext.Provider
             value={{
-                mainComments,
-                setMainComments
+                post,
+                setPost
             }}
         >
             {children}
@@ -32,11 +70,10 @@ export const PostContextProvider = function({
 
 
  // ---> Create a individual cope
-export function useMainCommentsContext () {
+export function usePostContext () {
     const context = useContext(PostContext) as PostContextProvider;
-    // console.log("typeof setSubcommentsWithParentIdList the two::", context.setMainComments)
     if(!context) {
-        throw new Error ("Subcomments context in subcomment-context file isn't exist!");
+        throw new Error ("Post context in subcomment-context file isn't exist!");
     }
     return context;
 }

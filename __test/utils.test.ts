@@ -1,5 +1,6 @@
 import {describe, expect, test} from '@jest/globals';
 import { processContentAddition, processStringContentAddition } from '@/utils/posts.util';
+import {mainCommentsFakeList} from "./fixtures/comments";
 
 describe('Test post util::', () => {
     test("Test 'processContentAddition' function", () => {
@@ -14,3 +15,9 @@ describe('Test post util::', () => {
         expect(processStringContentAddition(b, 100)).toBe('ASCcasacascaca');
     })
 });
+
+describe('Test commennts', ( ) => {
+    test("Test sort mainComments", () => {
+        // expect();
+    })
+})

@@ -20,9 +20,10 @@ export const MainCommentContextProvider = function({
     // Call api to fetch all main comments for one post
     const [mainComments, setMainComments] = useState<TCommentWithUser[]>();
     console.log("mainComment::", mainComments);
+    console.log("postId at MainCommentContextProvider::", postId);
     useEffect(
         () => {
-            document.addEventListener("DOMContentLoaded", function() {
+            // document.addEventListener("DOMContentLoaded", function() {
                 setTimeout(function() {
                     const result =  fetch(`http://localhost:3000/api/comments/main-comments?post-id=${postId}`, {
                         method: "get",
@@ -37,7 +38,7 @@ export const MainCommentContextProvider = function({
                         })
                         .catch(error => console.log(`Get main comment is failed!`));
                 }, 1000)
-            })
+            // })
         }, [postId]
     )
 

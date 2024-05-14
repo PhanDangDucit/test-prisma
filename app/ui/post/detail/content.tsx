@@ -5,8 +5,8 @@ import { formatDate } from "@/utils/functions";
 import { getAuthorOfPost } from "@/lib/data-user";
 
 export default async function ContentMainDetailPost ({
-    category,
-    post
+    post,
+    category
 } : {
     category: string|undefined,
     post: PostType
