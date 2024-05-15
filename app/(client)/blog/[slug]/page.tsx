@@ -32,30 +32,27 @@ export default async function Page({
     params: { slug: string }
 }) {
     const slug = decodeURIComponent(params.slug);
-    const post = await fetchPostBySlug(slug);
+    const [session, post] = await [
+        await auth(), 
+        await fetchPostBySlug(slug)
+    ];
     if(!post) return;
     const [
         category, 
-        session, 
         // relatedPosts, 
-        author, 
+        author,
+        userInfo,
         // similarPosts,
         // manyViewsPosts
     ] = await Promise.all([
         await fetchPostCategoryById(post.post_type_id),
-        await auth(),
         // await fetchNewPostRelated(post.post_type_id),
         await getAuthorOfPost(post.author_id) as User,
+        await getUserByEmail(session?.user?.email!) as User
         // await fetchManyViewsEachPost(post.post_type_id, 4),
         // await fetchManyViewsPosts(4)
     ]);
     
-    const email = session?.user?.email;
-    let userInfo:User = user;
-    // check user logging to comment
-    if(email) {
-        userInfo = await getUserByEmail(email) as User;
-    }
     return (
         <>
             {/* Main */}
@@ -64,7 +61,7 @@ export default async function Page({
                     <Suspense fallback={<ContentMainDetailPostSkeleton/>}>
                         <ContentMainDetailPost 
                             // relatedPosts={relatedPosts} 
-                            author={author} 
+                            author={author}
                             category={category} 
                             post={post}
                         />
