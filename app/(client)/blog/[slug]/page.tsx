@@ -1,8 +1,8 @@
 import ContentMainDetailPost from "@/app/ui/post/detail/content";
-import {
-    TheBestViewPost,
-    ManyViewsPosts
-} from "@/app/ui/post/detail/posts";
+// import {
+//     TheBestViewPost,
+//     ManyViewsPosts
+// } from "@/app/ui/post/detail/posts";
 
 import { 
     ContentMainDetailPostSkeleton, 
@@ -12,11 +12,11 @@ import {
 import { auth } from "@/auth";
 import { User } from "@/helpers/definitions";
 import { getUserByEmail } from "@/lib/actions-user";
-import { getAllMainComments } from "@/lib/data-comment";
+// import { getAllMainComments } from "@/lib/data-comment";
 import { 
-    fetchManyViewsEachPost,
-    fetchManyViewsPosts,
-    fetchNewPostRelated,
+    // fetchManyViewsEachPost,
+    // fetchManyViewsPosts,
+    // fetchNewPostRelated,
     fetchPostBySlug, 
     fetchPostCategoryById 
 } from "@/lib/data-post";
@@ -38,14 +38,14 @@ export default async function Page({
         category, 
         session, 
         // relatedPosts, 
-        // author, 
+        author, 
         // similarPosts,
         // manyViewsPosts
     ] = await Promise.all([
         await fetchPostCategoryById(post.post_type_id),
         await auth(),
         // await fetchNewPostRelated(post.post_type_id),
-        // await getAuthorOfPost(post.author_id) as User,
+        await getAuthorOfPost(post.author_id) as User,
         // await fetchManyViewsEachPost(post.post_type_id, 4),
         // await fetchManyViewsPosts(4)
     ]);
@@ -64,7 +64,7 @@ export default async function Page({
                     <Suspense fallback={<ContentMainDetailPostSkeleton/>}>
                         <ContentMainDetailPost 
                             // relatedPosts={relatedPosts} 
-                            // author={author} 
+                            author={author} 
                             category={category} 
                             post={post}
                         />

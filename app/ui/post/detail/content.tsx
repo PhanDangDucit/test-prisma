@@ -4,12 +4,12 @@ import { formatDate } from "@/utils/functions";
 
 export default async function ContentMainDetailPost ({
     // relatedPosts,
-    // author,
+    author,
     post,
     category
 } : {
     // relatedPosts: PostType[],
-    // author:User,
+    author:User,
     category: string|undefined,
     post: PostType
 }) {
