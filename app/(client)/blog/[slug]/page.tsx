@@ -37,17 +37,17 @@ export default async function Page({
     const [
         category, 
         session, 
-        relatedPosts, 
-        author, 
-        similarPosts,
-        manyViewsPosts
+        // relatedPosts, 
+        // author, 
+        // similarPosts,
+        // manyViewsPosts
     ] = await Promise.all([
         await fetchPostCategoryById(post.post_type_id),
         await auth(),
-        await fetchNewPostRelated(post.post_type_id),
-        await getAuthorOfPost(post.author_id) as User,
-        await fetchManyViewsEachPost(post.post_type_id, 4),
-        await fetchManyViewsPosts(4)
+        // await fetchNewPostRelated(post.post_type_id),
+        // await getAuthorOfPost(post.author_id) as User,
+        // await fetchManyViewsEachPost(post.post_type_id, 4),
+        // await fetchManyViewsPosts(4)
     ]);
     
     const email = session?.user?.email;
@@ -63,14 +63,14 @@ export default async function Page({
                 <div className="grid grid-cols-3 gap-3">
                     <Suspense fallback={<ContentMainDetailPostSkeleton/>}>
                         <ContentMainDetailPost 
-                            relatedPosts={relatedPosts} 
-                            author={author} 
+                            // relatedPosts={relatedPosts} 
+                            // author={author} 
                             category={category} 
                             post={post}
                         />
                     </Suspense>
                     <Suspense fallback={<ManyViewsPostsSkeleton/>}>
-                        <ManyViewsPosts similarPosts={similarPosts}/>
+                        {/* <ManyViewsPosts similarPosts={similarPosts}/> */}
                     </Suspense>
                 </div>
                 <hr className="w-full h-1 mx-auto my-12 bg-gray-300 border-0 rounded md:my-8 dark:bg-gray-300"/>
@@ -84,7 +84,7 @@ export default async function Page({
                     </div>
                     {/* Posts with other topics*/}
                     <Suspense fallback={<TheBestViewPostSkeleton/>}>
-                        <TheBestViewPost manyViewsPosts={manyViewsPosts}/>
+                        {/* <TheBestViewPost manyViewsPosts={manyViewsPosts}/> */}
                     </Suspense>
                 </div>
             </PostContextProvider>
