@@ -48,14 +48,17 @@ export const PostRelated = ({
 }
 
 
-export const TheBestViewPost = async () => {
-    const posts = await fetchManyViewsPosts(4);
+export const TheBestViewPost = async ({
+    manyViewsPosts
+}:{
+    manyViewsPosts:PostType[]
+}) => {
     console.log("TheBestViewPost component is re-rendered!");
     return (
         <div className="">
             <h1 className="my-5 text-orange-600 text-2xl border-b-2 border-orange-200 inline-block p-1">More</h1>
             { 
-                posts && posts.map((post) => (
+                manyViewsPosts && manyViewsPosts.map((post) => (
                     <div
                         key={post.id}
                         className="relative mb-2 flex flex-col items-center bg-white border border-gray-200 rounded-lg shadow md:flex-row md:max-w-xl hover:bg-gray-100 dark:border-gray-700 dark:bg-gray-800 dark:hover:bg-gray-700"
@@ -84,11 +87,10 @@ export const TheBestViewPost = async () => {
 
 
 export const ManyViewsPosts = async ({
-    postTypeId
+    similarPosts
 }:{
-    postTypeId:number
+    similarPosts:PostType[]
 }) => {
-    const similarPosts = await fetchManyViewsEachPost(postTypeId, 4);
     console.log("ManyViewsPosts component is re-rendered!");
     return (
         <div className="">

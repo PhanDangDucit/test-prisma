@@ -1,21 +1,20 @@
 import { PostType, User } from "@/helpers/definitions";
 import {PostRelated} from "@/app/ui/post/detail/posts";
-import { fetchNewPostRelated } from "@/lib/data-post";
 import { formatDate } from "@/utils/functions";
-import { getAuthorOfPost } from "@/lib/data-user";
 
 export default async function ContentMainDetailPost ({
+    relatedPosts,
+    author,
     post,
     category
 } : {
+    relatedPosts: PostType[],
+    author:User,
     category: string|undefined,
     post: PostType
 }) {
     console.log("============");
-    const [relatedPosts, author] = await Promise.all([
-        await fetchNewPostRelated(post.post_type_id),
-        await getAuthorOfPost(post.author_id) as User
-    ])
+    
     console.log("content of post component is re-rendered!");
     return (
         <div className="col-start-1 col-end-3">
