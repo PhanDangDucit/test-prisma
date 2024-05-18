@@ -1,6 +1,7 @@
 
 import { TCommentWithUser } from "@/helpers/definitions";
 import { getAllMainComments } from "@/lib/data-comment";
+export const maxDuration = 15;
 
 export async function GET(request: Request) {
     const url = new URL(request.url);
