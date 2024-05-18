@@ -50,3 +50,8 @@ $ git add/rm <file>
 # Api
 - [get] /blog/[slug]
 
+<!-- Performance for app -->
+- stream
+- compress
+- readable stream
+- seperate fetch data
