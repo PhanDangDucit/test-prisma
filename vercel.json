@@ -1,6 +1,6 @@
 {
     "functions": {
-        "lib/*.tsx": {
+        "api/test.tsx": {
             "maxDuration": 15 
         }
     }
