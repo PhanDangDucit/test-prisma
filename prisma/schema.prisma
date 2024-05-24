@@ -1,8 +1,17 @@
+// supabase database
 datasource db {
   provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  url = env("DATABASE_URL") // uses connection pooling
+  directUrl = env("DIRECT_URL") // uses a direct connection
 }
+
+// vercel database
+
+// datasource db {
+//   provider = "postgresql"
+//   url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+//   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+// }
 generator client {
   provider = "prisma-client-js"
   previewFeatures = ["relationJoins"]

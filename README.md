@@ -274,3 +274,9 @@ type User = {
 - [Auto-Growing Inputs & Textareas](https://css-tricks.com/auto-growing-inputs-textareas/)
 
 - contentEditable
+
+
+# Supabase
+```bash
+$ npm install @supabase/supabase-js @supabase/ssr @supabase/auth-helpers-nextjs
+```
