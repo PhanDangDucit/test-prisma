@@ -1,8 +1,8 @@
 import ContentMainDetailPost from "@/app/ui/post/detail/content";
-// import {
-//     TheBestViewPost,
-//     ManyViewsPosts
-// } from "@/app/ui/post/detail/posts";
+import {
+    TheBestViewPost,
+    ManyViewsPosts
+} from "@/app/ui/post/detail/posts";
 
 import { 
     ContentMainDetailPostSkeleton, 
@@ -12,11 +12,11 @@ import {
 import { auth } from "@/auth";
 import { User } from "@/helpers/definitions";
 import { getUserByEmail } from "@/lib/actions-user";
-// import { getAllMainComments } from "@/lib/data-comment";
+import { getAllMainComments } from "@/lib/data-comment";
 import { 
-    // fetchManyViewsEachPost,
-    // fetchManyViewsPosts,
-    // fetchNewPostRelated,
+    fetchManyViewsEachPost,
+    fetchManyViewsPosts,
+    fetchNewPostRelated,
     fetchPostBySlug, 
     fetchPostCategoryById 
 } from "@/lib/data-post";
@@ -32,27 +32,30 @@ export default async function Page({
     params: { slug: string }
 }) {
     const slug = decodeURIComponent(params.slug);
-    const [session, post] = await [
-        await auth(), 
-        await fetchPostBySlug(slug)
-    ];
+    const post = await fetchPostBySlug(slug);
     if(!post) return;
     const [
         category, 
-        // relatedPosts, 
-        author,
-        userInfo,
-        // similarPosts,
-        // manyViewsPosts
+        session, 
+        relatedPosts, 
+        author, 
+        similarPosts,
+        manyViewsPosts
     ] = await Promise.all([
         await fetchPostCategoryById(post.post_type_id),
-        // await fetchNewPostRelated(post.post_type_id),
+        await auth(),
+        await fetchNewPostRelated(post.post_type_id),
         await getAuthorOfPost(post.author_id) as User,
-        await getUserByEmail(session?.user?.email!) as User
-        // await fetchManyViewsEachPost(post.post_type_id, 4),
-        // await fetchManyViewsPosts(4)
+        await fetchManyViewsEachPost(post.post_type_id, 4),
+        await fetchManyViewsPosts(4)
     ]);
     
+    const email = session?.user?.email;
+    let userInfo:User = user;
+    // check user logging to comment
+    if(email) {
+        userInfo = await getUserByEmail(email) as User;
+    }
     return (
         <>
             {/* Main */}
@@ -60,14 +63,14 @@ export default async function Page({
                 <div className="grid grid-cols-3 gap-3">
                     <Suspense fallback={<ContentMainDetailPostSkeleton/>}>
                         <ContentMainDetailPost 
-                            // relatedPosts={relatedPosts} 
-                            author={author}
+                            relatedPosts={relatedPosts} 
+                            author={author} 
                             category={category} 
                             post={post}
                         />
                     </Suspense>
                     <Suspense fallback={<ManyViewsPostsSkeleton/>}>
-                        {/* <ManyViewsPosts similarPosts={similarPosts}/> */}
+                        <ManyViewsPosts similarPosts={similarPosts}/>
                     </Suspense>
                 </div>
                 <hr className="w-full h-1 mx-auto my-12 bg-gray-300 border-0 rounded md:my-8 dark:bg-gray-300"/>
@@ -81,7 +84,7 @@ export default async function Page({
                     </div>
                     {/* Posts with other topics*/}
                     <Suspense fallback={<TheBestViewPostSkeleton/>}>
-                        {/* <TheBestViewPost manyViewsPosts={manyViewsPosts}/> */}
+                        <TheBestViewPost manyViewsPosts={manyViewsPosts}/>
                     </Suspense>
                 </div>
             </PostContextProvider>

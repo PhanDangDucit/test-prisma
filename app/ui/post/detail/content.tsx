@@ -1,14 +1,14 @@
 import { PostType, User } from "@/helpers/definitions";
-// import {PostRelated} from "@/app/ui/post/detail/posts";
+import {PostRelated} from "@/app/ui/post/detail/posts";
 import { formatDate } from "@/utils/functions";
 
 export default async function ContentMainDetailPost ({
-    // relatedPosts,
+    relatedPosts,
     author,
     post,
     category
 } : {
-    // relatedPosts: PostType[],
+    relatedPosts: PostType[],
     author:User,
     category: string|undefined,
     post: PostType
@@ -32,7 +32,7 @@ export default async function ContentMainDetailPost ({
             <div>
                 <p className="text-end uppercase text-black font-bold -translate-x-[50px]">{author.username}</p>
             </div>
-            {/* <PostRelated posts={relatedPosts}/> */}
+            <PostRelated posts={relatedPosts}/>
         </div>
     );
 }
