@@ -5,12 +5,12 @@ import moment from "moment";
 import { PostType } from "@/helpers/definitions";
 import { processContentAddition } from "@/utils/posts.util";
 import conan from "@/public/conan.jpg";
-// import { Suspense } from "react";
-// import { 
-//     LatestPostMarketingSkeleton,
-//     LatestPostTechSkeleton,
-//     LatestPostBusinessSkeleton
-// } from "@/app/ui/home/skeletons-home";
+import { Suspense } from "react";
+import { 
+    LatestPostMarketingSkeleton,
+    LatestPostTechSkeleton,
+    LatestPostBusinessSkeleton
+} from "@/app/ui/home/skeletons-home";
 import { getLatestOnePostForEachPostType } from "@/lib/data-post";
 import { formatDateFollowHour } from "@/utils/functions";
 
@@ -20,6 +20,7 @@ export default async function LatestPost() {
         getLatestOnePostForEachPostType(2),
         getLatestOnePostForEachPostType(3),
     ]);
+    console.log("datas::", datas);
     const techPost = datas[0] as PostType;
     const marketingPost = datas[1] as PostType;
     const businessPost = datas[2] as PostType;
@@ -28,16 +29,16 @@ export default async function LatestPost() {
         <>
             <h1 className="my-5 text-orange-400 text-4xl border-b-2 border-orange-200 inline-block">New Posts</h1>
             <div className="grid grid-cols-3 gap-8 justify-between container">
-                {/* <Suspense fallback={<LatestPostTechSkeleton/>}> */}
+                <Suspense fallback={<LatestPostTechSkeleton/>}>
                     <LatestPostTech techPost={techPost}/>
-                {/* </Suspense> */}
+                </Suspense>
                 <div className="grid gap-3 grid-cols-1">
-                    {/* <Suspense fallback={<LatestPostMarketingSkeleton/>}> */}
+                    <Suspense fallback={<LatestPostMarketingSkeleton/>}>
                         <LatestPostMarketing marketingPost={marketingPost}/>
-                    {/* </Suspense> */}
-                    {/* <Suspense fallback={<LatestPostBusinessSkeleton/>}> */}
+                    </Suspense>
+                    <Suspense fallback={<LatestPostBusinessSkeleton/>}>
                         <LatestPostBusiness businessPost={businessPost}/>
-                    {/* </Suspense> */}
+                    </Suspense>
                 </div>
            </div>
         </>
