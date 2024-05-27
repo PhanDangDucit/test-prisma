@@ -7,13 +7,13 @@ import { Session } from "next-auth";
 import conan from "@/public/conan.jpg";
 import {DarkLight} from "@/app/ui/components/theme";
 
-export default function  HeaderAdmin ({
-    session,
-    onClick
-} : {
-    session: Session,
+type HeaderAdminProps = {
+    session?: Session,
     onClick: (theme: string) => void
-}) {
+}
+export default function  HeaderAdmin (props: HeaderAdminProps) {
+    const { session, onClick } = props;
+
     return (
         <nav className="bg-black border-gray-200 dark:bg-gray-900">
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">

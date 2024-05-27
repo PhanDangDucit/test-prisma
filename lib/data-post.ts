@@ -139,7 +139,7 @@ export async function fetchAllPostCategories() {
         return allPostsCategories;
     } catch (error) {
         await prisma.$disconnect();
-        throw new Error("Get all employees failed! " + error);
+        throw new Error("Get all categories failed! " + error);
     }
 }
 

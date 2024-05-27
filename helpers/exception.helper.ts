@@ -13,7 +13,7 @@ interface TApiResponseClientError {
 /**
  * Client Error: 400
  */
-const ApiResponseElements:Array<TApiResponseClientError> = [
+export const ApiResponseElements:Array<TApiResponseClientError> = [
     /**
      * Status code for cases:
      * 	- User is invalid,

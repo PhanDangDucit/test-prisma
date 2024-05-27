@@ -3,7 +3,7 @@
 import { revalidatePath } from 'next/cache'
 import { redirect } from 'next/navigation'
 
-import { createClient } from '@/configs/supabase-client.config'
+import { createClient } from '@/configs/supabase-server.config'
 
 export async function login(formData: FormData) {
     const supabase = createClient()
@@ -14,12 +14,21 @@ export async function login(formData: FormData) {
         email: formData.get('email') as string,
         password: formData.get('password') as string,
     }
-    const { error } = await supabase.auth.signInWithPassword(data)
+    const { error } = await supabase.auth.signInWithPassword(data);
     if (error) {
-        redirect('/error')
+        // console.log("error of login with supabase::", error);
+        redirect('/api/auth/error')
+        // return;
     }
-    revalidatePath('/', 'layout')
-    redirect('/')
+    if(!error) {
+        if(data.email != 'phanduc.flp@gmail.com') {
+            revalidatePath('/')
+            redirect('/')
+        } else {
+            revalidatePath('/');
+            redirect('/dashboad');
+        }
+    }
 }
 
 export async function signup(formData: FormData) {
@@ -35,8 +44,17 @@ export async function signup(formData: FormData) {
     const { error } = await supabase.auth.signUp(data)
 
     if (error) {
-        redirect('/error')
+        console.log("error of sign up with supabase::", error);
+        return;
+        redirect('/api/auth/error')
     }
-    revalidatePath('/', 'layout')
-    redirect('/')
+    if(!error) {
+        if(data.email != 'phanduc.flp@gmail.com') {
+            revalidatePath('/')
+            redirect('/')
+        } else {
+            revalidatePath('/');
+            redirect('/dashboad');
+        }
+    }
 }

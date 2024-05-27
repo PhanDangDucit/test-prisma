@@ -6,6 +6,8 @@ const inter = Inter({ subsets: ["latin"] });
 import "@/app/globals.css";
 import { Provider } from "@/app/ui/MainContent";
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { getUserInfoSupabase } from "@/utils/auth.utils";
+import { hosting } from "@/configs/constants";
 
 
 const LayoutAdmin = async ({
@@ -13,15 +15,22 @@ const LayoutAdmin = async ({
 }: {
     children: React.ReactNode
 }) => {
-    const session = await auth();
-    if(session?.user?.role != 1) {
+    /**
+     * Check Jwt of user
+     */
+    fetch(`${hosting}/api/auth/check-jwt`);
+
+    const user = await getUserInfoSupabase();
+  
+    if(user.email != "phanduc.flp@gmail.com") {
         redirect('/');
     }
+
     return (
         <html lang="en">
           <SpeedInsights/>
             <body className={inter.className}>
-                <Provider session={session}>
+                <Provider>
                     {children}
                 </Provider>
             </body>

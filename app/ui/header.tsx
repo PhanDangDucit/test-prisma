@@ -8,13 +8,16 @@ import conan from "@/public/conan.jpg"
 
 export default function Header({
     session,
-    categories
+    categories,
+    className
 }:{
     session?:Session|null,
-    categories?:PostCategoriesType[]
+    categories?:PostCategoriesType[],
+    className?: string
 }) {
-    return ( 
-        <nav className="bg-black border-gray-200 dark:bg-gray-900">
+    console.log("session:::", session);
+    return (
+        <nav className={"bg-black border-gray-200 dark:bg-gray-900 " + className}>
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
                 {/* Logo */}
                 <div className="navbar-start">

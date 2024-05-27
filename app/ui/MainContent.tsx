@@ -5,12 +5,16 @@ import ThemeContext, { UserContext } from "@/app/store/hooks";
 import { useState } from "react";
 import { Session } from "next-auth";
 
+type Props = {
+    session: Session
+}
+
 export function Provider({
     children,
-    session
+    props
 }: {
     children: React.ReactNode,
-    session: Session
+    props?: Props
 }) {
     const [theme, setTheme] = useState('dark');
     const changeTheme = (theme: string) => {
@@ -22,7 +26,7 @@ export function Provider({
     // const username
     return (
         <ThemeContext.Provider value={value}>
-            <HeaderAdmin session={session} onClick={changeTheme}/>
+            <HeaderAdmin {...props} onClick={changeTheme}/>
             {children}
             <Footer/>
         </ThemeContext.Provider>

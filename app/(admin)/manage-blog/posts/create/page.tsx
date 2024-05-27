@@ -3,19 +3,14 @@ import { auth } from "@/auth";
 import { PostCategoriesType, User } from "@/helpers/definitions";
 import { getUserByEmail } from "@/lib/actions-user";
 import { fetchAllPostCategories } from "@/lib/data-post";
+import { getUserInfoSupabase } from "@/utils/auth.utils";
 
 const Page = async () => {
-    const data = await Promise.all([
-        await fetchAllPostCategories(),
-        await auth()
-    ]);
-    const postCategories:PostCategoriesType[] = data[0];
-    const session = data[1];
-    
-    if(!session) return
-    if(!session.user) return
-    const email = session.user.email;
+    const postCategories = await fetchAllPostCategories();
+    const email = (await getUserInfoSupabase()).email;
     const user = await getUserByEmail(email!) as User;
+    console.log("user::", user);
+
     return (
         <div className="min-h-screen p-24 w-full">
             <EditorBox categories={postCategories} userId={user.id}/>

@@ -117,3 +117,13 @@ export type TCommentWithUser = {
         username: string|null
     }
 }
+
+export namespace Supabase {
+    /**
+     * Type for Supabase environment variables
+     */
+    export type TSUPABASE_ENV = {
+        url: string,
+        "anon-key": string
+    }
+}

@@ -1,13 +1,15 @@
+
 import { createServerClient, type CookieOptions } from '@supabase/ssr'
 import { cookies } from 'next/headers'
-import { ENV_SUPABASE } from '@/configs/supabase-client.config';
+import { SUPABASE_ENV } from '@/configs/constants'
+
 
 export function createClient() {
     const cookieStore = cookies()
 
     return createServerClient(
-        ENV_SUPABASE.url,
-        ENV_SUPABASE['anon-key'],
+        SUPABASE_ENV.url,
+        SUPABASE_ENV['anon-key'],
         {
             cookies: {
                 get(name: string) {
@@ -28,6 +30,7 @@ export function createClient() {
                         // user sessions.
                     }
                 },
+
                 remove(name: string, options: CookieOptions) {
                     try {
                         cookieStore.set({ name, value: '', ...options })

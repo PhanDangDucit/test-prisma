@@ -1,5 +1,29 @@
-export const initialState = { message: null || "", errors: {} };
+import { Supabase } from "@/helpers/definitions";
 
+
+/**
+ * Node environment
+ */
+
+export const hosting = process.env.DEV_HOST_URL! ?? process.env.PRODUCTION_HOST_URL ;
+
+/**
+ * SUPABASE_ENV variable is used for configure client of "supabase"
+ */
+export const SUPABASE_ENV:Supabase.TSUPABASE_ENV = {
+    url:process.env.NEXT_PUBLIC_SUPABASE_URL!,
+    "anon-key":process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
+}
+
+
+/**
+ * Constants for useFormState:
+ *  - initialState
+ *  - user
+ *  - comment
+ *  - post
+ */
+export const initialState = { message: null || "", errors: {} };
 
 export const user = {
     id: 0,
