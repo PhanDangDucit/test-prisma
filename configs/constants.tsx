@@ -5,7 +5,7 @@ import { Supabase } from "@/helpers/definitions";
  * Node environment
  */
 
-export const hosting = process.env.DEV_HOST_URL! ?? process.env.PRODUCTION_HOST_URL ;
+export const hosting = process.env.NEXT_PUBLIC_DEV_HOST_URL! ?? process.env.NEXT_PUBLIC_PRODUCTION_HOST_URL ;
 
 /**
  * SUPABASE_ENV variable is used for configure client of "supabase"

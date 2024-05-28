@@ -15,7 +15,6 @@ export default function Header({
     categories?:PostCategoriesType[],
     className?: string
 }) {
-    console.log("session:::", session);
     return (
         <nav className={"bg-black border-gray-200 dark:bg-gray-900 " + className}>
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">

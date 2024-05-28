@@ -1,13 +1,11 @@
-import { auth } from "@/auth";
-import { redirect } from "next/navigation";
 
 import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 import "@/app/globals.css";
 import { Provider } from "@/app/ui/MainContent";
 import { SpeedInsights } from "@vercel/speed-insights/next"
-import { getUserInfoSupabase } from "@/utils/auth.utils";
-import { hosting } from "@/configs/constants";
+// import { hosting } from "@/configs/constants";
+import RedirectAdminComponent from "@/app/ui/components/redirect-admin";
 
 
 const LayoutAdmin = async ({
@@ -18,18 +16,13 @@ const LayoutAdmin = async ({
     /**
      * Check Jwt of user
      */
-    fetch(`${hosting}/api/auth/check-jwt`);
-
-    const user = await getUserInfoSupabase();
-  
-    if(user.email != "phanduc.flp@gmail.com") {
-        redirect('/');
-    }
+    // fetch(`${hosting}/api/auth/check-jwt`);
 
     return (
         <html lang="en">
-          <SpeedInsights/>
+            <SpeedInsights/>
             <body className={inter.className}>
+                <RedirectAdminComponent/>
                 <Provider>
                     {children}
                 </Provider>
