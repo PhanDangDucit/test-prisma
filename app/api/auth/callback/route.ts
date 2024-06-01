@@ -5,7 +5,7 @@ import { SUPABASE_ENV } from '@/configs/constants'
 
 export async function GET(request: Request) {
     const { searchParams, origin } = new URL(request.url)
-    const code = searchParams.get('code')
+    const code = searchParams.get('code');
     // if "next" is in param, use it as the redirect URL
     const next = searchParams.get('next') ?? '/'
 
@@ -28,7 +28,16 @@ export async function GET(request: Request) {
                 },
             }
         )
-        const { error } = await supabase.auth.exchangeCodeForSession(code)
+        
+        /**
+         * - exchangeCodeForSession() return session contain access and refresh tokens
+         *      + Two tokens are stored in storage medium
+         *  - Whenever the "session" is "refreshed", the "auth and refresh" tokens in the shared storage medium must be "updated".
+         *      + auth tokens?
+         *  - Supabase client libraries provide a customizable "storage" option when a client is initiated, 
+         *      allowing you to change where tokens are stored.
+         */
+        const { error } = await supabase.auth.exchangeCodeForSession(code);
         if (!error) {
             return NextResponse.redirect(`${origin}${next}`)
         }

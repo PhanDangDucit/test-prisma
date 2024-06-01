@@ -62,3 +62,14 @@ export const getUserInfoSupabase = function async():Promise<User> {
     const userInfoSupabaseObj = new UserInfoAuth(new SupabaseUserInfo());
     return userInfoSupabaseObj.getUserInfoApproach();
 }
+
+
+/**
+ * Check user to redirect
+ * @param email 
+ * @returns
+ */
+export function isAdmin(email: string) {
+    if(email != 'phanduc.flp@gmail.com') return 0;
+    return 1;
+}

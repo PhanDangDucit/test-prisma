@@ -5,6 +5,7 @@ import { redirect } from 'next/navigation'
 
 import { createClient } from '@/configs/supabase-server.config'
 import { hosting } from '@/configs/constants'
+import { isAdmin } from '@/utils/auth.utils'
 
 export async function login(formData: FormData) {
     const supabase = createClient()
@@ -15,6 +16,10 @@ export async function login(formData: FormData) {
         email: formData.get('email') as string,
         password: formData.get('password') as string,
     }
+
+    /**
+     * 
+     */
     const { error } = await supabase.auth.signInWithPassword(data);
     if (error) {
         // console.log("error of login with supabase::", error);
@@ -22,7 +27,7 @@ export async function login(formData: FormData) {
         // return;
     }
     if(!error) {
-        if(data.email != 'phanduc.flp@gmail.com') {
+        if(isAdmin(data.email)) {
             revalidatePath('/')
             redirect('/')
         } else {
@@ -45,12 +50,11 @@ export async function signup(formData: FormData) {
     const { error } = await supabase.auth.signUp(data)
 
     if (error) {
-        console.log("error of sign up with supabase::", error);
-        return;
         redirect('/api/auth/error')
     }
+
     if(!error) {
-        if(data.email != 'phanduc.flp@gmail.com') {
+        if(isAdmin(data.email)) {
             revalidatePath('/')
             redirect('/')
         } else {
@@ -62,7 +66,6 @@ export async function signup(formData: FormData) {
 
 export async function signupGoogleProvider(formData: FormData) {
     const supabase = createClient()
-    console.log("waht?::");
     // type-casting here for convenience
     // in practice, you should validate your inputs
 
@@ -73,6 +76,10 @@ export async function signupGoogleProvider(formData: FormData) {
                 access_type: 'offline',
                 prompt: 'consent',
             },
+            /**
+             * Redirect "callbak" after sign in complete, but tokens are not sent
+             *  to avoid prefetching that user is authenticated
+             */
             redirectTo: `${hosting}api/auth/callback`
         }
     })
@@ -81,6 +88,21 @@ export async function signupGoogleProvider(formData: FormData) {
         redirect('/api/auth/error');
     }
     if (data.url) {
-        redirect(data.url) // use the redirect API for your server framework
+        /**
+         * use the "redirect API" for your server framework:
+         *      - authenticate with google
+         */
+        redirect(data.url)
     }
+}
+
+export async function signOut() {
+    const supabase = createClient();
+
+    const { error } = await supabase.auth.signOut({ scope: 'local' });
+
+    if(error) {
+        redirect("/api/auth/error");
+    }
+    redirect("/")
 }

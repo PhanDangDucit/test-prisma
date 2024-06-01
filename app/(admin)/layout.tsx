@@ -6,6 +6,7 @@ import { Provider } from "@/app/ui/MainContent";
 import { SpeedInsights } from "@vercel/speed-insights/next"
 // import { hosting } from "@/configs/constants";
 import RedirectAdminComponent from "@/app/ui/components/redirect-admin";
+import { getUserInfoSupabase } from "@/utils/auth.utils";
 
 
 const LayoutAdmin = async ({
@@ -17,12 +18,13 @@ const LayoutAdmin = async ({
      * Check Jwt of user
      */
     // fetch(`${hosting}/api/auth/check-jwt`);
+    const user = await getUserInfoSupabase();
 
     return (
         <html lang="en">
             <SpeedInsights/>
             <body className={inter.className}>
-                <RedirectAdminComponent/>
+                <RedirectAdminComponent email={user["email"]!}/>
                 <Provider>
                     {children}
                 </Provider>

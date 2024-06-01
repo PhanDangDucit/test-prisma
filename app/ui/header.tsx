@@ -5,16 +5,30 @@ import Link from "next/link";
 import { Session } from "next-auth";
 import { PostCategoriesType } from "@/helpers/definitions";
 import conan from "@/public/conan.jpg"
+import { User } from "@supabase/supabase-js";
 
-export default function Header({
-    session,
-    categories,
-    className
-}:{
-    session?:Session|null,
+type Props = {
+    // session?:Session|null,
+    user: User,
     categories?:PostCategoriesType[],
     className?: string
-}) {
+}
+
+// const getHeaderUserProps = (props:Props) => {
+//     return {
+//         session: props.session,
+//         categories: props.categories,
+//         className: props.className
+//     }
+// }
+
+export default function Header(props: Props) {
+    const {
+        className, 
+        categories,
+        user
+    } = props;
+
     return (
         <nav className={"bg-black border-gray-200 dark:bg-gray-900 " + className}>
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -49,16 +63,16 @@ export default function Header({
                     <div tabIndex={0} role="button" className="btn m-1" title="user-avatar">
                         <Image
                             className="w-8 h-8 rounded-full"
-                            src={session?.user?.image || conan}
+                            src={user?.image || conan}
                             alt="user photo"
                         />
                     </div>
                     <ul tabIndex={0} className="dropdown-content z-[1] menu p-2 shadow bg-gray-100 rounded-box">
-                        {session ? (
+                        {user ? (
                             <>
                                 <li className="px-4 py-3">
-                                    <span className="block text-sm text-black dark:text-white">{session?.user?.name}</span>
-                                    <span className="block text-sm  text-black truncate dark:text-gray-400">{session?.user?.email}</span>
+                                    <span className="block text-sm text-black dark:text-white">{user?.name}</span>
+                                    <span className="block text-sm  text-black truncate dark:text-gray-400">{user?.email}</span>
                                 </li>
                                 <li className="p-0">
                                     <ul className="p-2" aria-labelledby="user-menu-button">

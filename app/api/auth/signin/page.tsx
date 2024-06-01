@@ -128,6 +128,11 @@ export default function LoginPage() {
                                 Sign Up here
                             </Link>
                         </p>
+                        <p className='text-center'>
+                            <Link href="/api/auth/forgot-password">
+                                Forgot password
+                            </Link>
+                        </p>
                     </div>
                 </div>
             </div>

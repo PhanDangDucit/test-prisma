@@ -1,11 +1,14 @@
-import { getUserInfoSupabase } from "@/utils/auth.utils"
+import { isAdmin } from "@/utils/auth.utils"
 import { redirect } from "next/navigation";
 
-export default async function RedirectAdminComponent() {
-    const user = await getUserInfoSupabase();
-    if(!user) return;
+export default async function RedirectAdminComponent({
+    email
+}:{
+    email:string
+}) {
+    if(!email) return;
 
-    if(user.email != "phanduc.flp@gmail.com") {
+    if(!isAdmin(email)) {
         redirect('/');
     }
     
