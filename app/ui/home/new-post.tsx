@@ -11,8 +11,32 @@ import {
     LatestPostTechSkeleton,
     LatestPostBusinessSkeleton
 } from "@/app/ui/home/skeletons-home";
-import { getLatestOnePostForEachPostType } from "@/lib/data-post";
 import { formatDateFollowHour } from "@/utils/functions";
+// [
+//     {
+//         id: 1, 
+//         name: "Duc",
+//         age: 23
+//     },
+//     {
+//         id: 2, 
+//         name: "Me",
+//         age: 43
+//     },
+// ]
+
+// [
+//     {
+//         id: 1, 
+//         title: "Happy New Year",
+//     },
+//     {
+//         id: 2, 
+//         title: "Happy New Year"
+//     },
+// ]
+
+
 
 export default async function LatestPost() {
     const datas = await Promise.all([

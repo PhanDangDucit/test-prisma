@@ -4,8 +4,9 @@ import { isAdmin } from "@/utils/auth.utils"
 export default async function RedirectUserComponent ({
     email
 }:{
-    email: string
+    email?: string
 }) {
+    
     if(!email) return;
 
     /**

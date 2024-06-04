@@ -1,6 +1,5 @@
 // import { unstable_noStore as noCache } from 'next/cache';
 // import moment from 'moment';
-import prisma from "@/prisma/client";
 
 /**
  * Save info of user from provider

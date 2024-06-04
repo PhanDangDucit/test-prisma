@@ -1,8 +1,8 @@
 // import { PostType } from "@/helpers/definitions";
-import prisma from "@/prisma/client";
 import { unstable_noStore as noCache } from 'next/cache';
 // import moment from 'moment';
 import { formartSlug } from "@/helpers/convert-language";
+import { FindSuzuSupabase } from './suzu-supabase-find';
 
 /**
  * Fetch all Post
@@ -58,23 +58,46 @@ export function processSlugUnique(title: string) {
  * @param post_type_id
  * @returns
  */
+
+// const { data, error } = await supabase
+//   .from('countries')
+//   .select('id', 'name')
+//   .order('id', { ascending: false })
+
+
+// const { data, error } = await supabase
+//   .from('countries')
+//   .select('name')
+//   .limit(1)
+
+// export async function getLatestOnePostForEachPostType(post_type_id: number) {
+//     noCache();
+//     try {
+//         const post = await prisma.post.findFirst({
+//             where: {
+//                 post_type_id,
+//             },
+//             orderBy: {
+//                 created_at: 'desc'
+//             },
+//         })
+//         await prisma.$disconnect();
+//         return post;
+//     } catch (error) {
+//         await prisma.$disconnect();
+//         throw new Error("Get one post failed!");
+//     }
+// }
+
 export async function getLatestOnePostForEachPostType(post_type_id: number) {
-    noCache();
-    try {
-        const post = await prisma.post.findFirst({
-            where: {
-                post_type_id,
-            },
-            orderBy: {
-                created_at: 'desc'
-            },
-        })
-        await prisma.$disconnect();
-        return post;
-    } catch (error) {
-        await prisma.$disconnect();
-        throw new Error("Get one post failed!");
-    }
+    await FindSuzuSupabase.FindOneEntity.findOneEntity("Post", {
+        where: {
+            post_type_id
+        },
+        order: {
+            ascending:false
+        }
+    })
 }
 
 /**
@@ -132,16 +155,7 @@ export async function fetchManyViewsEachPost(post_type_id: number, quantity: num
  * Get all post categories
  * @returns 
  */
-export async function fetchAllPostCategories() {
-    try {
-        const allPostsCategories = await prisma.post_Type.findMany();
-        await prisma.$disconnect();
-        return allPostsCategories;
-    } catch (error) {
-        await prisma.$disconnect();
-        throw new Error("Get all categories failed! " + error);
-    }
-}
+
 
 /**
  * 

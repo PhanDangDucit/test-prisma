@@ -2,14 +2,13 @@
 import Image from "next/image";
 import logo from "@/public/logo.png";
 import Link from "next/link";
-import { Session } from "next-auth";
 import { PostCategoriesType } from "@/helpers/definitions";
 import conan from "@/public/conan.jpg"
 import { User } from "@supabase/supabase-js";
 
 type Props = {
     // session?:Session|null,
-    user: User,
+    user?: User,
     categories?:PostCategoriesType[],
     className?: string
 }
