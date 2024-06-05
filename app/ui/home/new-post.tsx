@@ -12,42 +12,22 @@ import {
     LatestPostBusinessSkeleton
 } from "@/app/ui/home/skeletons-home";
 import { formatDateFollowHour } from "@/utils/functions";
-// [
-//     {
-//         id: 1, 
-//         name: "Duc",
-//         age: 23
-//     },
-//     {
-//         id: 2, 
-//         name: "Me",
-//         age: 43
-//     },
-// ]
-
-// [
-//     {
-//         id: 1, 
-//         title: "Happy New Year",
-//     },
-//     {
-//         id: 2, 
-//         title: "Happy New Year"
-//     },
-// ]
-
-
+import { getOnePost } from "@/lib/data-post";
 
 export default async function LatestPost() {
     const datas = await Promise.all([
-        getLatestOnePostForEachPostType(1),
-        getLatestOnePostForEachPostType(2),
-        getLatestOnePostForEachPostType(3),
+        getOnePost<PostType>(1),
+        getOnePost<PostType>(2),
+        getOnePost<PostType>(3),
     ]);
-    console.log("datas::", datas);
-    const techPost = datas[0] as PostType;
-    const marketingPost = datas[1] as PostType;
-    const businessPost = datas[2] as PostType;
+    // console.log("datas::", datas);
+    if(!datas) return;
+    const techPost = datas[0]![0];
+    const marketingPost = datas[1]![0];
+    const businessPost = datas[2]![0];
+    // console.log("1::", techPost)
+    // console.log("2::", marketingPost)
+    // console.log("3::", businessPost)
 
     return (
         <>
@@ -68,6 +48,7 @@ export default async function LatestPost() {
         </>
     )
 }
+
 export async function LatestPostTech({techPost}: {techPost:PostType}) {
     if(!techPost) return;
     return (
@@ -99,7 +80,11 @@ export async function LatestPostTech({techPost}: {techPost:PostType}) {
 }
 
 // Above
-export async function LatestPostMarketing({marketingPost}: {marketingPost:PostType}) {
+export async function LatestPostMarketing({
+    marketingPost
+}: {
+    marketingPost: PostType
+}) {
     if(!marketingPost) return;
     return (
         <div className="card bg-gray-100 shadow-xl relative px-10 pt-10 p-4">
@@ -124,7 +109,11 @@ export async function LatestPostMarketing({marketingPost}: {marketingPost:PostTy
 }
 
 // below
-export async function LatestPostBusiness({businessPost}: {businessPost:PostType}) {
+export async function LatestPostBusiness({
+    businessPost
+} : {
+    businessPost:PostType
+}) {
     if(!businessPost) return;
     return (
         <div className="card bg-gray-100 shadow-xl relative px-10 pt-10 p-4">

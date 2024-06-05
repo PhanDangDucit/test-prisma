@@ -5,12 +5,9 @@ import {
     validatedAccount, 
     validatedRoleUser
 } from "@/validators/validate-user";
-import { PrismaClient } from "@prisma/client"
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import { z } from 'zod';
-
-const prisma = new PrismaClient();
 
 /**
  * Create new account

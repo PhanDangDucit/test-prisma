@@ -1,4 +1,4 @@
-import { PostType, User } from "@/helpers/definitions";
+import { PostType, TUser } from "@/helpers/definitions";
 import {PostRelated} from "@/app/ui/post/detail/posts";
 import { formatDate } from "@/utils/functions";
 
@@ -8,9 +8,9 @@ export default async function ContentMainDetailPost ({
     post,
     category
 } : {
-    relatedPosts: PostType[],
-    author:User,
-    category: string|undefined,
+    relatedPosts?: PostType[],
+    author:TUser,
+    category: string,
     post: PostType
 }) {
     console.log("============");

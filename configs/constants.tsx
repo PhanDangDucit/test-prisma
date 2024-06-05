@@ -25,8 +25,8 @@ export const SUPABASE_ENV:Supabase.TSUPABASE_ENV = {
  */
 export const initialState = { message: null || "", errors: {} };
 
-export const user = {
-    id: 0,
+export const userCont = {
+    id: '',
     fullname: null,
     username: null,
     password: null,

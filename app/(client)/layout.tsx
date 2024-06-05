@@ -7,8 +7,7 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 // import { hosting } from "@/configs/constants";
 import RedirectUserComponent from "@/app/ui/components/redirect-user";
 import { getUserInfoSupabase } from "@/utils/auth.utils";
-import { PostCategoriesType } from "@/helpers/definitions";
-import { FindSuzuSupabase } from "@/lib/suzu-supabase-find";
+import { getAllCategories } from "@/lib/data-categories-post";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -28,18 +27,19 @@ export default async function RootLayout({
     
     const datas = await Promise.all([
         await getUserInfoSupabase(),
-        await FindSuzuSupabase.findAll<PostCategoriesType>('Post_Type')
+        await getAllCategories()
     ]);
     
     const user = datas[0];
     const categories = datas[1];
-    console.log("categories::", categories);
+    
+    // console.log("categories::", categories);
     if(!categories) return;
 
     return (
-      <html lang="en">
-          <SpeedInsights/>
-          <body className={inter.className}>
+        <html lang="en">
+            <SpeedInsights/>
+            <body className={inter.className}>
                 {
                     user && <RedirectUserComponent email={user["email"]}/>
                 }
@@ -50,7 +50,7 @@ export default async function RootLayout({
                     {children}
                 </main>
                 <Footer/>
-          </body>
-      </html>
+            </body>
+        </html>
     );
 }

@@ -21,7 +21,7 @@ CREATE TABLE "Post" (
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
     "content" TEXT NOT NULL,
-    "thumnail" VARCHAR(255) NOT NULL,
+    "thumbnail" VARCHAR(255) NOT NULL,
     "slug" VARCHAR(150) Not NULL,
     "view" INTEGER DEFAULT 0,
     "is_show" INTEGER default 0,

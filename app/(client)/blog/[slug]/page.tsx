@@ -9,22 +9,21 @@ import {
     ManyViewsPostsSkeleton, 
     TheBestViewPostSkeleton 
 } from "@/app/ui/post/skeletons-post";
-import { auth } from "@/auth";
-import { User } from "@/helpers/definitions";
+import { PostCategoriesType, PostType, TUser } from "@/helpers/definitions";
 import { getUserByEmail } from "@/lib/actions-user";
 import { getAllMainComments } from "@/lib/data-comment";
+
 import { 
-    fetchManyViewsEachPost,
-    fetchManyViewsPosts,
-    fetchNewPostRelated,
-    fetchPostBySlug, 
-    fetchPostCategoryById 
+    getManyPost,
+    fetchOnePost
 } from "@/lib/data-post";
 import { Suspense } from "react";
 import CommentPart from "@/app/ui/post/detail/comment";
-import { user } from "@/configs/constants";
+import { userCont } from "@/configs/constants";
 import { PostContextProvider } from "@/app/store/post-context";
 import { getAuthorOfPost } from "@/lib/data-user";
+import { getUserInfoSupabase } from "@/utils/auth.utils";
+import { getOneCategory } from "@/lib/data-categories-post";
 
 export default async function Page({ 
     params
@@ -32,45 +31,59 @@ export default async function Page({
     params: { slug: string }
 }) {
     const slug = decodeURIComponent(params.slug);
-    const post = await fetchPostBySlug(slug);
-    if(!post) return;
+    console.log('*', slug, '*');
+    const posts = await fetchOnePost<PostType>("slug", slug);
+    if(!posts) return;
+    const post = posts[0];
+    
+    // console.log("posts?", posts);
+    // console.log("post?", post);
+    // console.log("what?", post["author_id"]);
+
     const [
         category, 
-        session, 
+        user,
         relatedPosts, 
-        author, 
+        author,
         similarPosts,
-        manyViewsPosts
     ] = await Promise.all([
-        await fetchPostCategoryById(post.post_type_id),
-        await auth(),
-        await fetchNewPostRelated(post.post_type_id),
-        await getAuthorOfPost(post.author_id) as User,
-        await fetchManyViewsEachPost(post.post_type_id, 4),
-        await fetchManyViewsPosts(4)
+        await getOneCategory<PostCategoriesType>('id', post.post_type_id),
+        await getUserInfoSupabase(),
+        await getManyPost<PostType>(post.post_type_id, 2, 'created_at'),
+        await getAuthorOfPost<TUser>(post["author_id"]),
+        await getManyPost<PostType>(post.post_type_id, 4, 'view'),
     ]);
+    // console.log("author:::", author);
     
-    const email = session?.user?.email;
-    let userInfo:User = user;
+    const email = user?.email;
+    let userInfo:TUser = userCont;
+
     // check user logging to comment
     if(email) {
-        userInfo = await getUserByEmail(email) as User;
+        userInfo = await getUserByEmail(email) as TUser;
     }
+
+    // console.log("category:::", category);
+    // console.log("user:::", user);
+    // console.log("related:::", relatedPosts);
+    // console.log("author:::", author);
+    // console.log("similar:::", similarPosts);
+
     return (
         <>
             {/* Main */}
-            <PostContextProvider slug={slug}>
+            {/* <PostContextProvider slug={slug}> */}
                 <div className="grid grid-cols-3 gap-3">
                     <Suspense fallback={<ContentMainDetailPostSkeleton/>}>
                         <ContentMainDetailPost 
-                            relatedPosts={relatedPosts} 
-                            author={author} 
-                            category={category} 
+                            author={author![0]} 
+                            relatedPosts={relatedPosts!}
+                            category={category![0]['name_post_type']} 
                             post={post}
                         />
                     </Suspense>
                     <Suspense fallback={<ManyViewsPostsSkeleton/>}>
-                        <ManyViewsPosts similarPosts={similarPosts}/>
+                        <ManyViewsPosts similarPosts={similarPosts!}/>
                     </Suspense>
                 </div>
                 <hr className="w-full h-1 mx-auto my-12 bg-gray-300 border-0 rounded md:my-8 dark:bg-gray-300"/>
@@ -78,16 +91,16 @@ export default async function Page({
                 <div className="grid grid-cols-3 gap-3 mt-5 pt-6">
                     {/* Comment */}
                     <div className="col-start-1 col-end-3">
-                        <CommentPart
+                        {/* <CommentPart
                             userInfo={userInfo}
-                        />
+                        /> */}
                     </div>
                     {/* Posts with other topics*/}
                     <Suspense fallback={<TheBestViewPostSkeleton/>}>
-                        <TheBestViewPost manyViewsPosts={manyViewsPosts}/>
+                        {/* <TheBestViewPost manyViewsPosts={manyViewsPosts}/> */}
                     </Suspense>
                 </div>
-            </PostContextProvider>
+            {/* </PostContextProvider> */}
         </>
     )
 }

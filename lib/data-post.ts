@@ -2,7 +2,10 @@
 import { unstable_noStore as noCache } from 'next/cache';
 // import moment from 'moment';
 import { formartSlug } from "@/helpers/convert-language";
-import { FindSuzuSupabase } from './suzu-supabase-find';
+import { FindSuzuSupabase } from '../libs/suzu-supabase-find';
+import { PostType } from '@/helpers/definitions';
+import { createClient } from '@/configs/supabase-server.config';
+import { PostgrestSingleResponse } from '@supabase/supabase-js';
 
 /**
  * Fetch all Post
@@ -17,28 +20,6 @@ export async function fetchAllPosts() {
     } catch (error) {
         await prisma.$disconnect();
         throw new Error("Get all post failed! " + error);
-    }
-}
-
-/**
- * 
- * @param slug 
- * @returns 
- */
-export async function fetchPostBySlug(slug:string) {
-    noCache();
-    slug = decodeURIComponent(slug);
-    try {
-        const post = await prisma.post.findFirst({
-            where: {
-                slug
-            },
-        })
-        // await prisma.$disconnect();
-        return post;
-    } catch (error) {
-        // await prisma.$disconnect();
-        throw new Error("Get one post failed!");
     }
 }
 
@@ -59,46 +40,25 @@ export function processSlugUnique(title: string) {
  * @returns
  */
 
-// const { data, error } = await supabase
-//   .from('countries')
-//   .select('id', 'name')
-//   .order('id', { ascending: false })
-
-
-// const { data, error } = await supabase
-//   .from('countries')
-//   .select('name')
-//   .limit(1)
-
-// export async function getLatestOnePostForEachPostType(post_type_id: number) {
-//     noCache();
-//     try {
-//         const post = await prisma.post.findFirst({
-//             where: {
-//                 post_type_id,
-//             },
-//             orderBy: {
-//                 created_at: 'desc'
-//             },
-//         })
-//         await prisma.$disconnect();
-//         return post;
-//     } catch (error) {
-//         await prisma.$disconnect();
-//         throw new Error("Get one post failed!");
-//     }
-// }
-
-export async function getLatestOnePostForEachPostType(post_type_id: number) {
-    await FindSuzuSupabase.FindOneEntity.findOneEntity("Post", {
-        where: {
-            post_type_id
-        },
-        order: {
-            ascending:false
-        }
-    })
+export async function getOnePost<T>(post_type_id: number):Promise<Array<T> | null> {
+    noCache();
+    try {
+        const supabase = createClient();
+        const {data}:PostgrestSingleResponse<Array<T>> = await supabase
+            .from('Post')
+            .select("*")
+            .order('id', {
+                ascending: false
+            })
+            .limit(1)
+            .eq("post_type_id", post_type_id)
+        return data;
+    } catch (error) {
+        throw new Error("Get one post failed!");
+    }
 }
+
+
 
 /**
  * 
@@ -106,48 +66,30 @@ export async function getLatestOnePostForEachPostType(post_type_id: number) {
  * @returns 
  */
 
-export async function fetchLatestPostsForPostType(post_type_id: number, limit: number) {
-    noCache();
-    try {
-        const post = await prisma.post.findMany({
-            take: limit,
-            where: {
-                post_type_id,
-            },
-            orderBy: {
-                created_at: 'desc'
-            },
-        })
-        await prisma.$disconnect();
-        return post;
-    } catch (error) {
-        await prisma.$disconnect();
-        throw new Error("Get one post failed!");
-    }
-}
-
 /**
  * 
  * @param post_type_id
- * @returns 
+ * @returns
  */
-export async function fetchManyViewsEachPost(post_type_id: number, quantity: number) {
+export async function getManyPost<T>(
+    post_type_id: number,
+    limit: number,
+    col: string
+): Promise<Array<T> | null>{
     noCache();
+    const supabase = createClient();
     try {
-        const posts = await prisma.post.findMany({
-            take: quantity,
-            where: {
-                post_type_id
-            },
-            orderBy: {
-                views: 'desc'
-            },
-        })
-        await prisma.$disconnect();
-        return posts;
+        const {data}:PostgrestSingleResponse<Array<T>> = await supabase
+            .from('Post')
+            .select("*")
+            .order(`${col}`, {
+                ascending: false
+            })
+            .limit(limit)
+            .eq("post_type_id", post_type_id)
+        return data;
     } catch (error) {
-        await prisma.$disconnect();
-        throw new Error("Get post that has the best views is failed!");
+        throw new Error(`Get many post with ${col} is failed!`);
     }
 }
 
@@ -184,18 +126,17 @@ export async function updatePostThumbnail(slug:string, thumbnail:string) {
  * @param id 
  * @returns 
  */
-export async function fetchPostCategoryById(id: number) {
+export async function fetchOnePost<T>(col: string, val: number|string):Promise<Array<T>|null> {
+    noCache();
+    const supabase = createClient();
     try {
-        const category =  await prisma.post_Type.findUnique({
-            where: {
-                id,
-            }
-        })
-        await prisma.$disconnect();
-        return category?.name_post_type;
+        const {data}:PostgrestSingleResponse<Array<T>> = await supabase
+            .from('Post')
+            .select("*")
+            .eq(`${col}`, val)
+        return data;
     } catch (error) {
-        await prisma.$disconnect();
-        throw new Error("Get image url faild! " + error);
+        throw new Error("Get one post failed! " + error);
     }
 }
 
@@ -223,42 +164,6 @@ export async function fetchThumbnail(title: string) {
 }
 
 /**
- * 
- * @param id 
- * @returns 
- */
-export async function fetchNewPostRelated(id: number) {
-    try {
-        const posts = await fetchLatestPostsForPostType(id, 2);
-        await prisma.$disconnect();
-        return posts;
-    } catch (error) {
-        await prisma.$disconnect();
-        throw new Error("Get post related is failed! " + error);
-    }
-}
-
-/**
- * Fetch many view posts
- * @returns 
- */
-export async function fetchManyViewsPosts(quantity:number) {
-    try {
-        const posts = await prisma.post.findMany({
-            take: quantity,
-            orderBy: {
-                views: 'desc'
-            }
-        })
-        await prisma.$disconnect();
-        return posts;
-    } catch (error) {
-        await prisma.$disconnect();
-        throw new Error("Get many view post is failed! " + error);
-    }
-}
-
-/**
  * Fetch many view posts
  * @returns 
  */
@@ -280,21 +185,6 @@ export async function fetchCategoriesIdByTypeName(name_post_type:string) {
         throw new Error("Get many view post is failed! " + error);
     }
 }
-
-/**
- * Get all status of post
- * @returns 
- */
-// export async function getAllStatus() {
-//     try {
-//         const status = await prisma.post_Status.findMany();
-//         await prisma.$disconnect();
-//         return status;
-//     } catch (error) {
-//         await prisma.$disconnect();
-//         throw new Error("Get all status of post is failed! " + error);
-//     }
-// }
 
 export async function getRangeView() {
     try {

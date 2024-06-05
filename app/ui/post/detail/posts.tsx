@@ -2,15 +2,15 @@ import { PostType } from "@/helpers/definitions";
 import { processContentAddition } from "@/utils/posts.util";
 import Image from "next/image";
 import Link from "next/link";
-import { fetchManyViewsPosts, fetchManyViewsEachPost } from "@/lib/data-post";
 import icon from "@/public/tree.jpg";
 
 export const PostRelated = ({
     posts
 }:{
-    posts:PostType[]
+    posts?:PostType[]
 }) => {
     console.log("PostRelated is re-render!");
+    if(!posts) return ;
     return (
         <div className="bg-gray-100 p-4 mt-12">
             {

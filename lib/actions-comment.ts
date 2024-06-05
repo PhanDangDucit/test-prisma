@@ -1,7 +1,9 @@
 "use server"
 import { comment, post } from "@/configs/constants";
+import { createClient } from "@/configs/supabase-server.config";
 import { PostType, TComment, TCommentWithUser } from "@/helpers/definitions";
-import prisma from "@/prisma/client";
+import { insertComment, updateCommentCount, updateSubCommentCount } from "@/utils/comment.util";
+// import prisma from "@/prisma/client";
 import { 
     CommentState,
     CreateComment,
@@ -22,6 +24,7 @@ export async function createNewComment(
     prevState: CommentState,
     formData: FormData
 ) {
+    const supabase = createClient();
     console.log("add comment");
     const validatedFields = validatedComment(CreateComment, formData);
     if (!validatedFields.success) {
@@ -38,6 +41,7 @@ export async function createNewComment(
     console.log("Submit new main comment!");
     // create time follow UTC time zone to save data for database
     const updatedAt = new Date();
+
     const result : {
         comment:TComment,
         post:PostType
@@ -45,70 +49,64 @@ export async function createNewComment(
         comment,
         post
     };
+
     try {
         if(parentId === 0) {
+            const datas = {
+                ...validatedFields.data,
+                user_id: userId,
+                like_count: 0,
+                post_id: postId,
+                updated_at: updatedAt,
+                subcomment_count: 0
+            }
+
             // create a new main comment
-            const result1 = await prisma.comment.create({
-                data: {
-                    ...validatedFields.data,
-                    user_id: userId,
-                    like_count: 0,
-                    post_id: postId,
-                    updated_at: updatedAt,
-                    subcomment_count: 0
-                }
-            })
+            const result1 = await insertComment(datas)
+
             result.comment = result1;
+
             console.log("result create new main comment::", result1);
-            const result2 = await prisma.post.update({
-                where: {
-                    id: postId
-                },
-                data:{
-                    comment_count: {
-                        increment: 1,
-                    },
-                }
-            })
+
+            // Update comment count of the post
+            const result2 = await updateCommentCount(postId);
+
             result.post = result2;
+
             console.log("result update comment_count for post::", result2);
         } else {
             console.log("ParentId:", parentId);
             // create a new subcomment
-            const result3 = await prisma.comment.create({
-                data: {
-                    ...validatedFields.data,
-                    user_id: userId,
-                    like_count: 0,
-                    post_id: postId,
-                    updated_at: updatedAt,
-                    parent_id: parentId
-                }
-            })
+
+            const datas = {
+                ...validatedFields.data,
+                user_id: userId,
+                like_count: 0,
+                post_id: postId,
+                updated_at: updatedAt,
+                parent_id: parentId
+            }
+            /**
+             * Insert a new comment
+             */
+            const result3 = await insertComment(datas);
             result.comment = result3;
+            
             console.log("result create new subcomment::", result3);
-            const result4 = await prisma.comment.update({
-                where: {
-                    id: parentId,
-                },
-                data:{
-                    subcomment_count: {
-                        increment: 1,
-                    },
-                }
-            })
+
+            /**
+             * Update subcommentcount for main comment
+             */
+            const result4 = await updateSubCommentCount(parentId);
+
             console.log("result update subcomment_count for main comment::", result4);
-            const result5 = await prisma.post.update({
-                where: {
-                    id: postId
-                },
-                data:{
-                    comment_count: {
-                        increment: 1,
-                    },
-                }
-            })
+            
+            /**
+             * update comment count for the post
+             */
+            const result5 = await updateCommentCount(postId);
             result.post = result5;
+
             console.log("result update comment_count for post::", result5);
         }
         // console.log("result::---> ", result)

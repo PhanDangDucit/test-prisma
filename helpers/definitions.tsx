@@ -46,7 +46,7 @@ export type PostType = {
     post_type_id:number;
     slug:string;
     is_show: string,
-    author_id: number,
+    author_id: string,
     comment_count:number
 }
 
@@ -58,8 +58,8 @@ export type PostCategoriesType = {
     icon: string|null,
 }
 
-export type User = {
-    id: number,
+export type TUser = {
+    id: string,
     fullname: string|null,
     username: string|null,
     password: string|null,

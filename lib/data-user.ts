@@ -1,5 +1,9 @@
 // import { unstable_noStore as noCache } from 'next/cache';
 // import moment from 'moment';
+import { unstable_noStore as noCache } from 'next/cache';
+
+import { createClient } from "@/configs/supabase-server.config";
+import { PostgrestSingleResponse } from "@supabase/supabase-js";
 
 /**
  * Save info of user from provider
@@ -136,17 +140,16 @@ export async function getAllUsers() {
     }
 }
 
-export async function getAuthorOfPost(userId: number) {
+export async function getAuthorOfPost<T>(userId: string): Promise<Array<T> | null> {
+    noCache();
+    const supabase = createClient();
     try {
-        const users = await prisma.user.findUnique({
-            where: {
-                id: userId
-            },
-            select: {
-                username: true
-            }
-        });
-        return users;
+        const { data }:PostgrestSingleResponse<Array<T>> = 
+            await supabase
+                    .from('User_Profile')
+                    .select("*")
+                    .eq("id", userId);
+        return data;
     } catch (error) {
         throw new Error("Get all users is failed: " + error);
     }

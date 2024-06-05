@@ -1,18 +1,17 @@
-import { fetchLatestPostsForPostType } from "@/lib/data-post";
+import { PostType } from "@/helpers/definitions";
+import { getManyPost } from "@/lib/data-post";
 // import Image from "next/image";
 // import moment from "moment";
 import Link from "next/link";
 
 
 export default async function CategoryPost() {
-    // const politicalPosts = await fetchLatestPostsForPostType(2, 3);
-    // const marketingPosts = await fetchLatestPostsForPostType(3, 3);
-    // const businessPosts = await fetchLatestPostsForPostType(4, 3);
     const datas = await Promise.all([
-        fetchLatestPostsForPostType(2,3),
-        fetchLatestPostsForPostType(3, 3),
-        fetchLatestPostsForPostType(4, 3),
+        getManyPost<PostType>(2, 3, 'created_at'),
+        getManyPost<PostType>(3, 3, 'created_at'),
+        getManyPost<PostType>(4, 3, 'created_at'),
     ]);
+    // console.log("data::>>", datas);
     const politicalPosts = datas[0];
     const marketingPosts = datas[1];
     const businessPosts = datas[2];

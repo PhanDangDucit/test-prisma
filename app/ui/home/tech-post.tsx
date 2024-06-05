@@ -1,4 +1,4 @@
-import { fetchManyViewsEachPost } from "@/lib/data-post"
+import { getManyPost } from "@/lib/data-post"
 import Image from "next/image";
 import moment from "moment";
 import Link from "next/link";
@@ -7,11 +7,14 @@ import { processContentAddition } from "@/utils/posts.util";
 import conan from "@/public/conan.jpg";
 
 export default async function TechPost() {
-    const posts = await fetchManyViewsEachPost(1, 3);
+    const posts = await getManyPost<PostType>(1, 3, 'view');
+    // console.log("asacsacsa", posts);
+    if(!posts) return;
     if(posts.length == 0) return; 
     const time = (post:PostType) => {
         return moment(post.updated_at).endOf('day').fromNow();
     }
+    // console.log(time);
     return (
         <>
             <h1 className="my-5 text-orange-400 text-4xl border-b-2 border-orange-200 inline-block">Technology</h1>
