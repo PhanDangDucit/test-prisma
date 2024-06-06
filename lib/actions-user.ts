@@ -1,4 +1,5 @@
 "use server"
+import { createClient } from "@/configs/supabase-server.config";
 import { 
     CreateNewAccount,
     CreateState,
@@ -29,9 +30,7 @@ async function addNewUser(validatedFields: z.SafeParseSuccess<{
                 created_at
             }
         })
-        await prisma.$disconnect();
     } catch (error) {
-        await prisma.$disconnect();
         return {
             message: 'Database Error: Failed to Create User::' + error
         };
@@ -62,7 +61,8 @@ export async function createNewAccount(prevState: CreateState, formData: FormDat
  * @param userId 
  * @param formData 
  */
-export async function updateRoleUser(userId: number, formData: FormData) {
+export async function updateRoleUser(userId: string, formData: FormData) {
+    const supabase = createClient();
     try {
         const validatedFields = validatedRoleUser(formData);
         if (!validatedFields.success) {
@@ -71,14 +71,12 @@ export async function updateRoleUser(userId: number, formData: FormData) {
                 message: 'Missing Fields. Failed to Create User',
             };
         }
-        await prisma.user.update({
-            where: {
-                id: userId
-            },
-            data: {
-                role: validatedFields.data.role
-            }
-        })
+
+        await supabase
+            .from('User_Profile')
+            .update({ role: validatedFields.data.role })
+            .eq('id', userId)
+        
     } catch (error) {
         throw new Error("Update role for user is failed:: " + error);
     }

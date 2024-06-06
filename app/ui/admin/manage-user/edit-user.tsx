@@ -1,14 +1,14 @@
 'use client'
 import Image from "next/image";
 import { useState } from "react";
-import { User } from "@/helpers/definitions";
+import { TUser } from "@/helpers/definitions";
 import intIcon from "@/public/tree.jpg";
 import { updateRoleUser } from "@/lib/actions-user";
 
 export const EditModalUser = ({
     user
 }:{
-    user: User
+    user: TUser
 }) => {
     const updateUserWithId = updateRoleUser.bind(null, user.id);
     // const role = user.role === 1 ? "admin" : "user";

@@ -1,6 +1,6 @@
 
 import Image from "next/image";
-import { User } from "@/helpers/definitions";
+import { TUser } from "@/helpers/definitions";
 import { formatDate } from "@/utils/functions";
 import intIcon from "@/public/tree.jpg";
 import Link from "next/link";
@@ -10,7 +10,7 @@ import { EditModalUser } from "@/app/ui/admin/manage-user/edit-user";
 export async function TableUser ({
     users
 } : {
-    users: User[]
+    users: TUser[]
 }) {
     return (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-5 p-4">
@@ -94,12 +94,6 @@ export async function TableUser ({
                                     {user.user_status_id}
                                 </td> */}
                                 <td className="px-6 py-4">
-                                    {/* <Link href={`manage-user/${user.id}`}>Profile</Link> */}
-                                    {/* <Link href={`/`}>
-                                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                                            <path strokeLinecap="round" strokeLinejoin="round" d="m16.862 4.487 1.687-1.688a1.875 1.875 0 1 1 2.652 2.652L6.832 19.82a4.5 4.5 0 0 1-1.897 1.13l-2.685.8.8-2.685a4.5 4.5 0 0 1 1.13-1.897L16.863 4.487Zm0 0L19.5 7.125" />
-                                        </svg>
-                                    </Link> */}
                                     <Modal user={user}>
                                         <EditModalUser user={user}/>
                                     </Modal>

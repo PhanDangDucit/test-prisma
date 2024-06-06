@@ -1,6 +1,5 @@
 // import { PostType } from "@/helpers/definitions";
 import { SearchQuery } from "@/helpers/definitions";
-import prisma from "@/prisma/client";
 // import moment from 'moment';
 
 /**
@@ -17,6 +16,7 @@ export async function getPostsByFilter(search:SearchQuery) {
     const maxViews = search['max-view'];
     const category = search['category'];
     const status = search['status'];
+    
     if(status === "hidden") {
         var statusFormat = "Hidden";
     } else {

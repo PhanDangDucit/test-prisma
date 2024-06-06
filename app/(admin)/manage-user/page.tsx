@@ -1,11 +1,12 @@
 
 import { TableUser } from '@/app/ui/admin/manage-user/table';
-import { getAllUsers } from '@/lib/data-user';
-import { User } from '@prisma/client';
+import { TUser } from '@/helpers/definitions';
+import { getManyUsers } from '@/lib/data-user';
 
 const Page = async () => {
-    const users: User[] = await getAllUsers();
-    console.log(users);
+    const users = await getManyUsers<TUser>(100);
+    if(!users) return;
+    
     return (
         <div className="my-24 mx-24">
             <TableUser users={users}/>

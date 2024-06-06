@@ -127,18 +127,34 @@ export async function processAccountProvider(email: string|null, userRole:number
 //     }
 // }
 
+export async function getManyUsers<T>(
+    limit: number,
+): Promise<Array<T> | null>{
+    noCache();
+    const supabase = createClient();
+    try {
+        const {data}:PostgrestSingleResponse<Array<T>> = await supabase
+            .from('User_Profile')
+            .select("*")
+            .limit(limit)
+        return data;
+    } catch (error) {
+        throw new Error(`Get many user is failed!`);
+    }
+}
+
 /**
  * Get all users
  * @returns 
  */
-export async function getAllUsers() {
-    try {
-        const users = await prisma.user.findMany();
-        return users;
-    } catch (error) {
-        throw new Error("Get all users is failed: " + error);
-    }
-}
+// export async function getAllUsers() {
+//     try {
+//         const users = await prisma.user.findMany();
+//         return users;
+//     } catch (error) {
+//         throw new Error("Get all users is failed: " + error);
+//     }
+// }
 
 export async function getAuthorOfPost<T>(userId: string): Promise<Array<T> | null> {
     noCache();

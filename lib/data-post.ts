@@ -186,27 +186,30 @@ export async function fetchCategoriesIdByTypeName(name_post_type:string) {
     }
 }
 
-export async function getRangeView() {
+type RangeView = {
+    maxViews: number,
+    minViews: number
+}
+/**
+ * 
+ * @returns 
+ */
+export async function getRangeView(): Promise<RangeView> {
+    const supabase = createClient();
     try {
-        const maxViewAgg = await prisma.post.aggregate({
-            _max: {
-                views:true
-            }
-        });
-        const minViewAgg = await prisma.post.aggregate({
-            _min: {
-                views:true
-            }
-        });
-        await prisma.$disconnect();
+        const { data } = await supabase
+            .from('Post')
+            .select('view.max(), view.min()')
+
+        console.log("range views::> ", data);
         const result = {
-            maxViews: maxViewAgg._max.views,
-            minViews: minViewAgg._min.views
+            maxViews: data![0]["max"],
+            minViews: data![0]["min"]
         }
+
         return result;
     } catch (error) {
-        await prisma.$disconnect();
-        throw new Error("Get all status of post is failed! " + error);
+        throw new Error("Get range view from min and max view is failed! " + error);
     }
 }
 

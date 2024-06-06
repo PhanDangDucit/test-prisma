@@ -1,13 +1,13 @@
 "use client"
 import React from "react"
-import { User } from "@/helpers/definitions";
+import { TUser } from "@/helpers/definitions";
 import { useRouter } from 'next/navigation'
 
 export function Modal({
     user,
     children
 } : {
-    user: User,
+    user: TUser,
     children: React.ReactNode
 }) {
     const router = useRouter();

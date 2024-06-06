@@ -22,8 +22,14 @@ export default async function RootLayout({
   return (
     <html lang="en">
       <body className={inter.className}>
-          <RedirectAdminComponent email={user["email"]!}/>
-          <RedirectUserComponent email={user["email"]!}/>
+        {
+          user && (
+           <>
+              <RedirectAdminComponent email={user["email"]!}/>
+              <RedirectUserComponent email={user["email"]!}/>
+           </>
+          )
+        }
           <Header className="fixed w-full top-0 h-[100px] z-20"/>
             {children}
           <Footer/>

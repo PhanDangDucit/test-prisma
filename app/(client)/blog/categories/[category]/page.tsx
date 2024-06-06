@@ -1,7 +1,7 @@
+import { PostCategoriesType, PostType } from "@/helpers/definitions";
+import { getOneCategory } from "@/lib/data-categories-post";
 import { 
-    fetchCategoriesIdByTypeName,
-    fetchLatestPostsForPostType, 
-    fetchManyViewsEachPost 
+    getManyPost
 } from "@/lib/data-post";
 import { processContentAddition } from "@/utils/posts.util";
 import moment from "moment";
@@ -15,33 +15,40 @@ const Page = async ({
         category: string
     }
 }) => {
-    const categories = await fetchCategoriesIdByTypeName(params.category);
+    const categories = await getOneCategory<PostCategoriesType>('name_post_type', params.category);
+    console.log("categories", categories);
+    
     if(!categories) return;
-    const viewPosts = await fetchManyViewsEachPost(categories.id, 9);
-    const latestPosts = await fetchLatestPostsForPostType(categories.id, 10);
+    const viewPosts = await getManyPost<PostType>(categories[0].id, 9, 'view');
+    console.log("viewPosts", viewPosts);
+
+    const latestPosts = await getManyPost<PostType>(categories[0].id, 9, 'created_at');
+    console.log("latestPosts", latestPosts);
     return (
         <>
             <h1 className="my-5 text-orange-400 text-4xl border-b-2 border-orange-200 inline-block uppercase">{params.category}</h1>
             {/* Many view posts */}
             <div className="grid grid-cols-3 gap-4">
                 {
-                    viewPosts.map((post)=> post && (
+                    viewPosts && viewPosts.map((post)=> post && (
                         <div className="card bg-gray-100 shadow-xl relative px-10 pt-10 p-4" key={post.id}>
-                        <figure className="px-10 pt-10 p-4 h-[182px] w-[340px] relative m-auto">
-                            <Image
-                                className="rounded-xl object-cover"
-                                src={post?.thumbnail || ''}
-                                // height={182}
-                                // width={304}
-                                fill
-                                alt="marketing post"
-                            />
-                        </figure>
-                        <div className="flex flex-col items-center">
+                            <figure className="px-10 pt-10 p-4 h-[182px] w-[340px] relative m-auto">
+                                <Image
+                                    className="rounded-xl object-cover"
+                                    src={post?.thumbnail || ''}
+                                    // height={182}
+                                    // width={304}
+                                    fill
+                                    alt="marketing post"
+                                />
+                            </figure>
+                            <div className="flex flex-col items-center">
                                 <h2 className="card-title text-gray-600 text-base">{post?.title}</h2>
-                            <div className="text-gray-500 text-sm"  dangerouslySetInnerHTML={{ __html:  processContentAddition(post?.content, 80)}}/>
-                        </div>
-                        <p className="ml-3 text-gray-400 text-xs">{moment(post?.created_at).startOf('hour').fromNow()}</p>
+                                <div className="text-gray-500 text-sm"  dangerouslySetInnerHTML={{ __html:  processContentAddition(post?.content, 80)}}/>
+                            </div>
+                        <p className="ml-3 text-gray-400 text-xs">
+                            {moment(post?.created_at).startOf('hour').fromNow()}
+                        </p>
                         <Link href={`/blog/${post?.slug}/`} className="absolute inset-0">{''}</Link>
                     </div>
                     ))
@@ -51,12 +58,12 @@ const Page = async ({
                 {/* Latest posts */}
                 <div className="col-start-1 col-end-3 ">
                     {
-                        latestPosts.map((post)=> post && (
+                        latestPosts && latestPosts.map((post)=> post && (
                             <div className="flex rounded-xl mt-4  border-2 border-orange-300 relative" key={post.id}>
                                 <div className="relative w-full h-56">
                                     <Image 
                                         className="object-cover rounded-t-lg md:h-auto md:w-48 md:rounded-none md:rounded-s-lg" 
-                                        src={post.thumbnail!}
+                                        src={post.thumbnail}
                                         fill
                                         priority
                                         alt="latest-post"
