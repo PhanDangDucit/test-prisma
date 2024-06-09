@@ -190,24 +190,75 @@ type RangeView = {
     maxViews: number,
     minViews: number
 }
+
 /**
  * 
- * @returns 
  */
-export async function getRangeView(): Promise<RangeView> {
+export async function getMinValue(col: string, entity: string): Promise<number | null> {
     const supabase = createClient();
     try {
-        const { data } = await supabase
-            .from('Post')
-            .select('view.max(), view.min()')
+        const { data } : PostgrestSingleResponse<number | null>= await supabase.rpc(
+            'get_min_in_col_of_entity', 
+            {
+                col: `${col}`,
+                entity: `${entity}`
+            }
+        );
 
-        console.log("range views::> ", data);
-        const result = {
-            maxViews: data![0]["max"],
-            minViews: data![0]["min"]
+        console.log("min views::> ", data);
+        return data;
+    } catch (error) {
+        throw new Error(`Get range view from min of ${col} in ${entity} is failed! ` + error);
+    }
+}
+
+/**
+ * Get max value of 'col' in 'entity'
+ * @param col 
+ * @param entity 
+ * @returns 
+ */
+export async function getMaxValue(col: string, entity: string): Promise<number | void> {
+    const supabase = createClient();
+    try {
+        const { data } : PostgrestSingleResponse<number>= await supabase.rpc(
+            'get_max_in_col_of_entity', 
+            {
+                col: `${col}`,
+                entity: `${entity}`
+            }
+        );
+        console.log("max views::> ", data);
+
+        if(data) return data;
+
+    } catch (error) {
+        throw new Error(`Get range view from min of ${col} in ${entity} is failed! ` + error);
+    }
+}
+
+/**
+ * 
+ * @returns
+ */
+export async function getRangeView(col: string, entity: string): Promise<RangeView> {
+    try {
+        const maxViews = await getMinValue(`${col}`, `${entity}`);
+        const minViews = await getMaxValue(`${col}`, `${entity}`);
+        console.log("what? min, max::> ", maxViews, minViews);
+        
+        if(typeof maxViews == 'number' && typeof minViews == 'number')  {
+            console.log("what? min, max::> ", maxViews, minViews);
+            const result = {
+                maxViews,
+                minViews
+            }
+                
+            return result;
         }
+        console.log("what? ", maxViews, minViews);
+        throw new Error("You cann't get min and max value");
 
-        return result;
     } catch (error) {
         throw new Error("Get range view from min and max view is failed! " + error);
     }

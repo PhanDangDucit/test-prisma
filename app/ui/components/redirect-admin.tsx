@@ -1,14 +1,13 @@
 import { isAdmin } from "@/utils/auth.utils"
+import { User } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 
 export default async function RedirectAdminComponent({
-    email
+    user
 }:{
-    email:string
+    user:User
 }) {
-    if(!email) return;
-
-    if(!isAdmin(email)) {
+    if(!user || !isAdmin(user["email"])) {
         redirect('/');
     }
     

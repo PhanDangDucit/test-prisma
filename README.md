@@ -288,3 +288,4 @@ $ npm install @supabase/supabase-js @supabase/ssr @supabase/auth-helpers-nextjs
 
 # Inline functions
 - [React, Inline Functions, and Performance](https://medium.com/@ryanflorence/react-inline-functions-and-performance-bdff784f5578)
+

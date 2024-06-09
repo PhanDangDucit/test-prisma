@@ -24,7 +24,7 @@ const LayoutAdmin = async ({
         <html lang="en">
             <SpeedInsights/>
             <body className={inter.className}>
-                <RedirectAdminComponent email={user["email"]!}/>
+                <RedirectAdminComponent user={user}/>
                 <Provider>
                     {children}
                 </Provider>

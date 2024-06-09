@@ -6,6 +6,7 @@ import { fetchAllPostCategories, getRangeView } from '@/lib/data-post';
 import { getPostsByFilter } from "@/lib/data-filter-post";
 import { BadgePlus } from "lucide-react";
 import Link from "next/link";
+import { getAllCategories } from "@/lib/data-categories-post";
 
 export default async function Page({
     searchParams,
@@ -16,7 +17,7 @@ export default async function Page({
     let {
         maxViews,
         minViews
-    } = await getRangeView();
+    } = await getRangeView('view', 'Post');
     console.log("Max views::", maxViews, "Min views::", minViews);
     
     if(!maxViews && !minViews) {
@@ -40,7 +41,7 @@ export default async function Page({
     }
     const results = await Promise.all([
         await getPostsByFilter(search), 
-        await fetchAllPostCategories()
+        await getAllCategories()
     ]);
     const posts:PostType[] = results[0];
     const categories: PostCategoriesType[] = results[1];
@@ -55,7 +56,7 @@ export default async function Page({
             <div 
                 className="col-start-1 col-end-3 mt-12 border-[1px] shadow-gray-300"
             >
-                {/* <SideBar
+                <SideBar
                     categories={categories}
                     allStatus={allStatusPost}
                     maxViews={maxViews!}
@@ -64,12 +65,19 @@ export default async function Page({
             </div>
             <div className="col-start-3 col-end-12 mt-12">
                 <div className="flex">
-                    <PostSearchBar/>
-                    <Link href="/manage-blog/posts/create" role="button" className="btn text-orange-500">
+                    {/* <PostSearchBar/> */}
+                    <Link 
+                        href="/manage-blog/posts/create" 
+                        role="button" 
+                        className="btn text-orange-500"
+                    >
                         <BadgePlus/>
                     </Link>
                 </div>
-                <PostResult posts={posts} status={search.status}/> */}
+                <PostResult 
+                    posts={posts} 
+                    status={search.status}
+                />
             </div>
         </div>
     );

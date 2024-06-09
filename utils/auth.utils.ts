@@ -69,7 +69,7 @@ export const getUserInfoSupabase = function async():Promise<User> {
  * @param email 
  * @returns
  */
-export function isAdmin(email: string) {
+export function isAdmin(email: string | undefined) {
     if(email != 'phanduc.flp@gmail.com') return 0;
     return 1;
 }

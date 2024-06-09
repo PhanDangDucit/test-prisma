@@ -87,6 +87,7 @@ export async function signupGoogleProvider(formData: FormData) {
     if(error) {
         redirect('/api/auth/error');
     }
+    
     if (data.url) {
         /**
          * use the "redirect API" for your server framework:

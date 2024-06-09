@@ -10,7 +10,6 @@ const PostResult = ({
     posts:PostType[],
     status:string
 }) => {
-    console.log("status post result::", status);
     return (
         <div className="border-[1px] border-gray-100 w-3/4 mx-auto m-12 bg-white">
             { 
