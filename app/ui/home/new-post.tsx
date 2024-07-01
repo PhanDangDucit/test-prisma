@@ -13,30 +13,40 @@ import conan from "@/public/conan.jpg";
 // } from "@/app/ui/home/skeletons-home";
 import { getLatestOnePostForEachPostType } from "@/lib/data-post";
 import { formatDateFollowHour } from "@/utils/functions";
+import { TError } from "@/helpers/error-type";
 
 export default async function LatestPost() {
-    const datas = await Promise.all([
+    const datas:any|PostType[]|TError.ServerError = await Promise.all([
         getLatestOnePostForEachPostType(1),
         getLatestOnePostForEachPostType(2),
         getLatestOnePostForEachPostType(3),
     ]);
-    const techPost = datas[0] as PostType;
-    const marketingPost = datas[1] as PostType;
-    const businessPost = datas[2] as PostType;
+
+    const techPost = datas[0];
+    const marketingPost = datas[1];
+    const businessPost = datas[2];
+
+    if(techPost.statusCode == 404) return;
+    if(marketingPost.statusCode == 404) return;
+    if(businessPost.statusCode == 404) return;
+
+    console.log("techPost::>>>", techPost);
+    console.log("marketingPost::>>>", marketingPost);
+    console.log("businessPost::>>>", businessPost);
 
     return (
         <>
             <h1 className="my-5 text-orange-400 text-4xl border-b-2 border-orange-200 inline-block">New Posts</h1>
             <div className="grid grid-cols-3 gap-8 justify-between container">
                 {/* <Suspense fallback={<LatestPostTechSkeleton/>}> */}
-                    <LatestPostTech techPost={techPost}/>
+                    <LatestPostTech techPost={techPost as PostType}/>
                 {/* </Suspense> */}
                 <div className="grid gap-3 grid-cols-1">
                     {/* <Suspense fallback={<LatestPostMarketingSkeleton/>}> */}
-                        <LatestPostMarketing marketingPost={marketingPost}/>
+                        <LatestPostMarketing marketingPost={marketingPost as PostType}/>
                     {/* </Suspense> */}
                     {/* <Suspense fallback={<LatestPostBusinessSkeleton/>}> */}
-                        <LatestPostBusiness businessPost={businessPost}/>
+                        <LatestPostBusiness businessPost={businessPost as PostType}/>
                     {/* </Suspense> */}
                 </div>
            </div>

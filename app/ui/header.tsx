@@ -13,6 +13,7 @@ export default function Header({
     session?:Session|null,
     categories?:PostCategoriesType[]
 }) {
+    if(!categories || !(categories.length > 0)) return;
     return ( 
         <nav className="bg-black border-gray-200 dark:bg-gray-900">
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -34,7 +35,7 @@ export default function Header({
                         className="flex text-white flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-black dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700"
                     >
                         {
-                            categories && categories.map((category) => (
+                            categories.map((category) => (
                                 <li className="uppercase text-base" key={category.id}>
                                     <Link href={`/blog/categories/${category.name_post_type}`}>{category.name_post_type}</Link>
                                 </li>

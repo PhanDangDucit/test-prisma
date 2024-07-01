@@ -73,7 +73,11 @@ export async function getLatestOnePostForEachPostType(post_type_id: number) {
         return post;
     } catch (error) {
         await prisma.$disconnect();
-        throw new Error("Get one post failed!");
+        // throw new Error("Get one post failed!");
+        return {
+            statusCode: 404,
+            message: "Not found"
+        }
     }
 }
 
@@ -124,7 +128,11 @@ export async function fetchManyViewsEachPost(post_type_id: number, quantity: num
         return posts;
     } catch (error) {
         await prisma.$disconnect();
-        throw new Error("Get post that has the best views is failed!");
+        // throw new Error("Get post that has the best views is failed!");
+        return {
+            statusCode: 404,
+            message: "Not found"
+        }
     }
 }
 
@@ -139,7 +147,11 @@ export async function fetchAllPostCategories() {
         return allPostsCategories;
     } catch (error) {
         await prisma.$disconnect();
-        throw new Error("Get all employees failed! " + error);
+        // throw new Error("Get all employees failed! " + error);
+        return {
+            statusCode: 404,
+            message: "Not found"
+        }
     }
 }
 

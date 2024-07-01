@@ -8,6 +8,7 @@ import conan from "@/public/conan.jpg";
 
 export default async function TechPost() {
     const posts = await fetchManyViewsEachPost(1, 3);
+    if(!posts) return;
     if(posts.length == 0) return; 
     const time = (post:PostType) => {
         return moment(post.updated_at).endOf('day').fromNow();
