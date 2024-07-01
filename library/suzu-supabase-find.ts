@@ -1,7 +1,7 @@
 import { createClient } from "@/configs/supabase-server.config";
 import { PostgrestSingleResponse } from "@supabase/supabase-js";
-import { FindOneEntityQuery } from "@/libs/types/find-type";
-import { findOneWithOrder, findOneWithSelect } from "./utils/select.util";
+// import { FindOneEntityQuery } from "@/library/types/find-type";
+// import { findOneWithOrder, findOneWithSelect } from "@/library/utils/select.util";
 
 export namespace FindSuzuSupabase {
     /**

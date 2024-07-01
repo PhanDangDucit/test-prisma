@@ -1,11 +1,11 @@
-import { Order, TEntity } from "@/libs/types/find-type";
+import { FindType } from "@/library/types/find-type";
 
 /**
  * get key and value for order
  * @param order 
  * @returns 
  */
-export function findOneWithOrder<T> (order: Order<T> |undefined) {
+export function findOneWithOrder<T> (order: FindType.Order<T> |undefined) {
     let colOrder: string = '';
     let asc: boolean = true;
 
@@ -36,7 +36,7 @@ export function findOneWithOrder<T> (order: Order<T> |undefined) {
     }
 }
 
-export function findOneWithSelect<T>(where: TEntity<T> | undefined) {
+export function findOneWithSelect<T>(where: FindType.TEntity<T> | undefined) {
     let selectCols: Array<string>|string = [];
     if(where) {
         for (const col in where) {

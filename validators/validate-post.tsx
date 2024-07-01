@@ -75,5 +75,3 @@ export function validatedPost(action: typeof CreatePost | typeof UpdatePost, for
         userID: formData.get('user-id'),
     });
 }
-
-
