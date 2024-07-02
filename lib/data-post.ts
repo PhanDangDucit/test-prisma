@@ -124,6 +124,7 @@ export async function fetchManyViewsEachPost(post_type_id: number, quantity: num
                 views: 'desc'
             },
         })
+        console.log("posts:::" + posts);
         await prisma.$disconnect();
         return posts;
     } catch (error) {

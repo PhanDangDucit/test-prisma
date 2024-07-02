@@ -26,6 +26,7 @@ export type PostCategoryState = {
     };
     message?: string | null;
 }
+
 // Type action of post category
 type ActionPostCategories = typeof CreatePostCategory | typeof UpdatePostCategory
 
@@ -33,7 +34,7 @@ type ActionPostCategories = typeof CreatePostCategory | typeof UpdatePostCategor
  * Validate employee by zod
  * @param action 
  * @param formData
- * @returns 
+ * @returns
  */
 export function validatedPostCategory(action: ActionPostCategories, formData: FormData) {
     return action.safeParse({
