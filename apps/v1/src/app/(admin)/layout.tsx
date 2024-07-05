@@ -8,7 +8,6 @@ import { SpeedInsights } from "@vercel/speed-insights/next"
 import RedirectAdminComponent from "@/app/ui/components/redirect-admin";
 import { getUserInfoSupabase } from "@/utils/auth.utils";
 
-
 const LayoutAdmin = async ({
     children
 }: {

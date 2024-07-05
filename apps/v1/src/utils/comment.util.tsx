@@ -35,9 +35,9 @@ export async function insertComment(datas:Partial<TComment>) {
 export async function updateSubCommentCount(parentId:number) {
     const supabase = createClient();
     const { data } = await supabase
-                                .from('Comment')
-                                .update({ subcomment_count: 1 })
-                                .eq('id', parentId)
-                                .select()
+        .from('Comment')
+        .update({ subcomment_count: 1 })
+        .eq('id', parentId)
+        .select()
     return data![0];
 }

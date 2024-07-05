@@ -1,4 +1,3 @@
-'use client'
 import Image from "next/image";
 import logo from "@/public/logo.png";
 import Link from "next/link";
@@ -7,19 +6,10 @@ import conan from "@/public/conan.jpg"
 import { User } from "@supabase/supabase-js";
 
 type Props = {
-    // session?:Session|null,
     user?: User,
     categories?:PostCategoriesType[],
     className?: string
 }
-
-// const getHeaderUserProps = (props:Props) => {
-//     return {
-//         session: props.session,
-//         categories: props.categories,
-//         className: props.className
-//     }
-// }
 
 export default function Header(props: Props) {
     const {

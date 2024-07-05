@@ -39,6 +39,7 @@ CREATE TABLE "Post_Type" (
     "icon" VARCHAR(250),
     CONSTRAINT "Post_Type_pkey" PRIMARY KEY ("id")
 );
+
 create index id_post_type_index on public."Post"(id);
 
 CREATE TABLE "Comment" (

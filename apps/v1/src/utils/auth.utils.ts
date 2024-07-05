@@ -1,4 +1,3 @@
-import { auth } from "@/auth";
 import { createClient } from "@/configs/supabase-server.config";
 import { User } from "@supabase/supabase-js";
 
@@ -46,15 +45,6 @@ export class SupabaseUserInfo implements UserInfo {
 }
 
 /**
- * 
- */
-export class AuthJSUserInfo implements UserInfo {
-    async getUserInfo() {
-        return (await auth())?.user;
-    }
-}
-
-/**
  * Get user's information with email supabase
  * @returns
  */
@@ -62,7 +52,6 @@ export const getUserInfoSupabase = function async():Promise<User> {
     const userInfoSupabaseObj = new UserInfoAuth(new SupabaseUserInfo());
     return userInfoSupabaseObj.getUserInfoApproach();
 }
-
 
 /**
  * Check user to redirect

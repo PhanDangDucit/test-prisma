@@ -6,7 +6,12 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "@blog-v1": "pnpm --filter v1",
-    "@blog-v2": "pnpm --filter v2"
+    "@blog-v2": "pnpm --filter v2",
+    "dev": "pnpm --filter v1"
+  },
+  "dependencies": {
+    "v1": "workspace:*",
+    "v2": "workspace:*"
   },
   "keywords": [],
   "author": "",

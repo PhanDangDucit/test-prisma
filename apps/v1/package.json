@@ -1,5 +1,5 @@
 {
-  "name": "@blog-v1",
+  "name": "v1",
   "version": "0.1.0",
   "private": true,
   "scripts": {
@@ -28,6 +28,7 @@
     "@tiptap/extension-list-item": "^2.2.4",
     "@tiptap/extension-ordered-list": "^2.2.4",
     "@tiptap/extension-strike": "^2.2.4",
+    "@tiptap/extension-text": "^2.4.0",
     "@tiptap/extension-text-align": "^2.2.4",
     "@tiptap/extension-underline": "^2.2.4",
     "@tiptap/pm": "^2.2.4",
