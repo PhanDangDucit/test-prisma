@@ -42,21 +42,6 @@ export function validatedAccount(action: typeof CreateNewAccount, formData: Form
     });
 }
 
-/**
- * uodate state type
- */
-// export type UpdateState = {
-//     errors?: {
-//         id?:number[];
-//         fullname?:string[];
-//         username?:string[];
-//         avatar?:string[];
-//         email?: string[];
-//         password?: string[];
-//         role?: string[];
-//     };
-//     message?: string | null;
-// };
 
 const FormUpdateUserRole = z.object({
     role: z.coerce.number()

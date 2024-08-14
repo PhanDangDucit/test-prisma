@@ -1,4 +1,3 @@
-import { auth } from "@/auth";
 import { createClient } from "@/configs/supabase-server.config";
 import { User } from "@supabase/supabase-js";
 
@@ -42,15 +41,6 @@ export class SupabaseUserInfo implements UserInfo {
     async getUserInfo() {
         const supabase = createClient();
         return (await supabase.auth.getUser()).data.user;
-    }
-}
-
-/**
- * 
- */
-export class AuthJSUserInfo implements UserInfo {
-    async getUserInfo() {
-        return (await auth())?.user;
     }
 }
 

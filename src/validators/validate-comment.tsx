@@ -1,4 +1,4 @@
-import { PostType, TComment, TCommentWithUser } from "@/helpers/definitions";
+import { PostType, TComment } from "@/helpers/definitions";
 import { z } from "zod";
 
 const FormSchema = z.object({

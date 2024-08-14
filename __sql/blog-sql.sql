@@ -1,64 +1,69 @@
 
--- CreateTable
-CREATE TABLE "User_Profile" (
-    "id" uuid not null references auth.users on delete cascade,
-    "fullname" VARCHAR(255),
-    "avatar" VARCHAR(255),
-    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-    "updated_at" TIMESTAMP(3) NOT NULL,
-    "phone" INTEGER,
-    "role" INTEGER NOT NULL DEFAULT 0,
-    CONSTRAINT "User_profile_pkey" PRIMARY KEY ("id")
-);
-alter table public."User_Profile" enable row level security;
-create index id_user_profile_index on public."User_Profile"(id);
+CREATE TYPE user_role AS ENUM ('admin', 'users', 'author');
 
 -- CreateTable
-CREATE TABLE "Post" (
+CREATE TABLE "user_profiles" (
+    id uuid not null references auth.users on delete cascade,
+    fullname VARCHAR(255),
+    user_avatar VARCHAR(255),
+    created_at TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP(3) NOT NULL,
+    user_phone INTEGER,
+    user_role INTEGER NOT NULL DEFAULT 0,
+    CONSTRAINT "user_profile_pkey" PRIMARY KEY ("id")
+);
+
+-- CreateTable
+CREATE TABLE "posts" (
     "id" SERIAL NOT NULL,
-    "user_id" uuid not null references public."User_Profile" on delete cascade,
-    "title" VARCHAR(150) NOT NULL,
+    "post_author_id" uuid not null references public."users" on delete cascade,
+    "post_title" TEXT NOT NULL,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
-    "content" TEXT NOT NULL,
-    "thumbnail" VARCHAR(255) NOT NULL,
-    "slug" VARCHAR(150) Not NULL,
-    "view" INTEGER DEFAULT 0,
-    "is_show" INTEGER default 0,
+    "post_content" TEXT NOT NULL,
+    "post_thumbnail" TEXT NOT NULL,
+    "post_slug" TEXT Not NULL,
+    "post_views" INTEGER DEFAULT 0,
+    "post_is_show" INTEGER default 0,
     "post_type_id" INTEGER NOT NULL,
-    "comment_count" INTEGER default 0,
+    "post_comment_count" INTEGER default 0,
+    "post_is_draft" BOOLEAN default true,
+    "post_is_publish" BOOLEAN default false,
+    "post_share_count" INTEGER default 0,
+    "post_score" INTEGER default 0,
     CONSTRAINT "Post_pkey" PRIMARY KEY ("id")
 );
-create index id_post_index on public."Post"(id);
 
 -- CreateTable
-CREATE TABLE "Post_Type" (
+CREATE TABLE "post_types" (
     "id" SERIAL NOT NULL,
-    "name_post_type" VARCHAR(30) NOT NULL,
-    "priority" INTEGER UNIQUE NOT NULL,
-    "icon" VARCHAR(250),
-    CONSTRAINT "Post_Type_pkey" PRIMARY KEY ("id")
+    "post_type_name" TEXT NOT NULL,
+    "post_type_priority" INTEGER UNIQUE NOT NULL,
+    "post_type_thumbnail" TEXT,
+    "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "updated_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT "post_types_pkey" PRIMARY KEY ("id")
 );
-create index id_post_type_index on public."Post"(id);
 
-CREATE TABLE "Comment" (
+CREATE TABLE "comments" (
     "id" SERIAL NOT NULL,
     "user_id" uuid not null references public."User_Profile" on delete cascade,
     "post_id" INTEGER NOT NULL,
     "parent_id" INTEGER DEFAULT 0,
-    "content" TEXT,
+    "comment_content" TEXT,
     "created_at" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
     "updated_at" TIMESTAMP(3) NOT NULL,
-    "like_count" INTEGER DEFAULT 0,
+    "feeling_count" INTEGER DEFAULT 0,
+    "subcomment_count" INTEGER DEFAULT 0,
     CONSTRAINT "Comment_pkey" PRIMARY KEY ("id")
 );
 
-CREATE TABLE "Like_Status" (
+CREATE TABLE "feeling_status" (
     "id" SERIAL NOT NULL,
     "comment_id" INTEGER Not Null,
     "user_id" uuid not null references public."User_Profile" on delete cascade,
-    "value" VARCHAR(30),
-    "icon" VARCHAR(255),
+    "value" text not null,
+    "icon" Text not null,
     CONSTRAINT "Like_Statsu_pkey" PRIMARY KEY ("id")
 );
 
@@ -87,3 +92,11 @@ ALTER TABLE "Like_Status" ADD CONSTRAINT "Post_post_type_id_fkey" FOREIGN KEY ("
 --     -- Like_status and User_profile
 ALTER TABLE "Like_Status" ADD CONSTRAINT "Like_status_User_profile_id_fkey" FOREIGN KEY ("user_id") 
     REFERENCES "User_Profile"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+# index
+create index id_user_profile_index on public."User_Profile"(id);
+create index id_post_index on public."Post"(id);
+create index id_post_type_index on public."Post"(id);
+
+# Security
+alter table public."User_Profile" enable row level security;

@@ -69,11 +69,6 @@ export const ApiResponseElements:Array<TApiResponseClientError> = [
         message: "Not Acceptable"
     },
 ]
-
-// const responseMessage = (message: string): string => {
-//     return message;
-// }
-
 export interface ApiResponseCLientError extends Error {
     status: number,
     message: string

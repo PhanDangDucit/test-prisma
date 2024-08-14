@@ -3,9 +3,8 @@ import { fetchAllDepartments, fetchEmployeeById } from "@/lib/data-employee";
 import DepartmentSelect from "./department-select";
 
 export async function FormEditEmployee({id}: {id: string}) {
-    const [departments, employee] = await Promise.all([fetchAllDepartments(), fetchEmployeeById(id)])
-    // const departments = await fetchAllDepartments();
-    // const employee = (await fetchEmployeeById(id));
+    const [departments, employee] = await Promise.all([fetchAllDepartments(), fetchEmployeeById(id)]);
+    
     const updateEmployeeWithId = updateEmployee.bind(null, id);
 
     return (
