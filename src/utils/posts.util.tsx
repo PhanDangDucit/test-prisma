@@ -1,20 +1,14 @@
-// class PostUtils {
-    
-// }
-
 /**
- * Process content addition when string contents are html tags block
+ * @desc Process content addition when string contents are html tags block
  * @param str 
  * @returns
  */
 export function processContentAddition(str:string, len: number) {
     // slicing string from the first <p> to the last </p> suite condition which is required
     const strSliced = processSlice(str, str.search('<p>'), str.search('</p>') + 4);
-    // console.log("strSliced::", strSliced);
 
     // slicing strSliced from 0 to len
     const strWithLength = processSlice(strSliced, 0, len);
-    // console.log("strWithLength::", strWithLength);
 
     // search position of the last space in strWithLength
     const lastSpace = processSearchLastCharacter(strWithLength, ' ');
@@ -27,7 +21,7 @@ export function processContentAddition(str:string, len: number) {
 }
 
 /**
- * Process content addition is only string
+ * @desc Process content addition is only string
  * @param str
  * @param len
  * @returns
@@ -37,13 +31,12 @@ export function processStringContentAddition(str:string, len: number) {
         return str;
     }
     const strSliced = processSlice(str, 0, len);
-    // console.log("strSliced::", strSliced);
     const lastSpace = processSearchLastCharacter(strSliced, ' ');
     return processSlice(strSliced, 0, lastSpace) + '...';
 }
 
 /**
- * Get length of string
+ * @desc Get length of string
  * @param str 
  * @returns 
  */
@@ -52,7 +45,7 @@ export function getLengthArrayOrString(str:string) {
 }
 
 /**
- * Slices a string to return a string which has content from "start" to "end"
+ * @desc Slices a string to return a string which has content from "start" to "end"
  * @param str 
  * @param start 
  * @param end 
@@ -63,7 +56,7 @@ export function processSlice(str:string, start:number, end:number) {
 }
 
 /**
- * Process search last character
+ * @desc Process search last character
  * @param str 
  * @param character 
  * @returns 
@@ -75,7 +68,7 @@ export function processSearchLastCharacter(str: string, character: string) {
 type QueryType = number | string;
 
 /**
- * Check if type of a query is number
+ * @desc Check if type of a query is number
  * @param q 
  * @returns 
  */

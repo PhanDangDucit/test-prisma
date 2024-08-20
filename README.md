@@ -16,7 +16,6 @@
 
 // // Append the image element to the DOM
 // document.body.appendChild(imgElement);
-
 ```
 # Test
 - [The Importance of Request Timeouts](https://dev.to/bearer/the-importance-of-request-timeouts-l3n)

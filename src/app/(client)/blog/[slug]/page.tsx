@@ -23,7 +23,7 @@ import { userCont } from "@/configs/constants";
 import { PostContextProvider } from "@/app/store/post-context";
 import { getAuthorOfPost } from "@/lib/data-user";
 import { getUserInfoSupabase } from "@/utils/auth.utils";
-import { getOneCategory } from "@/lib/data-categories-post";
+import { getOneCategory } from "@/lib/data-post-types";
 
 export default async function Page({ 
     params

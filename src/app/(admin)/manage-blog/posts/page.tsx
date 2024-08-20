@@ -6,7 +6,7 @@ import { fetchAllPostCategories, getRangeView } from '@/lib/data-post';
 import { getPostsByFilter } from "@/lib/data-filter-post";
 import { BadgePlus } from "lucide-react";
 import Link from "next/link";
-import { getAllCategories } from "@/lib/data-categories-post";
+import { getAllCategories } from "@/lib/data-post-types";
 
 export default async function Page({
     searchParams,

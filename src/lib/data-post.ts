@@ -5,7 +5,8 @@ import { formartSlug } from "@/helpers/convert-language";
 import { FindSuzuSupabase } from '../libs/suzu-supabase-find';
 import { PostType } from '@/helpers/definitions';
 import { createClient } from '@/configs/supabase-server.config';
-import { PostgrestSingleResponse } from '@supabase/supabase-js';
+import { PostgrestResponse, PostgrestSingleResponse } from '@supabase/supabase-js';
+import { cookies } from 'next/headers';
 
 /**
  * Fetch all Post
@@ -40,22 +41,16 @@ export function processSlugUnique(title: string) {
  * @returns
  */
 
-export async function getOnePost<T>(post_type_id: number):Promise<Array<T> | null> {
-    noCache();
-    try {
-        const supabase = createClient();
-        const {data}:PostgrestSingleResponse<Array<T>> = await supabase
-            .from('Post')
-            .select("*")
-            .order('id', {
-                ascending: false
-            })
-            .limit(1)
-            .eq("post_type_id", post_type_id)
-        return data;
-    } catch (error) {
-        throw new Error("Get one post failed!");
-    }
+export async function getOnePost(post_type_id: number) {
+    const { data , error } = await createClient(cookies())
+        .from('Post')
+        .select("*")
+        .order('id', {
+            ascending: false
+        })
+        .limit(1)
+        .eq("post_type_id", post_type_id) as PostgrestSingleResponse<TPost>
+    return data;
 }
 
 
@@ -71,26 +66,19 @@ export async function getOnePost<T>(post_type_id: number):Promise<Array<T> | nul
  * @param post_type_id
  * @returns
  */
-export async function getManyPost<T>(
-    post_type_id: number,
-    limit: number,
-    col: string
-): Promise<Array<T> | null>{
-    noCache();
-    const supabase = createClient();
-    try {
-        const {data}:PostgrestSingleResponse<Array<T>> = await supabase
-            .from('Post')
-            .select("*")
-            .order(`${col}`, {
-                ascending: false
-            })
-            .limit(limit)
-            .eq("post_type_id", post_type_id)
-        return data;
-    } catch (error) {
-        throw new Error(`Get many post with ${col} is failed!`);
-    }
+export async function getPostManyViews(
+    category: string,
+    limit: number = 9,
+) {
+    const { data, error } = await createClient(cookies())
+        .from('Post')
+        .select("*")
+        .order(`view`, {
+            ascending: false
+        })
+        .limit(limit)
+        .eq("post_type_id", categoryId) as PostgrestResponse<TPost>
+    return data;
 }
 
 /**

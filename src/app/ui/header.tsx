@@ -2,26 +2,16 @@
 import Image from "next/image";
 import logo from "@/public/logo.png";
 import Link from "next/link";
-import { PostCategoriesType } from "@/helpers/definitions";
 import conan from "@/public/conan.jpg"
-import { User } from "@supabase/supabase-js";
 
 type Props = {
-    // session?:Session|null,
-    user?: User,
-    categories?:PostCategoriesType[],
+    user?: TUserProfile,
+    categories?: TCategoryList,
     className?: string
 }
 
-// const getHeaderUserProps = (props:Props) => {
-//     return {
-//         session: props.session,
-//         categories: props.categories,
-//         className: props.className
-//     }
-// }
-
 export default function Header(props: Props) {
+
     const {
         className, 
         categories,
@@ -62,7 +52,7 @@ export default function Header(props: Props) {
                     <div tabIndex={0} role="button" className="btn m-1" title="user-avatar">
                         <Image
                             className="w-8 h-8 rounded-full"
-                            src={user?.image || conan}
+                            src={user?.avatar || conan}
                             alt="user photo"
                         />
                     </div>
@@ -70,7 +60,7 @@ export default function Header(props: Props) {
                         {user ? (
                             <>
                                 <li className="px-4 py-3">
-                                    <span className="block text-sm text-black dark:text-white">{user?.name}</span>
+                                    <span className="block text-sm text-black dark:text-white">{user?.username}</span>
                                     <span className="block text-sm  text-black truncate dark:text-gray-400">{user?.email}</span>
                                 </li>
                                 <li className="p-0">
@@ -84,16 +74,16 @@ export default function Header(props: Props) {
                                     </ul>
                                 </li>
                             </>
-                        ) :   (    
-                        <>
-                            <li>
-                                <ul className="p-2" aria-labelledby="user-menu-button">
-                                    <li>
-                                        <Link href="/api/auth/signin" className="text-black">Signin</Link>
-                                    </li>
-                                </ul>
-                            </li>
-                        </>
+                        ) : (    
+                            <>
+                                <li>
+                                    <ul className="p-2" aria-labelledby="user-menu-button">
+                                        <li>
+                                            <Link href="/api/auth/signin" className="text-black">Signin</Link>
+                                        </li>
+                                    </ul>
+                                </li>
+                            </>
                         )}
                     </ul>
                 </div>
