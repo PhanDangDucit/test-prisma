@@ -62,12 +62,14 @@ npm i -S react-rnd
 
 npm install -D jest jest-environment-jsdom @testing-library/react @testing-library/jest-dom
 
-$ npm i prisma-slug
+$ npm i -g prisma
+
+$ npm uninstall -g prisma
 
 # Set up a new Prisma project
 $ prisma init
 
-# Generate artifacts (e.g. Prisma Client)
+# Generate Prisma Client
 $ prisma generate
 
 # Browse your data
@@ -96,6 +98,9 @@ $ prisma debug
 
 
 $ prisma migrate dev --create-only
+
+$ npm i --save-dev prisma@latest                       │
+$ npm i @prisma/client@latest   
 ```
 # Test
 
