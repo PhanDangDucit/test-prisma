@@ -25,10 +25,9 @@ npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
 
-# local env files
-.env*.local
-
-.env.development
+# Environment
+.env
+.env.staging
 .env.production
 
 # vercel
@@ -38,10 +37,10 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# # Test unit
-# test.js
-# __tests__
-
+# 
 /.swc/
 __trash
 .vercel
+
+# database
+__sql__/.sql

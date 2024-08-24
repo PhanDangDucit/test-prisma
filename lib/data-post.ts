@@ -132,14 +132,11 @@ export async function fetchManyViewsEachPost(post_type_id: number, quantity: num
  * Get all post categories
  * @returns 
  */
-export async function fetchAllPostCategories() {
+export async function getAllCategories() {
     try {
-        const allPostsCategories = await prisma.post_Type.findMany();
-        await prisma.$disconnect();
-        return allPostsCategories;
+        return await prisma.post_types.findMany();
     } catch (error) {
-        await prisma.$disconnect();
-        throw new Error("Get all employees failed! " + error);
+        throw new Error("Get all categories failed! " + error);
     }
 }
 

@@ -3,10 +3,10 @@ import { Inter } from "next/font/google";
 import "@/app/globals.css";
 import Header from "@/app/ui/header";
 import Footer from "@/app/ui/footer";
-import { fetchAllPostCategories } from "@/lib/data-post";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { SpeedInsights } from "@vercel/speed-insights/next"
+import { getAllCategories } from "@/lib/data-post";
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
@@ -20,7 +20,7 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
   const datas = await Promise.all([
-    await fetchAllPostCategories(),
+    await getAllCategories(),
     await auth()
   ]);
   const categories = datas[0];
