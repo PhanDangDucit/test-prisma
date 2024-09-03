@@ -10,7 +10,7 @@ import {
     validateSlug,
     validatedPost 
 } from '@/validators/validate-post';
-import { processSlugUnique, getPostIdBySlug } from "@/lib/data-post";
+import { processSlugUnique, getPostIdBySlug } from "@/lib/posts/data-post";
 import { CreatePostCategory, PostCategoryState, validatedPostCategory } from "@/validators/validate-categories-post";
 // import { insertDataInPostUser } from "@/lib/data-user";
 

@@ -1,6 +1,6 @@
 import PostCategories from '@/app/ui/admin/manage-post/post-category';
 import { PostCategoriesType } from '@/helpers/definitions';
-import { fetchAllPostCategories } from '@/lib/data-post';
+import { fetchAllPostCategories } from '@/lib/posts/data-post';
 
 const Page = async () => {
     const categories: PostCategoriesType[] = await fetchAllPostCategories();

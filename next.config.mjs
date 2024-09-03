@@ -2,7 +2,7 @@
 const nextConfig = {
     images: {
         loader: 'custom',
-        loaderFile: 'app/ui/imageloader.tsx',
+        loaderFile: 'components/imageloader.tsx',
         unoptimized: true,
     },
     eslint: {

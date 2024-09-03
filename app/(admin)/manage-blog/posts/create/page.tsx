@@ -2,7 +2,7 @@ import EditorBox from "@/app/ui/post/create-editor-box";
 import { auth } from "@/auth";
 import { PostCategoriesType, User } from "@/helpers/definitions";
 import { getUserByEmail } from "@/lib/actions-user";
-import { fetchAllPostCategories } from "@/lib/data-post";
+import { fetchAllPostCategories } from "@/lib/posts/data-post";
 
 const Page = async () => {
     const data = await Promise.all([

@@ -1,7 +1,7 @@
 import EditorBox from "@/app/ui/post/edit-editor-box";
 import { PostCategoriesType, PostType } from "@/helpers/definitions";
-import { fetchAllPostCategories } from "@/lib/data-post";
-import { fetchPostBySlug } from '@/lib/data-post';
+import { fetchAllPostCategories } from "@/lib/posts/data-post";
+import { fetchPostBySlug } from '@/lib/posts/data-post';
 
 const Page = async ({
     params

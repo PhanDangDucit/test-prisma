@@ -1,7 +1,6 @@
 // import GitHubProvider from "next-auth/providers/github";
 import FacebookProvider from "next-auth/providers/facebook";
 import GoogleProvider from "next-auth/providers/google";
-// import CredentialsProvider from "next-auth/providers/credentials";
 import { Session, User } from "next-auth";
 import { JWT } from "next-auth/jwt";
 import { processAccountProvider } from "../lib/data-user";
@@ -55,32 +54,7 @@ export const options = {
                     role: userRole
                 }
             },
-        }),
-        // CredentialsProvider({
-        //     // Name of you
-        //     name: "account",
-        //     credentials: {
-        //         email: {
-        //             label: "Email:",
-        //             type: "text",
-        //             placeholder: "eamil..."
-        //         },
-        //         password: {
-        //             label: "Password:",
-        //             type: "password",
-        //             placeholder: "password..."
-        //         }
-        //     },
-        //     async authorize(credentials) {
-        //         try {
-        //             // find user in database
-        //             console.log(credentials);
-        //         } catch (error) {
-        //             console.log("You cannot login!::: ", error);
-        //         }
-        //         return null;
-        //     }
-        // }),
+        })
     ],
     callbacks: {
         async jwt({token, user} : {token: JWT, user:User}) {

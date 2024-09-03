@@ -2,7 +2,7 @@ import PostResult from "@/app/ui/admin/manage-post/post-result";
 import PostSearchBar from "@/app/ui/admin/manage-post/post-search";
 import SideBar from "@/app/ui/admin/manage-post/sidebar";
 import { PostCategoriesType, PostType, SearchQuery } from "@/helpers/definitions";
-import { fetchAllPostCategories, getRangeView } from '@/lib/data-post';
+import { fetchAllPostCategories, getRangeView } from '@/lib/posts/data-post';
 import { getPostsByFilter } from "@/lib/data-filter-post";
 import { BadgePlus } from "lucide-react";
 import Link from "next/link";

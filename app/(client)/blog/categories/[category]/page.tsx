@@ -2,7 +2,7 @@ import {
     fetchCategoriesIdByTypeName,
     fetchLatestPostsForPostType, 
     fetchManyViewsEachPost 
-} from "@/lib/data-post";
+} from "@/lib/posts/data-post";
 import { processContentAddition } from "@/utils/posts.util";
 import moment from "moment";
 import Image from "next/image";

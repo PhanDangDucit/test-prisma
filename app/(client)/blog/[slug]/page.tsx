@@ -19,7 +19,7 @@ import {
     // fetchNewPostRelated,
     fetchPostBySlug, 
     fetchPostCategoryById 
-} from "@/lib/data-post";
+} from "@/lib/posts/data-post";
 import { Suspense } from "react";
 import CommentPart from "@/app/ui/post/detail/comment";
 import { user } from "@/configs/constants";
