@@ -3,10 +3,11 @@
  * @param {any} cb - callback is used to handle actions related to data
  * @returns 
  */
-export const catchError = (cb: any) => {
+export const catchError = async (cb: any) => {
     try {
-        return cb();
+        return await cb;
     } catch (error) {
+        console.log(error);
         return {error};
     }
 }

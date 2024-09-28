@@ -41,6 +41,7 @@ next-env.d.ts
 /.swc/
 __trash
 .vercel
+__tests__
 
 # database
 __sql__/.sql

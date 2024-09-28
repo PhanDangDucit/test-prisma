@@ -8,15 +8,15 @@ async function getALlPosts (limit: number, offset: number) {
 }
 
 export default async function ContentHomeUser() {
-
-    const data = await getALlPosts();
-    console.log("data in posts:", data);
+    const LIMIT = 5;
+    const OFFSET = 0;
+    const data = await getALlPosts(LIMIT, OFFSET);
 
     let posts: PostsList = [];
     if(data["status"] == "201") {
         posts = data["data"];
     }
     return (
-       <PostList posts={posts}/>
+       <PostList postsInit={posts}/>
     )
 }

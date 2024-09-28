@@ -9,7 +9,7 @@ import { getAllCategories } from "@/lib/categories/categories.lib";
  * @returns 
  */
 export async function GET(request: Request) {
-    const data = await catchError(await getAllCategories());
+    const data = await catchError(getAllCategories());
     
     if(data.error) {
         return Response.json({

@@ -14,7 +14,7 @@ export async function GET(request: Request) {
     const limit = getFielBySearchParam({searchParam, field: "limit"})
     const offset = getFielBySearchParam({searchParam, field: "offset"})
 
-    const data = await catchError(await getAllPosts(offset, limit));
+    const data = await catchError(getAllPosts(offset, limit));
     
     if(data.error) {
         return Response.json({

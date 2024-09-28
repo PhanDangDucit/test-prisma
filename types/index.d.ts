@@ -39,10 +39,7 @@ declare global {
     }
 
     type CategoriesList = Array<Categories>
-
-    
 }
-
 
 export type FormSchemaEmployeeType = {
     id: ZodString;
@@ -53,9 +50,6 @@ export type FormSchemaEmployeeType = {
     department_id: ZodString;
     email: ZodString;
 }
-
-
-
 
 export type User = {
     id: number,
