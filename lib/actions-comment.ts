@@ -1,14 +1,12 @@
 "use server"
 import { comment, post } from "@/configs/constants";
-import { PostType, TComment, TCommentWithUser } from "@/helpers/definitions";
 import prisma from "@/prisma/client";
+import { TComment } from "@/types";
 import { 
     CommentState,
     CreateComment,
     validatedComment
 } from "@/validators/validate-comment";
-// import { revalidatePath } from "next/cache";
-// import { redirect } from "next/navigation";
 
 /**
  * 

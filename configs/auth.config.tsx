@@ -1,4 +1,3 @@
-// import GitHubProvider from "next-auth/providers/github";
 import FacebookProvider from "next-auth/providers/facebook";
 import GoogleProvider from "next-auth/providers/google";
 import { Session, User } from "next-auth";
@@ -7,19 +6,6 @@ import { processAccountProvider } from "../lib/data-user";
 
 export const options = {
     providers: [
-        // GitHubProvider({
-        //     async profile(profile) {
-        //         let userRole = 0;
-        //         if(profile?.email == "phanduc.flp@gmail.com") {
-        //             userRole = 1;
-        //         }
-        //         return {
-        //             ...profile,
-        //             id:String(profile.id),
-        //             role: userRole
-        //         }
-        //     }, 
-        // }),
         FacebookProvider({
             async profile(profile) {
                 let userRole = 0;
@@ -34,14 +20,6 @@ export const options = {
             }, 
         }),
         GoogleProvider({
-            // refresh token
-            // authorization: {
-            //     params: {
-            //       prompt: "consent",
-            //       access_type: "offline",
-            //       response_type: "code",
-            //     },
-            // },
             profile(profile) {
                 let userRole = 0;
                 if(profile?.email == "phanduc.flp@gmail.com") {

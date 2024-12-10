@@ -1,283 +1,116 @@
 datasource db {
   provider = "postgresql"
-  url = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  url = env("POSTGRES_URL") // uses connection pooling
   directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
 }
+
 generator client {
   provider = "prisma-client-js"
   previewFeatures = ["relationJoins"]
 }
 
-// generator client {
-//   provider = "prisma-client-js"
-// }
-
-// datasource db {
-//   provider = "postgresql"
-//   url      = env("DATABASE_URL")
-// }
-
-// Enum
-enum user_role {
-  User
-  Admin
-  Author
+model User {
+  id         Int      @id @default(autoincrement())
+  fullname   String?     @db.VarChar(255)
+  username   String?     @db.VarChar(255)
+  password   String?     @db.VarChar(50)
+  avatar     String?     @db.VarChar(255)
+  created_at DateTime    @default(now())
+  updated_at DateTime    @default(now()) @updatedAt
+  phone      Int?
+  email      String @unique
+  role       Int         @default(0)
+  addresses  Address[]
+  is_show Show @default(Show)
+  post Post[]
+  comment Comment[]
+  collection Collection[]
+  like_status Like_Status[]
 }
 
-model user_profiles {
-  id              Int              @id             @default(autoincrement())
-  updated_at      DateTime         @default(now()) @updatedAt
-  created_at      DateTime         @default(now())
-  user_fullname   String?     
-  user_name       String?     
-  user_password   String?     
-  user_avatar     String?     
-  user_phone      String?
-  user_email      String           @unique
-  user_role       user_role        @default(User)
-  user_is_block        Boolean          @default(false)
-  user_refreshed_token String[]
-
-  post posts[]
-  comment comments[]
-  post_collections post_collections[]
-  creator_programs creator_programs[]
-  program_user program_users[]
-  
-  @@index([created_at])
-  @@index([user_is_block])
-  @@index([user_role])
+model Address {
+  id      Int @id @default(autoincrement())
+  country String @db.VarChar(50)
+  user    User   @relation(fields: [user_id], references: [id])
+  user_id Int
 }
 
-
-model posts {
-  id                    Int           @id                 @default(autoincrement())
-  post_title            String?
-  created_at            DateTime      @default(now())
-  updated_at            DateTime      @default(now())     @updatedAt
-  post_content          String?
-  post_thumbnail        String?
-  post_slug             String?       @unique
-  post_type_id          Int
-  post_views            Int           @default(0)
-  post_is_publish       Boolean       @default(false)
-  post_is_draft         Boolean       @default(true)
-  post_date             DateTime?
-  post_comment_count    Int           @default(0)
-  post_share_count      Int           @default(0)
-  post_score            Int           @default(0)
-  post_author_id        Int       
-  post_is_free          Boolean       @default(true)  
-
-  // relationship
-  user                      user_profiles @relation(fields: [post_author_id], references: [id])
-  post_type                 post_types    @relation(fields: [post_type_id], references: [id])
-  
-  comment                   comments[]  
-  posts_post_collections    posts_post_collections[]
-  
-  // index
-  @@index([post_author_id])
-  @@index([created_at])
-  @@index([updated_at])
+enum Show {
+  Show
+  Hidden
 }
 
-model post_types {
-  id                       Int        @id                 @default(autoincrement())
-  post_type_name           String     @unique
-  created_at               DateTime   @default(now())
-  updated_at               DateTime   @default(now())     @updatedAt
-  post_type_priority       Int        @default(0)         @unique
-  post_type_icon           String?
-
-  post           posts[]
-  
-  // index
-  @@index([created_at])
+model Post {
+  id             Int      @id @default(autoincrement())
+  title          String      @db.VarChar(150)
+  created_at     DateTime    @default(now())
+  updated_at     DateTime    @default(now()) @updatedAt
+  content        String
+  thumbnail       String      @db.VarChar(255)
+  post_type      Post_Type   @relation(fields: [post_type_id], references: [id])
+  post_type_id   Int
+  slug String   @unique
+  views Int      @default(0)
+  is_show Show @default(Show)
+  user User @relation(fields: [author_id], references: [id])
+  author_id Int
+  comment_count Int @default(0)
+  comment Comment[]
+  post_collection Post_Collection[]
 }
 
-model feeling_status {
-  id                   Int      @id       @default(autoincrement())
-  feeling_status_value String   @unique
-  feeling_status_icon  String
-
-  // index
-  @@index([feeling_status_value])
+model Post_Type {
+  id             Int @id @default(autoincrement())
+  name_post_type String @db.VarChar(30) @unique
+  created_at  DateTime @default(now())
+  priority Int   @default(0) @unique
+  icon String?
+  post           Post[]
 }
 
-model comments {
-  id               Int         @id              @default(autoincrement())
-  created_at       DateTime    @default(now())
-  updated_at       DateTime    @default(now())  @updatedAt
-  user_id          Int
-  post_id          Int
-  comment_content  String
-  parent_id        Int         @default(0)
-  subcomment_count Int         @default(0)
-  feeling_count    Int         @default(0)
-
-  // relationship
-  post             posts               @relation(fields: [post_id], references: [id])
-  user             user_profiles       @relation(fields: [user_id], references: [id])
-  parent           comments?           @relation(name: "parent", fields: [parent_id], references: [id])
-  parents          comments[]          @relation(name: "parent")
-
-  // index
-  @@index([user_id])
-  @@index([post_id])
-  @@index([parent_id])
+model Like_Status {
+  id             Int    @id     @default(autoincrement())
+  value_like_status String @db.VarChar(30) @unique
+  icon_status String
+  user   User   @relation(fields: [user_id], references: [id])
+  user_id Int
+  comment   Comment   @relation(fields: [comment_id], references: [id])
+  comment_id Int
+  // comment Comment[]
+  @@index([id, value_like_status])
 }
 
-model post_collections {
-  id                      Int         @id             @default(autoincrement())
-  post_collection_name    String      @unique
-  user_id                 Int
-  created_at              DateTime    @default(now())
-  updated_at              DateTime    @default(now()) @updatedAt
-  post_count_saved        Int         @default(0)
-
-  // relationship
-  user         user_profiles          @relation(fields: [user_id], references: [id])
-
-  post         posts_post_collections[]
-
-  // index
-  @@index([user_id])
-  @@index([created_at])
+model Comment {
+  id         Int      @id        @default(autoincrement())
+  content        String 
+  user         User   @relation(fields: [user_id], references: [id])
+  user_id      Int
+  like_count Int @default(0)
+  post         Post   @relation(fields: [post_id], references: [id])
+  post_id      Int
+  parent   Comment?  @relation(name: "parent", fields: [parent_id], references: [id])
+  parents  Comment[] @relation(name: "parent")
+  parent_id Int?
+  subcomment_count Int  @default(0)
+  created_at DateTime    @default(now())
+  updated_at DateTime    @default(now()) @updatedAt
+  like_status Like_Status[]
 }
 
-model posts_post_collections {
-  id                      Int         @id             @default(autoincrement())
-  post_id                 Int
-  post_collection_id      Int
-
-  // relationship
-  post                    posts              @relation(fields: [post_id], references: [id])
-  post_collection         post_collections   @relation(fields: [post_collection_id], references: [id])
-  
-  // index
-  @@index([post_id])
-  @@index([post_collection_id])
+model Collection {
+  id         Int      @id @default(autoincrement())
+  value String @db.VarChar(30) @unique
+  user         User   @relation(fields: [user_id], references: [id])
+  user_id      Int
+  post_collection Post_Collection[]
 }
 
-model creator_programs {
-  id                      Int         @id             @default(autoincrement())
-  author_id               Int
-  csp_id                  Int
-  post_posted_count       Int         @default(0)
-  created_at              DateTime    @default(now())
-  updated_at              DateTime    @default(now()) @updatedAt
-  cp_others  Json?
-  user_follower_count     Int         @default(0)
-
-  // relationship
-  user         user_profiles              @relation(fields: [author_id], references: [id])
-  csp          creator_system_programs    @relation(fields: [csp_id], references: [id])
-
-  // index
-  @@index([author_id])
-  @@index([csp_id])
-}
-model creator_system_programs {
-  id                      Int         @id             @default(autoincrement())
-  csp_name    String
-  created_at              DateTime    @default(now())
-  updated_at              DateTime    @default(now()) @updatedAt
-  csp_others  Json?
-  csp_is_published        Boolean     @default(false)
-
-  creator_programs        creator_programs[]
-}
-
-model user_followers {
-  id                      Int         @id             @default(autoincrement())
-  publisher_id            Int
-  subscriber_id           Int
-  created_at              DateTime    @default(now())
-  updated_at              DateTime    @default(now()) @updatedAt
-  
-  //  indexes
-  @@index([created_at])
-  @@index([publisher_id])
-  @@index([subscriber_id])
-}
-
-model payments {
-  id                      Int         @id             @default(autoincrement())
-  payment_method          Int
-  received_account        Int
-  payment_others          Json?
-  created_at              DateTime    @default(now())
-  updated_at              DateTime    @default(now()) @updatedAt
-
-  // relationship
-  program_user program_users[]
-}
-
-model discounts {
-  id                       Int         @id             @default(autoincrement())
-  user_used_discount       String[]
-  discount_name            Int
-  discount_others          Json?
-  created_at               DateTime    @default(now())
-  updated_at               DateTime    @default(now()) @updatedAt
-
-  // relationship
-  program_user program_users[]
-}
-
-model program_users {
-  id                      Int         @id             @default(autoincrement())
-  payment_id              Int
-  usp_id                  Int
-  user_id                 Int
-  discount_id             Int
-  start_date              DateTime    @default(now())
-  end_date                DateTime
-  program_price_paied     Unsupported("numeric")
-  program_user_others     Json?
-
-  // relationship
-  user            user_profiles              @relation(fields: [user_id], references: [id])
-  usp             user_system_programs       @relation(fields: [usp_id], references: [id])
-  payment         payments                   @relation(fields: [payment_id], references: [id])
-  discount        discounts                  @relation(fields: [discount_id], references: [id])
-  
-  // index
-  @@index([user_id])
-  @@index([usp_id])
-  @@index([discount_id])
-  @@index([payment_id])
-  @@index([start_date])
-}
-
-model user_system_programs {
-  id                      Int         @id             @default(autoincrement())
-  usp_name     String
-  usp_price    Unsupported("numeric")
-  created_at              DateTime    @default(now())
-  updated_at              DateTime    @default(now()) @updatedAt
-  system_program_others   Json?
-  sp_is_published         Boolean     @default(false)
-
-  // relationship
-  pus program_users[]
-
-  // index
-  @@index([created_at])
-}
-
-model notifications {
-  id                      Int         @id             @default(autoincrement())
-  publisher_id            Int
-  subscriber_id           Int
-  notification_others     Json?
-  notification_viewed     Boolean     @default(false)
-  created_at              DateTime    @default(now())
-  updated_at              DateTime    @default(now()) @updatedAt
-
-  // index
-  @@index([publisher_id])
-  @@index([subscriber_id])
-  @@index([created_at])
+model Post_Collection {
+  id         Int      @id @default(autoincrement())
+  created_at DateTime    @default(now())
+  updated_at DateTime    @default(now()) @updatedAt
+  post  Post  @relation(fields: [post_id], references: [id])
+  post_id      Int
+  collection  Collection  @relation(fields: [collection_id], references: [id])
+  collection_id      Int
 }

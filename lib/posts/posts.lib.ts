@@ -6,7 +6,7 @@ import { formartSlug } from "@/helpers/convert-language";
  * @returns 
  */
 export const getAllPosts = async (offset: string = "0", limit: string = "5") => {
-    return await prisma.posts.findMany({
+    return await prisma.post.findMany({
         skip: Number(offset),
         take: Number(limit),
     })
@@ -66,7 +66,7 @@ export function processSlugUnique(title: string) {
  */
 export async function getPostByCategoryId(post_type_id: number) {
     try {
-        const post = await prisma.posts.findFirst({
+        const post = await prisma.post.findFirst({
             where: {
                 post_type_id,
             },
@@ -255,20 +255,6 @@ export async function fetchCategoriesIdByTypeName(name_post_type:string) {
     }
 }
 
-/**
- * Get all status of post
- * @returns 
- */
-// export async function getAllStatus() {
-//     try {
-//         const status = await prisma.post_Status.findMany();
-//         await prisma.$disconnect();
-//         return status;
-//     } catch (error) {
-//         await prisma.$disconnect();
-//         throw new Error("Get all status of post is failed! " + error);
-//     }
-// }
 
 export async function getRangeView() {
     try {
@@ -290,7 +276,12 @@ export async function getRangeView() {
         return result;
     } catch (error) {
         await prisma.$disconnect();
-        throw new Error("Get all status of post is failed! " + error);
+        console.log("get Range View! " + error);
+        return {
+            maxViews: 0,
+            minViews: 0
+
+        }
     }
 }
 

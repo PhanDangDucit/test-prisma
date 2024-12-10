@@ -1,13 +1,13 @@
 "use client"
 import { EditorContent, useEditor } from "@tiptap/react";
-import Toolbar from "@/app/ui/post/toolbar";
-import SidebarPost from "@/app/ui/post/sidebar-post";
 import { useFormState } from 'react-dom';
 import { useState } from "react";
 import { updatePost } from "@/lib/actions-post";
-import { PostCategoriesType, PostType } from "@/helpers/definitions";
 import { initialState } from "@/configs/constants";
 import { editorConfig } from "@/configs/editor.config";
+import { PostCategoriesType } from "@/types";
+import Toolbar from "./toolbar";
+import SidebarPost from "./sidebar-post";
 
 type Props = {
     categories: PostCategoriesType[],
@@ -30,7 +30,6 @@ const FormEditEditor = ({
     if(!editor) return null;
     editor.on('update',() => handleChange(editor.getHTML()));
     if(!post) return null;
-    // editor.chain().setContent(`${content}`).run();
 
     return ( 
         <form className='grid grid-cols-3 gap-3' action={dispatch}>

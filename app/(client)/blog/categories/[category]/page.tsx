@@ -1,24 +1,22 @@
-import { 
-    fetchCategoriesIdByTypeName,
-    fetchLatestPostsForPostType, 
-    fetchManyViewsEachPost 
-} from "@/lib/posts/data-post";
+
+import { fetchCategoriesIdByTypeName, fetchLatestPostsForPostType, fetchManyViewsEachPost } from "@/lib/posts/posts.lib";
 import { processContentAddition } from "@/utils/posts.util";
 import moment from "moment";
 import Image from "next/image";
 import Link from "next/link";
 
-const Page = async ({
+export default async function Page  ({
     params
 }: {
     params: {
         category: string
     }
-}) => {
+}) {
     const categories = await fetchCategoriesIdByTypeName(params.category);
     if(!categories) return;
     const viewPosts = await fetchManyViewsEachPost(categories.id, 9);
     const latestPosts = await fetchLatestPostsForPostType(categories.id, 10);
+
     return (
         <>
             <h1 className="my-5 text-orange-400 text-4xl border-b-2 border-orange-200 inline-block uppercase">{params.category}</h1>
@@ -31,8 +29,6 @@ const Page = async ({
                             <Image
                                 className="rounded-xl object-cover"
                                 src={post?.thumbnail || ''}
-                                // height={182}
-                                // width={304}
                                 fill
                                 alt="marketing post"
                             />
@@ -71,11 +67,7 @@ const Page = async ({
                         ))
                     }
                 </div>
-                {/* Ads */}
-                
             </div>
         </>
     );
 }
- 
-export default Page;

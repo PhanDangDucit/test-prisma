@@ -1,10 +1,10 @@
 'use client'
-import { PostCategoriesType, StatusPost } from '@/helpers/definitions';
 import MultiRangeSlider, { 
     DateFilter,
     PostCategoriesFilter,
     PostStatusFilter,
-} from '@/app/ui/admin/manage-post/filter';
+} from './filter';
+import { PostCategoriesType, StatusPost } from '@/types';
 
 export default function SideBar({
     categories,

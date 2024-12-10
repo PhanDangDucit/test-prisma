@@ -1,7 +1,6 @@
 'use client'
 import Image from "next/image";
 import { useState } from "react";
-import { User } from "@/helpers/definitions";
 import intIcon from "@/public/tree.jpg";
 import { updateRoleUser } from "@/lib/actions-user";
 
@@ -11,7 +10,7 @@ export const EditModalUser = ({
     user: User
 }) => {
     const updateUserWithId = updateRoleUser.bind(null, user.id);
-    // const role = user.role === 1 ? "admin" : "user";
+    
     return (
         <div className="relative p-4 w-full max-w-md max-h-full">
             {/* Modal content */}

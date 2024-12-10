@@ -13,9 +13,11 @@ export default async function ContentHomeUser() {
     const data = await getALlPosts(LIMIT, OFFSET);
 
     let posts: PostsList = [];
+    
     if(data["status"] == "201") {
         posts = data["data"];
     }
+
     return (
        <PostList postsInit={posts}/>
     )

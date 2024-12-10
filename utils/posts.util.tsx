@@ -10,11 +10,9 @@
 export function processContentAddition(str:string, len: number) {
     // slicing string from the first <p> to the last </p> suite condition which is required
     const strSliced = processSlice(str, str.search('<p>'), str.search('</p>') + 4);
-    // console.log("strSliced::", strSliced);
 
     // slicing strSliced from 0 to len
     const strWithLength = processSlice(strSliced, 0, len);
-    // console.log("strWithLength::", strWithLength);
 
     // search position of the last space in strWithLength
     const lastSpace = processSearchLastCharacter(strWithLength, ' ');
@@ -37,7 +35,6 @@ export function processStringContentAddition(str:string, len: number) {
         return str;
     }
     const strSliced = processSlice(str, 0, len);
-    // console.log("strSliced::", strSliced);
     const lastSpace = processSearchLastCharacter(strSliced, ' ');
     return processSlice(strSliced, 0, lastSpace) + '...';
 }

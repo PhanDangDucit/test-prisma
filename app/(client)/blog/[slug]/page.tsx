@@ -1,30 +1,13 @@
-import ContentMainDetailPost from "@/app/ui/post/detail/content";
-// import {
-//     TheBestViewPost,
-//     ManyViewsPosts
-// } from "@/app/ui/post/detail/posts";
-
-import { 
-    ContentMainDetailPostSkeleton, 
-    ManyViewsPostsSkeleton, 
-    TheBestViewPostSkeleton 
-} from "@/app/ui/post/skeletons-post";
 import { auth } from "@/auth";
-import { User } from "@/helpers/definitions";
 import { getUserByEmail } from "@/lib/actions-user";
-// import { getAllMainComments } from "@/lib/data-comment";
-import { 
-    // fetchManyViewsEachPost,
-    // fetchManyViewsPosts,
-    // fetchNewPostRelated,
-    fetchPostBySlug, 
-    fetchPostCategoryById 
-} from "@/lib/posts/data-post";
+
 import { Suspense } from "react";
-import CommentPart from "@/app/ui/post/detail/comment";
-import { user } from "@/configs/constants";
 import { PostContextProvider } from "@/app/store/post-context";
 import { getAuthorOfPost } from "@/lib/data-user";
+import ContentMainDetailPost from "@/components/users/post/detail/content";
+import CommentPart from "@/components/users/post/detail/comment";
+import { fetchPostBySlug, fetchPostCategoryById } from "@/lib/posts/posts.lib";
+import { ContentMainDetailPostSkeleton, ManyViewsPostsSkeleton, TheBestViewPostSkeleton } from "@/components/users/post/skeletons-post";
 
 export default async function Page({ 
     params
@@ -39,18 +22,12 @@ export default async function Page({
     if(!post) return;
     const [
         category, 
-        // relatedPosts, 
         author,
         userInfo,
-        // similarPosts,
-        // manyViewsPosts
     ] = await Promise.all([
         await fetchPostCategoryById(post.post_type_id),
-        // await fetchNewPostRelated(post.post_type_id),
         await getAuthorOfPost(post.author_id) as User,
         await getUserByEmail(session?.user?.email!) as User
-        // await fetchManyViewsEachPost(post.post_type_id, 4),
-        // await fetchManyViewsPosts(4)
     ]);
     
     return (
@@ -59,15 +36,11 @@ export default async function Page({
             <PostContextProvider slug={slug}>
                 <div className="grid grid-cols-3 gap-3">
                     <Suspense fallback={<ContentMainDetailPostSkeleton/>}>
-                        <ContentMainDetailPost 
-                            // relatedPosts={relatedPosts} 
+                        <ContentMainDetailPost
                             author={author}
                             category={category} 
                             post={post}
                         />
-                    </Suspense>
-                    <Suspense fallback={<ManyViewsPostsSkeleton/>}>
-                        {/* <ManyViewsPosts similarPosts={similarPosts}/> */}
                     </Suspense>
                 </div>
                 <hr className="w-full h-1 mx-auto my-12 bg-gray-300 border-0 rounded md:my-8 dark:bg-gray-300"/>
@@ -79,10 +52,6 @@ export default async function Page({
                             userInfo={userInfo}
                         />
                     </div>
-                    {/* Posts with other topics*/}
-                    <Suspense fallback={<TheBestViewPostSkeleton/>}>
-                        {/* <TheBestViewPost manyViewsPosts={manyViewsPosts}/> */}
-                    </Suspense>
                 </div>
             </PostContextProvider>
         </>

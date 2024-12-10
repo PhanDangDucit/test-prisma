@@ -4,9 +4,9 @@ import { upload } from '@vercel/blob/client';
 import { useState } from "react";
 import { useFormState } from "react-dom";
 import { initialState } from "@/configs/constants";
-import { PostCategoriesType } from "@/helpers/definitions";
 import initIcon from "@/public/tree.jpg";
 import { updatePostCategory } from "@/lib/actions-post";
+import { PostCategoriesType } from "@/types";
 
 export const EditModalPostCategories = ({
     category

@@ -3,19 +3,21 @@ import { BadgePlus } from "lucide-react";
 import Image from "next/image";
 import { upload } from '@vercel/blob/client';
 import { useState } from "react";
-import { createCategoryPost } from "@/lib/actions-post";
 import { useFormState } from "react-dom";
 import { initialState } from "@/configs/constants";
 import initIcon from "@/public/tree.jpg";
+import { createCategoryPost } from "@/lib/action-categories";
 
 export const CreateModalPostCategories = () => {
     const [state, dispatch] = useFormState(createCategoryPost, initialState);
     const [icon, setIcon] = useState<string>();
 
     const [loading, setLoading] = useState<boolean>(false);
+
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         if (!e.target.files) {
-            throw new Error('No file selected');
+            console.log('No file selected');
+            return;
         }
         setLoading(true);
         const file = e.target.files[0];
@@ -26,6 +28,7 @@ export const CreateModalPostCategories = () => {
         setLoading(false);
         setIcon(result?.url);
     }
+
     return (
         <div className="mt-5">
             {/* The button to open modal */}
@@ -67,8 +70,6 @@ export const CreateModalPostCategories = () => {
                                             <Image
                                                 src={icon||initIcon}
                                                 alt="icon"
-                                                // width={100}
-                                                // height={100}
                                                 fill
                                                 priority
                                                 className="rounded-xl"

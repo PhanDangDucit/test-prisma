@@ -1,6 +1,5 @@
+import { fetchNewPostRelated } from "@/lib/posts/posts.lib";
 
-import { PostType } from "@/helpers/definitions";
-import { fetchNewPostRelated } from "@/lib/posts/data-post";
 
 export async function GET(request: Request) {
     const url = new URL(request.url);

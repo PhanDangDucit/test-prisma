@@ -1,6 +1,5 @@
+import { fetchPostBySlug } from "@/lib/posts/posts.lib";
 
-import { PostType } from "@/helpers/definitions";
-import { fetchPostBySlug } from "@/lib/data-post";
 
 export async function GET(request: Request) {
     const url = new URL(request.url);

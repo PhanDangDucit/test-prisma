@@ -1,4 +1,4 @@
-import { PostType, TComment, TCommentWithUser } from "@/helpers/definitions";
+import { TComment } from "@/types";
 import { z } from "zod";
 
 const FormSchema = z.object({
@@ -63,7 +63,6 @@ export type CommentStateAvailability = {
  * @returns 
  */
 export function validatedComment(action: typeof CreateComment | typeof UpdateComment, formData: FormData) {
-    console.log("add subcomment");
     return action.safeParse({
         content: formData.get('content')
     });

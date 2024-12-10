@@ -1,4 +1,3 @@
-import { PostType } from "@/helpers/definitions";
 import { changeStatusPost } from "@/lib/actions-post";
 
 export async function FormChangeIsShowPost({

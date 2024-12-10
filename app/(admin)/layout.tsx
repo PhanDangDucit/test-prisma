@@ -4,9 +4,7 @@ import { redirect } from "next/navigation";
 import { Inter } from "next/font/google";
 const inter = Inter({ subsets: ["latin"] });
 import "@/app/globals.css";
-import { Provider } from "@/app/ui/MainContent";
-import { SpeedInsights } from "@vercel/speed-insights/next"
-
+import HeaderAdmin from "@/components/admin/header-admin";
 
 const LayoutAdmin = async ({
     children
@@ -17,13 +15,14 @@ const LayoutAdmin = async ({
     if(session?.user?.role != 1) {
         redirect('/');
     }
+    
     return (
         <html lang="en">
-          <SpeedInsights/>
             <body className={inter.className}>
-                <Provider session={session}>
+                <HeaderAdmin session={session}/>
+                <div className="container mx-auto">
                     {children}
-                </Provider>
+                </div>
             </body>
       </html>
     );

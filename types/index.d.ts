@@ -39,6 +39,35 @@ declare global {
     }
 
     type CategoriesList = Array<Categories>
+
+    // Type of user
+    type User = {
+        id: number,
+        fullname: string|null,
+        username: string|null,
+        password: string|null,
+        avatar: string|null,
+        created_at: Date|null,
+        updated_at: Date|null,
+        phone: number|null,
+        email: string,
+        role: number|null
+    }
+
+    // type of posts
+    type PostType = {
+        id:number;
+        title:string;
+        created_at:Date;
+        updated_at:Date;
+        content:string;
+        thumbnail:string|null;
+        post_type_id:number;
+        slug:string;
+        is_show: string,
+        author_id: number,
+        comment_count:number
+    }
 }
 
 export type FormSchemaEmployeeType = {
@@ -49,19 +78,6 @@ export type FormSchemaEmployeeType = {
     phone: ZodString;
     department_id: ZodString;
     email: ZodString;
-}
-
-export type User = {
-    id: number,
-    fullname: string|null,
-    username: string|null,
-    password: string|null,
-    avatar: string|null,
-    created_at: Date|null,
-    updated_at: Date|null,
-    phone: number|null,
-    email: string,
-    role: number|null
 }
 
 export type StatusPost = {
@@ -109,4 +125,11 @@ export type TCommentWithUser = {
         avatar: string|null,
         username: string|null
     }
+}
+export type PostCategoriesType = {
+    id: number,
+    name_post_type: string,
+    created_at: Date|null,
+    priority: number,
+    icon: string|null,
 }

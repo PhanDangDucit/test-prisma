@@ -1,6 +1,6 @@
 
-import { TCommentWithUser } from "@/helpers/definitions";
 import { getAllMainComments } from "@/lib/data-comment";
+import { TCommentWithUser } from "@/types";
 
 export async function GET(request: Request) {
     const url = new URL(request.url);

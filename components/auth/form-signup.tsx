@@ -1,29 +1,13 @@
 'use client'
-// react-hot-toast
 import { createNewAccount } from "@/lib/actions-user";
-import { useEffect, useState } from "react";
 import { useFormState } from 'react-dom';
 const FormSignUp = () => {
-    const [password, setPassword] = useState('');
-    const [repeatPass, setRepeatPass] = useState('');
     const initialState = { message: null, errors: {}};
     const [state, dispatch] = useFormState(createNewAccount, initialState);
-    // const handleSubmit = (e:React.FormEvent<HTMLFormElement>)=> {
-    //     if(password != repeatPass) {
-    //         e.preventDefault();
-    //     }
-    // }
-    // const handleChangePassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     setPassword(e.target.value);
-    // }
-    // const handleChangeRepeatPassword = (e: React.ChangeEvent<HTMLInputElement>) => {
-    //     setRepeatPass(e.target.value);
-    // }
 
     return (
         <form className="max-w-sm mx-auto"
             action={dispatch}
-            // onSubmit={(e)=> handleSubmit(e)}
         >
             {/* Email */}
             <div className="mb-5">
@@ -59,8 +43,6 @@ const FormSignUp = () => {
                     Your password
                 </label>
                 <input 
-                    // onChange={(e) => handleChangePassword(e)}
-                    // value={password}
                     type="password" id="password"
                     name="password"
                     className="shadow-sm bg-gray-500 border border-gray-300 text-gray-200 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 dark:shadow-sm-light"

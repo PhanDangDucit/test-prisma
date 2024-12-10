@@ -1,4 +1,4 @@
-import DetailPostPageSkeleton from "@/app/ui/post/skeletons-post";
+import DetailPostPageSkeleton from "@/components/users/post/skeletons-post";
 
 export default function Loading() {
     return <DetailPostPageSkeleton/>;

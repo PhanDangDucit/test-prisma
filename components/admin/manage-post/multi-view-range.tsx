@@ -4,13 +4,13 @@ import {
     useState,
     useRef
 } from "react";
-import { MultiRangeSliderProps } from "@/helpers/definitions";  
 import {
     useSearchParams,
     useRouter,
     usePathname
 } from "next/navigation";
 import { useDebouncedCallback } from 'use-debounce';
+import { MultiRangeSliderProps } from "@/types";
 
 export const MultiRangeSlider: React.FC<MultiRangeSliderProps> = ({
     min,
@@ -26,7 +26,7 @@ export const MultiRangeSlider: React.FC<MultiRangeSliderProps> = ({
     const { replace } = useRouter();
     
     const handleMinViewChange = useDebouncedCallback(() => {
-        const params = new URLSearchParams(searchParams);
+        const params = new URLSearchParams(searchParams.toString());
         if(minVal) {
             params.set('min-view', String(minVal));
         } else {
@@ -34,8 +34,9 @@ export const MultiRangeSlider: React.FC<MultiRangeSliderProps> = ({
         }
         replace(`${pathname}?${params.toString()}`);
     }, 200)
+    
     const handleMaxViewChange = useDebouncedCallback(() => {
-        const params = new URLSearchParams(searchParams);
+        const params = new URLSearchParams(searchParams.toString());
         if(maxVal) {
             params.set('max-view', String(maxVal));
         } else {

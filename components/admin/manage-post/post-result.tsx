@@ -1,7 +1,6 @@
-import { PostType } from "@/helpers/definitions";
 import Link from "next/link";
 import Image from "next/image";
-import { FormChangeIsShowPost } from "@/app/ui/admin/manage-post/form";
+import { FormChangeIsShowPost } from "./form";
 
 const PostResult = ({
     posts,
@@ -10,7 +9,6 @@ const PostResult = ({
     posts:PostType[],
     status:string
 }) => {
-    console.log("status post result::", status);
     return (
         <div className="border-[1px] border-gray-100 w-3/4 mx-auto m-12 bg-white">
             { 

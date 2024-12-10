@@ -1,7 +1,5 @@
-// import { PostType } from "@/helpers/definitions";
-import { SearchQuery } from "@/helpers/definitions";
 import prisma from "@/prisma/client";
-// import moment from 'moment';
+import { SearchQuery } from "@/types";
 
 /**
  * Get post when admin only filter query
@@ -22,9 +20,7 @@ export async function getPostsByFilter(search:SearchQuery) {
     } else {
         var statusFormat = "Show";
     }
-    // console.log("---------------");
-    // console.log("---------------");
-    // console.log("---------------");
+
     try {
         const posts = await prisma.post.findMany({
             where: {
@@ -34,12 +30,6 @@ export async function getPostsByFilter(search:SearchQuery) {
                         mode: 'insensitive'
                     }
                 },
-                // post_status: {
-                //     value: {
-                //         contains: status,
-                //         mode: 'insensitive'
-                //     }
-                // },
                 OR: [
                     {
                         post_type: {
@@ -80,6 +70,7 @@ export async function getPostsByFilter(search:SearchQuery) {
         return posts;
     } catch (error) {
         await prisma.$disconnect();
-        throw new Error("Get post when filter is failed! " + error);
+        console.log("Get post when filter is failed! " + error);
+        return [];
     }
 }

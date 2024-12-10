@@ -1,12 +1,6 @@
 "use client"
-import { TCommentWithUser } from "@/helpers/definitions";
+import { TCommentWithUser } from "@/types";
 import { createContext, useContext, useState } from "react";
-
-// type SubComments = TCommentWithUser[];
-
-// interface SubComments {
-//     subcomment: TCommentWithUser[];
-// }
 
 export type SubcommentsWithParentId = {
     parentId:number;
@@ -27,7 +21,6 @@ export const SubcommentsProvider = function({
 }) {
 
     const [subcommentsWithParentIdList, setSubcommentsWithParentIdList] = useState<SubcommentsWithParentId[]>([]);
-    // console.log("typeof setSubcommentsWithParentIdList the first::", setSubcommentsWithParentIdList)
 
     return (
         <SubcommentsContext.Provider
@@ -46,7 +39,6 @@ export function useSubcommentsContext () {
     const context = useContext(SubcommentsContext) as SubcommentsProvider;
     if(!context) {
         throw new Error ("Subcomments context in subcomment-context file isn't exist!");
-        
     }
     return context;
 }

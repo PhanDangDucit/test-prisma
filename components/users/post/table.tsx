@@ -1,9 +1,8 @@
 
 import Link from "next/link";
-import { PostType } from "@/helpers/definitions";
-import { fetchAllPosts } from "@/lib/posts/data-post";
-import DeletePost from "@/app/ui/post/delete-post";
 import Image from "next/image";
+import { fetchAllPosts } from "@/lib/posts/posts.lib";
+import DeletePost from "./delete-post";
 
 const TablePost = async () => {
     const posts:PostType[] = await fetchAllPosts();

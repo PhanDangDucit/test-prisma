@@ -1,10 +1,10 @@
-
-import { PostCategoriesType, StatusPost } from '@/helpers/definitions';
+"úe client"
 import React, { useState } from "react";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
 import { usePathname, useSearchParams, useRouter } from 'next/navigation';
 import { useDebouncedCallback } from 'use-debounce';
+import { PostCategoriesType, StatusPost } from "@/types";
 
 export function PostCategoriesFilter({
     categories
@@ -15,7 +15,7 @@ export function PostCategoriesFilter({
     const pathname = usePathname();
     const { replace } = useRouter();
     const handleSearchWithCategory = useDebouncedCallback((term: string, arg: string) => {
-        const params = new URLSearchParams(searchParams);
+        const params = new URLSearchParams(searchParams.toString());
         if(term) {
             params.set(`${arg}`, term);
         } else {
@@ -84,7 +84,7 @@ export function PostStatusFilter({
     const { replace } = useRouter();
 
     const handleSearchWithStatus = useDebouncedCallback((term: string, arg: string) => {
-        const params = new URLSearchParams(searchParams);
+        const params = new URLSearchParams(searchParams.toString());
         if(term) {
             params.set(`${arg}`, term);
         } else {
@@ -138,7 +138,7 @@ export function DateFilter() {
     const handleSearchWithStatus = useDebouncedCallback(() => {
         const fromDate = (new Date(startDate)).toISOString();
         const toDate = new Date(endDate).toISOString();
-        const params = new URLSearchParams(searchParams);
+        const params = new URLSearchParams(searchParams.toString());
         if(fromDate) {
             params.set(`from-date`, fromDate);
         } else {

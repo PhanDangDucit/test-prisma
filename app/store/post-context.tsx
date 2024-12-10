@@ -1,5 +1,4 @@
 "use client"
-import { PostType } from "@/helpers/definitions";
 import { createContext, useContext, useEffect, useState } from "react";
 
 export type PostContextProvider = {
@@ -16,35 +15,12 @@ export const PostContextProvider = function({
     children:React.ReactNode,
     slug:string
 }) {
-    // const getPost = () => {
-    //     let post:PostType;
-    //     const result = fetch(`http://localhost:3000/api/posts/post?slug=${slug}`, {
-    //         method: "get",
-    //         headers: {
-    //             "Content-Type": "application/json",
-    //         },
-    //     })
-    //     result
-    //         .then(res => res.json())
-    //         .then((post) => {
-    //             post = JSON.parse(post);
-    //             console.log(post);
-    //         })
-    //         .catch(error => console.log(`Get post is failed!`));
-    //     return post!;
-    // }
-    // const [post, setPost] = useState<PostType>(getPost());
     
     const [post, setPost] = useState<PostType>();
 
     useEffect(
         () => {
-            const result =  fetch(`http://localhost:3000/api/posts/post?slug=${slug}`, {
-                method: "get",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-            })
+            const result =  fetch(`http://localhost:3000/api/posts/post?slug=${slug}`)
 
             result
                 .then(res => res.json())

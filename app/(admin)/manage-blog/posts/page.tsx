@@ -1,9 +1,10 @@
-import PostResult from "@/app/ui/admin/manage-post/post-result";
-import PostSearchBar from "@/app/ui/admin/manage-post/post-search";
-import SideBar from "@/app/ui/admin/manage-post/sidebar";
-import { PostCategoriesType, PostType, SearchQuery } from "@/helpers/definitions";
-import { fetchAllPostCategories, getRangeView } from '@/lib/posts/data-post';
+import PostResult from "@/components/admin/manage-post/post-result";
+import PostSearchBar from "@/components/admin/manage-post/post-search";
+import SideBar from "@/components/admin/manage-post/sidebar";
+import { getAllCategories } from "@/lib/categories/categories.lib";
 import { getPostsByFilter } from "@/lib/data-filter-post";
+import { getRangeView } from "@/lib/posts/posts.lib";
+import { PostCategoriesType, SearchQuery } from "@/types";
 import { BadgePlus } from "lucide-react";
 import Link from "next/link";
 
@@ -16,12 +17,11 @@ export default async function Page({
         maxViews,
         minViews
     } = await getRangeView();
-    console.log("Max views::", maxViews, "Min views::", minViews);
+
     if(!maxViews && !minViews) {
         maxViews = 0;
         minViews = 0;
     }
-    // const today = (new Date()).toISOString().split('T')[0];
     const dateObj = new Date();
     const date = `${dateObj.getFullYear()}-${dateObj.getMonth()-1}-${dateObj.getDate()} `;
     const fromDate = (new Date(`${date}`)).toISOString();
@@ -37,19 +37,12 @@ export default async function Page({
         'to-date': searchParams['to-date'] || toDate,
     }
 
-    // const currentPage = Number(searchParams?.page) || 1;
-    // const totalPages = await fetchInvoicesPages(query);
-    // const posts:PostType[] = await getPostsByFilter(search);
-    // const categories: PostCategoriesType[] = await fetchAllPostCategories();
-    
     const results = await Promise.all([
         await getPostsByFilter(search), 
-        await fetchAllPostCategories()
+        await getAllCategories()
     ]);
     const posts:PostType[] = results[0];
     const categories: PostCategoriesType[] = results[1];
-    // console.log("status::", search.status);
-    // const allStatusPost: StatusPost[] = await getAllStatus();
     const allStatusPost = [{id: 1, value:"show"}, {id: 2, value:"hidden"}];
     
     return (

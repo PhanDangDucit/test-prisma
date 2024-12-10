@@ -3,6 +3,7 @@
 import { revalidatePath } from "next/cache";
 import { redirect } from "next/navigation";
 import prisma from "@/prisma/client";
+
 import {
     CreatePost,
     PostState,
@@ -10,9 +11,8 @@ import {
     validateSlug,
     validatedPost 
 } from '@/validators/validate-post';
-import { processSlugUnique, getPostIdBySlug } from "@/lib/posts/data-post";
 import { CreatePostCategory, PostCategoryState, validatedPostCategory } from "@/validators/validate-categories-post";
-// import { insertDataInPostUser } from "@/lib/data-user";
+import { processSlugUnique } from "./posts/posts.lib";
 
 /**
  * 
@@ -31,13 +31,11 @@ export async function createNewPost(userId:number, prevState:PostState, formData
 
     // create time follow UTC time zone to save data for database
     const updatedAt = new Date();
-    // const post_status_id = 1;
     const {
         post_type_id,
         title
     } = validatedFields.data;
     const slug = processSlugUnique(title);
-    // const authorId = userId;
     // Handle logic with try catch block
     const isValid = validateSlug(slug, title);
     if(!isValid) {
@@ -51,23 +49,14 @@ export async function createNewPost(userId:number, prevState:PostState, formData
                 updated_at: updatedAt,
                 slug,
                 author_id: userId,
-                // post_status_id,
                 post_type_id: Number(post_type_id)
             }
         })
-        // console.log("result:  ", result);
-        // console.log('b3');
-        // const postId = await getPostIdBySlug(slug);
-        // if(!postId) throw new Error("Get post id by slug is failed!");
-        
-        // await insertDataInPostUser(userId, postId);
-        // const insertPostUser = await insertDataInPostUser(userId, postId);
     } catch (error) {
         return {
             message:`Create a post failed:  + ${error}`
         }
     }
-    console.log('b4');
     revalidatePath('/manage-blog/posts');
     redirect('/manage-blog/posts');
 }
@@ -124,38 +113,6 @@ export async function deletePost(id: number) {
     } catch (error) {
         throw new Error("Delete a post failed: " + error);
     }
-}
-
-/**
- * 
- * @param formData 
- * @returns 
- */
-export async function createCategoryPost(prevPostState:PostCategoryState, formData: FormData) {
-    const validatedFields = validatedPostCategory(CreatePostCategory, formData);
-    if (!validatedFields.success) {
-        return {
-            errors: validatedFields.error.flatten().fieldErrors,
-            message: 'Missing Fields. Failed to Create Employee',
-        };
-    }
-
-    // create time follow UTC time zone to save data for database
-    const created_at = new Date();
-    try {
-        await prisma.post_Type.create({
-            data: {
-                ...validatedFields.data,
-                created_at
-            }
-        })
-    } catch (error) {
-        return {
-            message:`Create a category for post is failed:  + ${error}`
-        } 
-    }
-    revalidatePath('/manage-blog/categories');
-    redirect('/manage-blog/categories');
 }
 
 /**

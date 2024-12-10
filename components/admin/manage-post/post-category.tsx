@@ -1,10 +1,10 @@
 import moment from "moment";
-import { PostCategoriesType } from "@/helpers/definitions";
-import DeleteCategory from "@/app/ui/admin/manage-post/delete-category";
 import { CreateModalPostCategories } from "./create-modal";
 import Image from "next/image";
 import icon from "@/public/tree.jpg";
 import { EditModalPostCategories } from "./edit-modal";
+import DeletePostCategory from "./delete-category";
+import { PostCategoriesType } from "@/types";
 
 const PostCategories = ({
     categories
@@ -86,7 +86,7 @@ const PostCategories = ({
                                     <EditModalPostCategories category={category}/>
                                 </td>
                                 <td className="px-6 py-4">
-                                    <DeleteCategory categoryId={category.id}/>
+                                    <DeletePostCategory categoryId={category.id}/>
                                 </td>
                             </tr>
                         ))

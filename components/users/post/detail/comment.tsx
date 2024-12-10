@@ -1,5 +1,4 @@
 'use client'
-import { PostType, TComment, TCommentWithUser, User } from "@/helpers/definitions";
 import { createNewComment } from "@/lib/actions-comment";
 import { CornerDownRight } from "lucide-react";
 import Image from "next/image";
@@ -14,7 +13,8 @@ import { processStringContentAddition } from "@/utils/posts.util";
 import { SubcommentsProvider, SubcommentsWithParentId, useSubcommentsContext } from "@/app/store/subcomment-context";
 import { MainCommentContextProvider, useMainCommentsContext } from "@/app/store/maincomment-context";
 import { sortMainComments } from "@/utils/comment.util";
-import { PostContext, usePostContext } from "@/app/store/post-context";
+import { usePostContext } from "@/app/store/post-context";
+import { TComment, TCommentWithUser } from "@/types";
 
 export function ButtonSubmitNewMainComment ({
     userId
@@ -78,7 +78,7 @@ export const NewCommentMain = memo(function NewCommentMain({
 
     const {post, setPost} = usePostContext();
 
-    const initialState = { message: null || "", errors: {}, data: {}};
+    const initialState = { message: "", errors: {}, data: {}};
     const createCommentWithId = createNewComment.bind(null, post.id, userId, parentId);
     const [state, dispatch] = useFormState(createCommentWithId, initialState);
 
@@ -210,7 +210,7 @@ export function InputReplyComment({
     parentId: number,
     handleAddSubcomment:(newSubcomment: TCommentWithUser) => void,
 }) {
-    const initialState = { message: null || "", errors: {}, data: {}};
+    const initialState = { message: "", errors: {}, data: {}};
     const createCommentWithId = createNewComment.bind(null, postId, userInfo.id, parentId);
     const [state, dispatch] = useFormState(createCommentWithId, initialState);
     const {

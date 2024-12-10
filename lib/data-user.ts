@@ -1,5 +1,3 @@
-// import { unstable_noStore as noCache } from 'next/cache';
-// import moment from 'moment';
 import prisma from "@/prisma/client";
 
 /**
@@ -19,7 +17,7 @@ export async function createNewAccountByProvider(email:string, role:number, name
         await prisma.$disconnect();
     } catch (error) {
         await prisma.$disconnect();
-        throw new Error("create account is failed: " + error);
+        console.log("create account is failed: " + error);
     }
 }
 
@@ -103,27 +101,6 @@ export async function processAccountProvider(email: string|null, userRole:number
     }
 }
 
-// export async function getAuthorId(userId: number) {
-//     try {
-//         const authorId = await prisma.user
-//     } catch (error) {
-//         throw new Error("Get author id by slug: " + error);
-//     }
-// }
-
-// export async function insertDataInPostUser(userId: number, postId: number) {
-//     try {
-//         await prisma.post_User.create({
-//             data: {
-//                 user_id: userId,
-//                 post_id: postId
-//             }
-//         })
-//     } catch (error) {
-//         throw new Error("Insert data in insert data is failed: " + error);
-//     }
-// }
-
 /**
  * Get all users
  * @returns 
@@ -133,7 +110,8 @@ export async function getAllUsers() {
         const users = await prisma.user.findMany();
         return users;
     } catch (error) {
-        throw new Error("Get all users is failed: " + error);
+        console.log("Get all users is failed: " + error);
+        return [];
     }
 }
 

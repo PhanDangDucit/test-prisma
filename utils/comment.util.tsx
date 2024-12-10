@@ -1,4 +1,4 @@
-import { TCommentWithUser } from "@/helpers/definitions";
+import { TCommentWithUser } from "@/types";
 
 export const sortMainComments = (mainComments:TCommentWithUser[]) => {
     return mainComments.sort(

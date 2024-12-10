@@ -1,5 +1,5 @@
-import { TCommentWithUser } from "@/helpers/definitions";
 import prisma from "@/prisma/client";
+import { TCommentWithUser } from "@/types";
 
 /**
  * Get all comment of a post by postId

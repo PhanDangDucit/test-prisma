@@ -1,10 +1,10 @@
 'use client'
 
 import { upload } from '@vercel/blob/client';
-import { PostCategoriesType, PostType } from "@/helpers/definitions";
 import Image from "next/image";
 import { useState } from "react";
 import secondaryThumbnail from "@/public/tree.jpg";
+import { PostCategoriesType } from '@/types';
 // import { validateSlug } from '@/validators/validate-post';
 
 const SidebarPost = ({
@@ -14,7 +14,6 @@ const SidebarPost = ({
     categories: PostCategoriesType[],
     post?:PostType
 }) => {
-    // const inputFileRef = useRef<HTMLInputElement>(null);
     const [thumbnail, setThumbnail] = useState<string>();
     const [loading, setLoading] = useState<boolean>(false);
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {

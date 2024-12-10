@@ -1,7 +1,7 @@
-import EditorBox from "@/app/ui/post/edit-editor-box";
-import { PostCategoriesType, PostType } from "@/helpers/definitions";
-import { fetchAllPostCategories } from "@/lib/posts/data-post";
-import { fetchPostBySlug } from '@/lib/posts/data-post';
+import EditorBox from "@/components/users/post/create-editor-box";
+import { getAllCategories } from "@/lib/categories/categories.lib";
+import { fetchPostBySlug } from "@/lib/posts/posts.lib";
+import { PostCategoriesType } from "@/types";
 
 const Page = async ({
     params
@@ -11,12 +11,13 @@ const Page = async ({
     }
 }) => {
     const slug = params.slug;
-    const postCategories:PostCategoriesType[] = await fetchAllPostCategories();
+    const postCategories:PostCategoriesType[] = await getAllCategories();
     const post = await fetchPostBySlug(slug) as PostType;
+
     return (
         post && (
             <div className="min-h-screen p-24 w-full">
-                <EditorBox categories={postCategories} slug={slug} post={post}/>
+                <EditorBox categories={postCategories}/>
             </div>
         )
     )

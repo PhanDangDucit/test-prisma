@@ -6,8 +6,9 @@ import prisma from "@/prisma/client";
  */
 export async function getAllCategories() {
     try {
-        return await prisma.post_types.findMany();
+        return await prisma.post_Type.findMany();
     } catch (error) {
-        throw new Error("Get all categories failed! " + error);
+        console.log("Get all categories failed! " + error);
+        return [];
     }
 }
