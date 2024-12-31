@@ -10,13 +10,13 @@ importers:
     dependencies:
       '@auth/prisma-adapter':
         specifier: ^1.5.1
-        version: 1.6.0(@prisma/client@5.22.0(prisma@6.1.0))
+        version: 1.6.0(@prisma/client@6.1.0(prisma@6.1.0))
       '@hookform/resolvers':
         specifier: ^3.9.0
         version: 3.9.1(react-hook-form@7.54.2(react@18.3.1))
       '@prisma/client':
-        specifier: ^5.22.0
-        version: 5.22.0(prisma@6.1.0)
+        specifier: ^6.1.0
+        version: 6.1.0(prisma@6.1.0)
       '@radix-ui/react-accordion':
         specifier: ^1.2.0
         version: 1.2.2(@types/react-dom@18.3.5(@types/react@18.3.18))(@types/react@18.3.18)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
@@ -732,9 +732,9 @@ packages:
   '@popperjs/core@2.11.8':
     resolution: {integrity: sha512-P1st0aksCrn9sGZhp8GMYwBnQsbvAWsZAX44oXNNvLHGqAOcoVxmjZiohstwQ7SqKnbR47akdNi+uleWD8+g6A==}
 
-  '@prisma/client@5.22.0':
-    resolution: {integrity: sha512-M0SVXfyHnQREBKxCgyo7sffrKttwE6R8PMq330MIUF0pTwjUhLbW84pFDlf06B27XyCR++VtjugEnIHdr07SVA==}
-    engines: {node: '>=16.13'}
+  '@prisma/client@6.1.0':
+    resolution: {integrity: sha512-AbQYc5+EJKm1Ydfq3KxwcGiy7wIbm4/QbjCKWWoNROtvy7d6a3gmAGkKjK0iUCzh+rHV8xDhD5Cge8ke/kiy5Q==}
+    engines: {node: '>=18.18'}
     peerDependencies:
       prisma: '*'
     peerDependenciesMeta:
@@ -4332,10 +4332,10 @@ snapshots:
       preact: 10.11.3
       preact-render-to-string: 5.2.3(preact@10.11.3)
 
-  '@auth/prisma-adapter@1.6.0(@prisma/client@5.22.0(prisma@6.1.0))':
+  '@auth/prisma-adapter@1.6.0(@prisma/client@6.1.0(prisma@6.1.0))':
     dependencies:
       '@auth/core': 0.29.0
-      '@prisma/client': 5.22.0(prisma@6.1.0)
+      '@prisma/client': 6.1.0(prisma@6.1.0)
     transitivePeerDependencies:
       - '@simplewebauthn/browser'
       - '@simplewebauthn/server'
@@ -4859,7 +4859,7 @@ snapshots:
 
   '@popperjs/core@2.11.8': {}
 
-  '@prisma/client@5.22.0(prisma@6.1.0)':
+  '@prisma/client@6.1.0(prisma@6.1.0)':
     optionalDependencies:
       prisma: 6.1.0
 
