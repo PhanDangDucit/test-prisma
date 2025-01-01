@@ -1,6 +1,5 @@
 import NextAuth from "next-auth";
 import {options} from "./configs/auth.config";
-// import { NextAuthConfig } from "next-auth";
 
 declare module "next-auth" {
     interface User {

@@ -11,3 +11,4 @@ const Page = async () => {
 }
  
 export default Page;
+// @prisma/client: 5.11.0

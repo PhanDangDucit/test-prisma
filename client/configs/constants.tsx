@@ -1,6 +1,5 @@
 export const initialState = { message: null || "", errors: {} };
 
-
 export const user = {
     id: 0,
     fullname: null,

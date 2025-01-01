@@ -44,9 +44,3 @@ $ git pull
 $ git push origin master
 $ git add/rm <file>
 ```
-
-<!--  -->
-
-# Api
-- [get] /blog/[slug]
-

@@ -25,7 +25,7 @@ export const options = {
                 if(profile?.email == "phanduc.flp@gmail.com") {
                     userRole = 1;
                 }
-                console.log("profile:::", profile);
+                // console.log("profile:::", profile);
                 return {
                     ...profile,
                     id: profile.sub,
@@ -44,7 +44,7 @@ export const options = {
                 token.role = user.role;
                 token.username = user.name;
             };
-            console.log("token:: ", token);
+            // console.log("token:: ", token);
             return token;
         },
         async session({session, token}: {session:Session, token: JWT}) {
@@ -53,7 +53,7 @@ export const options = {
                 delete session.user.name;
                 session.user.name = token.name;
             }
-            console.log("session:: ", session);
+            // console.log("session:: ", session);
             return session;
         },
     }

@@ -1,0 +1,22 @@
+# Enviroment variables
+.env
+
+# Format
+.editorconfig
+
+# Git
+.gitignore
+git
+
+# Logging, tracing, monitoring
+log
+
+# Test
+jest.config.ts
+jest.setup.ts
+
+# Others
+__docs__
+__sql__
+.vscode
+tests
