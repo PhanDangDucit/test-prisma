@@ -22,7 +22,12 @@ $ cd test-prisma
 $ git checkout duc_prisma
 ```
 
-- Step 3: You can install dependencies
+- Step 3: Changing "client" folder:
+```bash
+$ cd client
+```
+
+- Step 4: You can install dependencies and run "client" instance
 ```bash
 $ npm install
 
@@ -30,14 +35,15 @@ $ npm run dev
 ```
 
 # Note
-
-- All environment variables are setup by me. You can change them to your own environment.
+- All environment variables are set up by me. You can change them to your own environment.
 
 # Reference
 
 - Next JS: https://nextjs.org/docs
 
 - PostgreSql: https://www.postgresql.org/docs/current/index.html
+
+- Prisma: https://www.prisma.io/
 
 # Contact me
 
