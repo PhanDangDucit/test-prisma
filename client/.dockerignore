@@ -3,6 +3,7 @@
 
 # Format
 .editorconfig
+.eslintrc
 
 # Git
 .gitignore
@@ -16,6 +17,7 @@ jest.config.ts
 jest.setup.ts
 
 # Others
+node_modules
 __docs__
 __sql__
 .vscode
