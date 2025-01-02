@@ -56,3 +56,7 @@ $ npm run dev
 
 # How to define a version of app
 - [Best practice software version](https://stackoverflow.com/questions/2864448/best-practice-software-versioning)
+
+- [Semantic Versioning 2.0.0](https://semver.org/)
+
+- [How to version your app in a continuous development world](https://medium.com/bilue/how-to-version-your-app-in-a-continuous-development-world-b4f23c2beab3)
