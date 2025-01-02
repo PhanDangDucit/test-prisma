@@ -34,6 +34,8 @@ $ npm install
 $ npm run dev
 ```
 
+
+
 # Note
 - All environment variables are set up by me. You can change them to your own environment.
 
