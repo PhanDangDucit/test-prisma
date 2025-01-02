@@ -52,3 +52,7 @@ $ npm run dev
 - Gmail: phanduc.flp@gmail.com
 - Facebook: https://www.facebook.com/phanduc.it
 - Linkedin: https://www.linkedin.com/in/phandangducit
+
+
+# How to define a version of app
+- [Best practice software version](https://stackoverflow.com/questions/2864448/best-practice-software-versioning)
