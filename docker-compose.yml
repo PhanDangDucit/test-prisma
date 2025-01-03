@@ -8,14 +8,17 @@ services:
     ports:
       - 3000:3000
     depends_on:
-      user_service:
-        condition: service_started
-        restart: true
-      post_service:
-        condition: service_started
-        restart: true
-      comment_service:
-        condition: service_started
+      # user_service:
+      #   condition: service_started
+      #   restart: true
+      # post_service:
+      #   condition: service_started
+      #   restart: true
+      # comment_service:
+      #   condition: service_started
+      #   restart: true
+      postgres-db:
+        condition: service_completed_successfully
         restart: true
     restart: on-failure
     volumes:
@@ -32,3 +35,12 @@ services:
 
   # comment_service:
   # post_service:
+  postgres-db:
+    image: postgres
+    environment:
+      - POSTGRES_PASSWORD=secret
+    restart: on-failure
+    volumes:
+      - data/:/var/lib/postgresql/data
+    ports:
+      - "5342:5342"

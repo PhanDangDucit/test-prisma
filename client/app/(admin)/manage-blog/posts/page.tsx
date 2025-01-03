@@ -24,7 +24,7 @@ export default async function Page({
     }
     const dateObj = new Date();
     const date = `${dateObj.getFullYear()}-${dateObj.getMonth()-1}-${dateObj.getDate()} `;
-    const fromDate = (new Date(`${date}`)).toISOString();
+    const fromDate = (new Date(`${date}`)).toDateString();
     const toDate = new Date();
     const search = {
         q:  searchParams.q || '',

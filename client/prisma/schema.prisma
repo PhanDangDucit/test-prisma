@@ -1,13 +1,17 @@
-datasource db {
-  provider = "postgresql"
-  url = env("DATABASE_URL_DEV")
-}
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
   provider = "prisma-client-js"
-  previewFeatures = ["relationJoins"]
 }
 
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL_DEV")
+}
 model User {
   id         Int      @id @default(autoincrement())
   fullname   String?     @db.VarChar(255)
@@ -23,8 +27,6 @@ model User {
   is_show Show @default(Show)
   post Post[]
   comment Comment[]
-  collection Collection[]
-  like_status Like_Status[]
 }
 
 model Address {
@@ -55,7 +57,6 @@ model Post {
   author_id Int
   comment_count Int @default(0)
   comment Comment[]
-  post_collection Post_Collection[]
 }
 
 model Post_Type {
@@ -67,17 +68,6 @@ model Post_Type {
   post           Post[]
 }
 
-model Like_Status {
-  id             Int    @id     @default(autoincrement())
-  value_like_status String @db.VarChar(30) @unique
-  icon_status String
-  user   User   @relation(fields: [user_id], references: [id])
-  user_id Int
-  comment   Comment   @relation(fields: [comment_id], references: [id])
-  comment_id Int
-  // comment Comment[]
-  @@index([id, value_like_status])
-}
 
 model Comment {
   id         Int      @id        @default(autoincrement())
@@ -93,23 +83,4 @@ model Comment {
   subcomment_count Int  @default(0)
   created_at DateTime    @default(now())
   updated_at DateTime    @default(now()) @updatedAt
-  like_status Like_Status[]
-}
-
-model Collection {
-  id         Int      @id @default(autoincrement())
-  value String @db.VarChar(30) @unique
-  user         User   @relation(fields: [user_id], references: [id])
-  user_id      Int
-  post_collection Post_Collection[]
-}
-
-model Post_Collection {
-  id         Int      @id @default(autoincrement())
-  created_at DateTime    @default(now())
-  updated_at DateTime    @default(now()) @updatedAt
-  post  Post  @relation(fields: [post_id], references: [id])
-  post_id      Int
-  collection  Collection  @relation(fields: [collection_id], references: [id])
-  collection_id      Int
 }

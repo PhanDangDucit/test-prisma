@@ -23,7 +23,7 @@ export default async function Page  ({
             {/* Many view posts */}
             <div className="grid grid-cols-3 gap-4">
                 {
-                    viewPosts.map((post)=> post && (
+                    viewPosts.map(post => post && (
                         <div className="card bg-gray-100 shadow-xl relative px-10 pt-10 p-4" key={post.id}>
                         <figure className="px-10 pt-10 p-4 h-[182px] w-[340px] relative m-auto">
                             <Image

@@ -123,10 +123,8 @@ export async function fetchManyViewsEachPost(post_type_id: number, quantity: num
                 views: 'desc'
             },
         })
-        await prisma.$disconnect();
         return posts;
     } catch (error) {
-        await prisma.$disconnect();
         throw new Error("Get post that has the best views is failed!");
     }
 }
