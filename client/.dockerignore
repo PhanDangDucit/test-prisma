@@ -1,7 +1,7 @@
 # Enviroment variables
 .env
 
-# Format
+# Format and types
 .editorconfig
 .eslintrc
 
@@ -22,3 +22,4 @@ __docs__
 __sql__
 .vscode
 tests
+fake-data
