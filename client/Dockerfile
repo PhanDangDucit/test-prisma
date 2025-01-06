@@ -1,34 +1,62 @@
-# Stage 1: build source code
-FROM node:22.11.0-alpine3.20 AS build
+# Global
+ARG ALPINE_VERSION="3.20"
+ARG NODE_VERSION="22.11.0"
+ARG WORKDIR="/app/frontend"
 
-WORKDIR /app/frontend
+# Stage 1: build source code
+
+FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION} AS build
+
+ARG WORKDIR
+
+WORKDIR ${WORKDIR}
 
 COPY package*.json .
 
 COPY .npmrc .
 
-RUN npm install
+RUN npm ci
 
 COPY . .
 
 RUN npx prisma generate
 
-RUN export DATABASE_URL_DEV=postgresql://postgres:secret@127.0.0.1:5432/postgres
-
 RUN npm run build
 
-# Stage 2:
+# Stage 2: Install dependencies
 
-FROM node:22.11.0-alpine3.20
+FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION} AS dependencies
 
-WORKDIR /app/frontend
+ARG WORKDIR
 
-COPY --from=build /app/frontend/.next ./.next
+WORKDIR ${WORKDIR}
 
-COPY --from=build /app/frontend/node_modules ./node_modules
+COPY --from=build ${WORKDIR}/package*.json .
 
-COPY --from=build /app/frontend/package.json ./package.json
+COPY --from=build ${WORKDIR}/.npmrc .
 
-RUN npm install --production
+COPY --from=build ${WORKDIR}/prisma ./prisma
+
+RUN npm ci --omit=dev && \ 
+    npm cache clean --force
+    
+RUN npx prisma generate
+
+# Stage 3: production
+FROM node:${NODE_VERSION}-alpine${ALPINE_VERSION} AS production
+
+ARG WORKDIR
+
+WORKDIR ${WORKDIR}
+
+COPY --from=build ${WORKDIR}/.next ./.next
+
+COPY --from=build ${WORKDIR}/prisma ./prisma
+
+COPY --from=dependencies ${WORKDIR}/package.json .
+
+COPY --from=build ${WORKDIR}/.env.prod .env
+
+COPY --from=dependencies ${WORKDIR}/node_modules ./node_modules
 
 CMD [ "npm", "start" ]

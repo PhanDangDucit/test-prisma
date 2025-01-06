@@ -10,16 +10,16 @@ export function UserMenu({
 }) {
     return (
         <div className="dropdown dropdown-end">
-                {
-                    session ? <UserMenuAuthed session={session}/>
-                        : (
-                            <Button className="bg-white hover:bg-gray-400">
-                                {
-                                    <Link href="/api/auth/signin" className="text-black">Sign In</Link>
-                                }
-                            </Button>
-                        )
-                }
-            </div>
+            {
+                session ? <UserMenuAuthed session={session}/>
+                    : (
+                        <Button className="bg-white hover:bg-gray-400">
+                            {
+                                <Link href="/api/auth/signin" className="text-black">Sign In</Link>
+                            }
+                        </Button>
+                    )
+            }
+        </div>
     )
 }
