@@ -1,5 +1,11 @@
+# package managers
 node_modules
+
+# Type
 .eslintrc.js
-tsc
-build
+
+# Version control
 .gitignore
+
+# environment
+.env
