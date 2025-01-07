@@ -18,7 +18,7 @@ export const getAllPosts = async (offset: string = "0", limit: string = "5") => 
  */
 export async function fetchAllPosts() {
     try {
-        return await prisma.post.findMany();
+        return await prisma.post.findMany() ?? [];
     } catch (error) {
         console.log("Get all post failed! ");
     }
