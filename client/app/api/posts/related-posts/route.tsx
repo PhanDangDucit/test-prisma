@@ -1,6 +1,5 @@
 import { fetchNewPostRelated } from "@/lib/posts/posts.lib";
 
-// 
 export async function GET(request: Request) {
     const url = new URL(request.url);
     
