@@ -12,6 +12,6 @@ export const getFielBySearchParam = ({
 
 export function getURL() {
     const hostDev = process.env.NEXT_PUBLIC_HOST_DEV ?? "http://localhost:3000";
-    const hostTech = process.env.NEXT_PUBLIC_HOST_TECH;
-    return process.env.NEXT_PUBLIC_NODE_ENV == "development" ? hostDev : hostTech;
+    const hostPro = process.env.NEXT_PUBLIC_HOST_PROD;
+    return process.env.NEXT_PUBLIC_NODE_ENV == "development" ? hostDev : hostPro;
 }
