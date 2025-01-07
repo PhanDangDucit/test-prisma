@@ -14,8 +14,8 @@ export default async function Page  ({
 }) {
     const categories = await fetchCategoriesIdByTypeName(params.category);
     if(!categories) return;
-    const viewPosts = await fetchManyViewsEachPost(categories.id, 9);
-    const latestPosts = await fetchLatestPostsForPostType(categories.id, 10);
+    const viewPosts = await fetchManyViewsEachPost(categories.id, 9) ?? [];
+    const latestPosts = await fetchLatestPostsForPostType(categories.id, 10) ?? [];
 
     return (
         <>
