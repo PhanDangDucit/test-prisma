@@ -1,0 +1,87 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("POSTGRES_PRISMA_URL") // uses connection pooling
+  directUtl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+}
+model User {
+  id         Int      @id @default(autoincrement())
+  fullname   String?     @db.VarChar(255)
+  username   String?     @db.VarChar(255)
+  password   String?     @db.VarChar(50)
+  avatar     String?     @db.VarChar(255)
+  created_at DateTime    @default(now())
+  updated_at DateTime    @default(now()) @updatedAt
+  phone      Int?
+  email      String @unique
+  role       Int         @default(0)
+  addresses  Address[]
+  is_show Show @default(Show)
+  post Post[]
+  comment Comment[]
+}
+
+model Address {
+  id      Int @id @default(autoincrement())
+  country String @db.VarChar(50)
+  user    User   @relation(fields: [user_id], references: [id])
+  user_id Int
+}
+
+enum Show {
+  Show
+  Hidden
+}
+
+model Post {
+  id             Int      @id @default(autoincrement())
+  title          String      @db.VarChar(150)
+  created_at     DateTime    @default(now())
+  updated_at     DateTime    @default(now()) @updatedAt
+  content        String
+  thumbnail       String      @db.VarChar(255)
+  post_type      Post_Type   @relation(fields: [post_type_id], references: [id])
+  post_type_id   Int
+  slug String   @unique
+  views Int      @default(0)
+  is_show Show @default(Show)
+  user User @relation(fields: [author_id], references: [id])
+  author_id Int
+  comment_count Int @default(0)
+  comment Comment[]
+}
+
+model Post_Type {
+  id             Int @id @default(autoincrement())
+  name_post_type String @db.VarChar(30) @unique
+  created_at  DateTime @default(now())
+  priority Int   @default(0) @unique
+  icon String?
+  post           Post[]
+}
+
+
+model Comment {
+  id         Int      @id        @default(autoincrement())
+  content        String 
+  user         User   @relation(fields: [user_id], references: [id])
+  user_id      Int
+  like_count Int @default(0)
+  post         Post   @relation(fields: [post_id], references: [id])
+  post_id      Int
+  parent   Comment?  @relation(name: "parent", fields: [parent_id], references: [id])
+  parents  Comment[] @relation(name: "parent")
+  parent_id Int?
+  subcomment_count Int  @default(0)
+  created_at DateTime    @default(now())
+  updated_at DateTime    @default(now()) @updatedAt
+}
