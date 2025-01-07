@@ -233,10 +233,9 @@ export async function fetchCategoriesIdByTypeName(name_post_type:string) {
                 id:true
             }
         })
-        await prisma.$disconnect();
-        return posts;
+        if(posts) return posts;
+        return null;
     } catch (error) {
-        await prisma.$disconnect();
         console.log("Get many view post is failed! " + error);
     }
 }
