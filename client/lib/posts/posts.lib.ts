@@ -92,9 +92,11 @@ export async function fetchLatestPostsForPostType(post_type_id: number, limit: n
                 created_at: 'desc'
             },
         })
-        return post;
+
+        if(post) return post;
+        return []
     } catch (error) {
-        console.log("Get one post failed!");
+        console.log("Get related posts failed!");
     }
 }
 
@@ -191,11 +193,8 @@ export async function fetchThumbnail(title: string) {
  */
 export async function fetchNewPostRelated(id: number) {
     try {
-        const posts = await fetchLatestPostsForPostType(id, 2);
-        await prisma.$disconnect();
-        return posts;
+        return await fetchLatestPostsForPostType(id, 2);
     } catch (error) {
-        await prisma.$disconnect();
         console.log("Get post related is failed! " + error);
     }
 }
