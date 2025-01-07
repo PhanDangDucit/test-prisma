@@ -6,6 +6,20 @@
 
 - Link hosting: https://test-prisma-sage.vercel.app/
 
+# Optimize
+## Docker images
+- Docker images decrease from `"1.4GB"` to `"285MB"` at `client` folder (**`Next.js`** apllication)
+
+```bash
+# change directory
+$ cd client
+
+# 
+$ docker build -t client-optimization .
+
+$ docker build -t client-no-optimization -f Dockerfile.large-size .
+```
+
 # How to run code
 
 - Step 1: Let you clone code from `github.com` to folder that contains this source code.
