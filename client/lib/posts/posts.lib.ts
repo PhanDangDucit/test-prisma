@@ -18,12 +18,9 @@ export const getAllPosts = async (offset: string = "0", limit: string = "5") => 
  */
 export async function fetchAllPosts() {
     try {
-        const allPosts = await prisma.post.findMany();
-        await prisma.$disconnect();
-        return allPosts;
+        return await prisma.post.findMany();
     } catch (error) {
-        await prisma.$disconnect();
-        throw new Error("Get all post failed! " + error);
+        console.log("Get all post failed! ");
     }
 }
 
@@ -40,11 +37,9 @@ export async function fetchPostBySlug(slug:string) {
                 slug
             },
         })
-        // await prisma.$disconnect();
         return post;
     } catch (error) {
-        // await prisma.$disconnect();
-        throw new Error("Get one post failed!");
+        console.log("Get one post failed!");
     }
 }
 
@@ -74,11 +69,9 @@ export async function getPostByCategoryId(post_type_id: number) {
                 created_at: 'desc'
             },
         })
-        await prisma.$disconnect();
         return post;
     } catch (error) {
-        await prisma.$disconnect();
-        throw new Error("Get one post failed!");
+        console.log("Get one post failed!");
     }
 }
 
@@ -99,11 +92,9 @@ export async function fetchLatestPostsForPostType(post_type_id: number, limit: n
                 created_at: 'desc'
             },
         })
-        await prisma.$disconnect();
         return post;
     } catch (error) {
-        await prisma.$disconnect();
-        throw new Error("Get one post failed!");
+        console.log("Get one post failed!");
     }
 }
 
@@ -125,7 +116,7 @@ export async function fetchManyViewsEachPost(post_type_id: number, quantity: num
         })
         return posts;
     } catch (error) {
-        throw new Error("Get post that has the best views is failed!");
+        console.log("Get post that has the best views is failed!");
     }
 }
 
@@ -145,10 +136,8 @@ export async function updatePostThumbnail(slug:string, thumbnail:string) {
               thumbnail,
             },
         })
-        await prisma.$disconnect();
     } catch (error) {
-        await prisma.$disconnect();
-        throw new Error("Update image url faild! " + error);
+        console.log("Update image url faild! ");
     }
 }
 
@@ -168,7 +157,7 @@ export async function fetchPostCategoryById(id: number) {
         return category?.name_post_type;
     } catch (error) {
         await prisma.$disconnect();
-        throw new Error("Get image url faild! " + error);
+        console.log("Get image url faild! " + error);
     }
 }
 
@@ -191,7 +180,7 @@ export async function fetchThumbnail(title: string) {
         return thumbnail
     } catch (error) {
         await prisma.$disconnect();
-        throw new Error("Get image url faild! " + error);
+        console.log("Get image url fail! " + error);
     }
 }
 
@@ -207,7 +196,7 @@ export async function fetchNewPostRelated(id: number) {
         return posts;
     } catch (error) {
         await prisma.$disconnect();
-        throw new Error("Get post related is failed! " + error);
+        console.log("Get post related is failed! " + error);
     }
 }
 
@@ -227,7 +216,7 @@ export async function fetchManyViewsPosts(quantity:number) {
         return posts;
     } catch (error) {
         await prisma.$disconnect();
-        throw new Error("Get many view post is failed! " + error);
+        console.log("Get many view post is failed! " + error);
     }
 }
 
@@ -249,7 +238,7 @@ export async function fetchCategoriesIdByTypeName(name_post_type:string) {
         return posts;
     } catch (error) {
         await prisma.$disconnect();
-        throw new Error("Get many view post is failed! " + error);
+        console.log("Get many view post is failed! " + error);
     }
 }
 
@@ -301,6 +290,6 @@ export async function getPostIdBySlug(slug: string) {
         return post?.id;
     } catch (error) {
         await prisma.$disconnect();
-        throw new Error("Get post id by slug is failed! " + error);
+        console.log("Get post id by slug is failed! " + error);
     }
 }

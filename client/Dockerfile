@@ -31,13 +31,9 @@ ARG WORKDIR
 WORKDIR ${WORKDIR}
 
 COPY --from=build ${WORKDIR}/.next/standalone .
-COPY --from=build ${WORKDIR}/.next/static static
+COPY --from=build ${WORKDIR}/.next/static ./.next/static
 COPY --from=build ${WORKDIR}/prisma ./prisma
-COPY --from=build ${WORKDIR}/.env.prod .env
 
-EXPOSE 3000
-
-ENV PORT 3000
-ENV HOSTNAME "0.0.0.0"
+ENV HOSTNAME="0.0.0.0"
 
 CMD [ "npm", "start" ]
