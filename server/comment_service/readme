@@ -1,5 +1,0 @@
-```bash
-$ docker build -t comment_service:0.0.1 .
-
-$ docker run --name comments -dp 8003:8003 comment:0.0.1
-```

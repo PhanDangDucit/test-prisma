@@ -5,7 +5,7 @@ import { fetchAllPosts } from "@/lib/posts/posts.lib";
 import DeletePost from "./delete-post";
 
 const TablePost = async () => {
-    const posts = await fetchAllPosts();
+    const posts = await fetchAllPosts() ?? [];
     return (
         <div className="relative overflow-x-auto shadow-md sm:rounded-lg mt-5 p-4">
             <table className="w-full text-sm text-left rtl:text-right text-gray-500 dark:text-gray-400">
