@@ -14,6 +14,7 @@ export function PostList ({postsInit}: {postsInit: PostsList}) {
                     <div key={post.id} className="my-5">
                         <Link
                             href={`/blog/${post.slug}`}
+                            className="underline"
                         >
                             {post.title}
                         </Link>
