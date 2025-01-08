@@ -11,14 +11,7 @@ export function PostList ({postsInit}: {postsInit: PostsList}) {
         <div className="flex flex-col items-center">
             {
                 posts.map(post => (
-                    <div key={post.id} className="h-96 w-96">
-                        <Image 
-                            src={post.thumbnail}
-                            width={300}
-                            height={300}
-                            className=""
-                            alt={post.title}
-                        />
+                    <div key={post.id} className="my-5">
                         <Link
                             href={`/blog/${post.slug}`}
                         >
