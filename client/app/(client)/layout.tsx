@@ -19,11 +19,11 @@ export const metadata: Metadata = {
  * @returns 
  */
 
-async function getAllCategories () {
-  return (await fetch(`${getURL()}/api/categories`, {
-      cache: "no-cache"
-  })).json()   
-}
+// async function getAllCategories () {
+//   return (await fetch(`${getURL()}/api/categories`, {
+//       cache: "no-cache"
+//   })).json()   
+// }
 
 export default async function RootLayout({
   children,
@@ -31,20 +31,8 @@ export default async function RootLayout({
   children: React.ReactNode;
 }) {
 
-  const [categoriesRes, session] = await Promise.all([
-    await getAllCategories(),
-    await auth()
-  ]);
+  const session = await auth()
 
-  let categories: CategoriesList = [];
-  if(categoriesRes["status"] == "201") {
-    categories = categoriesRes["data"]
-  }
-  console.log("data in categories:", categories);
-
-  /**
-   * Check admin
-   */
   if(session?.user?.role == 1) {
     redirect('/dashboard');
   }
@@ -53,7 +41,7 @@ export default async function RootLayout({
     <html lang="en">
       <SpeedInsights/>
       <body className={inter.className}>
-        <Header session={session ? session : null} categories={categories}/>
+        <Header session={session ? session : null}/>
           <main className="min-h-screen p-24 w-full">
             {children}
           </main>

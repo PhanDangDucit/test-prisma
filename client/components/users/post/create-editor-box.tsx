@@ -10,7 +10,7 @@ import { initialState } from '@/configs/constants';
 import { PostCategoriesType } from '@/types';
 import Toolbar from './toolbar';
 import SidebarPost from './sidebar-post';
-import { useAdminInfoContext } from '@/app/store/admin/admin-info';
+import { useAdminInfoContext } from '@/stores/admin/admin-info';
 
 const EditorBox = ({
     categories,

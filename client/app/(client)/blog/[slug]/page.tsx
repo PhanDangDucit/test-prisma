@@ -2,12 +2,12 @@ import { auth } from "@/auth";
 import { getUserByEmail } from "@/lib/actions-user";
 
 import { Suspense } from "react";
-import { PostContextProvider } from "@/app/store/post-context";
 import { getAuthorOfPost } from "@/lib/data-user";
 import ContentMainDetailPost from "@/components/users/post/detail/content";
 import CommentPart from "@/components/users/post/detail/comment";
 import { fetchPostBySlug, fetchPostCategoryById } from "@/lib/posts/posts.lib";
 import { ContentMainDetailPostSkeleton, ManyViewsPostsSkeleton, TheBestViewPostSkeleton } from "@/components/users/post/skeletons-post";
+import { PostContextProvider } from "@/stores/post-context";
 
 export default async function Page({ 
     params

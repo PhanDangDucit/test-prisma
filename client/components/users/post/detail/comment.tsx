@@ -10,11 +10,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useDebouncedCallback } from "use-debounce";
 import { nanoid } from 'nanoid';
 import { processStringContentAddition } from "@/utils/posts.util";
-import { SubcommentsProvider, SubcommentsWithParentId, useSubcommentsContext } from "@/app/store/subcomment-context";
-import { MainCommentContextProvider, useMainCommentsContext } from "@/app/store/maincomment-context";
 import { sortMainComments } from "@/utils/comment.util";
-import { usePostContext } from "@/app/store/post-context";
 import { TComment, TCommentWithUser } from "@/types";
+import { MainCommentContextProvider, useMainCommentsContext } from "@/stores/maincomment-context";
+import { usePostContext } from "@/stores/post-context";
+import { SubcommentsProvider, SubcommentsWithParentId, useSubcommentsContext } from "@/stores/subcomment-context";
 
 export function ButtonSubmitNewMainComment ({
     userId
