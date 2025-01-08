@@ -13,5 +13,4 @@ $ docker run --name postgres-test -e POSTGRES_PASSWORD=secret -dp 5432:5432 post
 $ docker run --name frontend-test -dp 3000:3000 frontend:0.4.0
 $ docker run --name frontend-test -dp 3000:3000 frontend:0.5.0
 
-0.1.0 # hostname
 ```
