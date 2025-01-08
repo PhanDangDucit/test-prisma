@@ -1,16 +1,25 @@
-import express, { Request, Response } from 'express';
-import { PrismaClient } from '@prisma/client';
+import express from 'express';
+
+import { config } from "dotenv";
+import { postApi } from './routes';
+import compression from 'compression';
 
 const app = express();
-const prisma = new PrismaClient();
 
+// Environment variables
+config();
+
+// Middlewares
 app.use(express.json());
+app.use(compression());
 
-app.get('/', (req: Request, res: Response) => {
-  res.send('Hello, Prisma with Express!');
-});
 
-const PORT = process.env.PORT || 3000;
+// Api
+postApi(app);
+
+const PORT = process.env.PORT || 8002;
+
+// Start the server and listen on port
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

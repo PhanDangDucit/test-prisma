@@ -1,0 +1,6 @@
+```bash
+$ docker build --no-cache -t post_service:0.0.1 .
+$ docker build -t post_service:0.0.1 .
+
+$ docker run --name posts -dp 8002:8002 post_service:0.0.1
+```

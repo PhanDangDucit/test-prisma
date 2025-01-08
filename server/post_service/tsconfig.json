@@ -6,7 +6,10 @@
     "esModuleInterop": true,
     "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "outDir": "./dist"
+    // "noEmit": true,
+    "outDir": "./build",
+    "rootDir": "src",
   },
-  "include": ["src/**/*"]
+  "include": ["src/**/*", "src/*"],
+  "exclude": ["node_modules"]
 }
