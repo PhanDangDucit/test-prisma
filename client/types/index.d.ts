@@ -7,22 +7,22 @@ declare global {
      */
     type Posts = {
         id: number;
-        post_title: string;
+        title: string;
         created_at: string;
         updated_at: string;
-        post_content: string;
-        post_thumbnail: string;
-        post_slug: string;
-        post_type_id: string;
-        post_views: string;
-        post_is_publish: boolean;
-        post_is_draft: boolean;
-        post_date: string;
-        post_comment_count: number;
-        post_share_count: number;
-        post_score: number;
-        post_author_id: number;
-        post_is_free: boolean;
+        content: string;
+        thumbnail: string;
+        slug: string;
+        type_id: string;
+        views: string;
+        is_publish: boolean;
+        is_draft: boolean;
+        date: string;
+        comment_count: number;
+        share_count: number;
+        score: number;
+        author_id: number;
+        is_free: boolean;
     }
 
     type PostsList = Array<Posts>;

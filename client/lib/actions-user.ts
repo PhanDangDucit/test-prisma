@@ -117,6 +117,6 @@ export async function getUserByEmail(email: string) {
         })
         return user;
     } catch (error) {
-        throw new Error("Find user is failed:: " + error);
+        console.log("Find user is failed:: ");
     }
 }

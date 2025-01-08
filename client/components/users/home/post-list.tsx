@@ -1,5 +1,6 @@
 "use client"
 import Image from "next/image";
+import Link from "next/link";
 import { useState } from "react";
 
 export function PostList ({postsInit}: {postsInit: PostsList}) {
@@ -7,18 +8,22 @@ export function PostList ({postsInit}: {postsInit: PostsList}) {
     const [posts, setPosts] = useState<PostsList>(postsInit);
 
     return (
-        <div>
+        <div className="flex flex-col items-center">
             {
                 posts.map(post => (
                     <div key={post.id} className="h-96 w-96">
                         <Image 
-                            src={post.post_thumbnail}
+                            src={post.thumbnail}
                             width={300}
                             height={300}
                             className=""
-                            alt={post.post_content}
+                            alt={post.title}
                         />
-                        <p>{post.post_title}</p>
+                        <Link
+                            href={`/blog/${post.slug}`}
+                        >
+                            {post.title}
+                        </Link>
                     </div>
                 ))
             }

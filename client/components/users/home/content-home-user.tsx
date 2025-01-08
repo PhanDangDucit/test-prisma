@@ -18,6 +18,8 @@ export default async function ContentHomeUser() {
         posts = data["data"];
     }
 
+    console.log("posts: ", posts);
+
     return (
        <PostList postsInit={posts}/>
     )
