@@ -7,6 +7,7 @@ export const catchError = async (cb: any) => {
     try {
         return await cb;
     } catch (error) {
+        console.log("==============")
         console.log(error);
         return {error};
     }

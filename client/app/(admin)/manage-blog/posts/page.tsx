@@ -5,6 +5,7 @@ import { getAllCategories } from "@/lib/categories/categories.lib";
 import { getPostsByFilter } from "@/lib/data-filter-post";
 import { getRangeView } from "@/lib/posts/posts.lib";
 import { PostCategoriesType, SearchQuery } from "@/types";
+import { DateRange } from "@/utils/admin/manage-post/date.util";
 import { BadgePlus } from "lucide-react";
 import Link from "next/link";
 
@@ -22,10 +23,9 @@ export default async function Page({
         maxViews = 0;
         minViews = 0;
     }
-    const dateObj = new Date();
-    const date = `${dateObj.getFullYear()}-${dateObj.getMonth()-1}-${dateObj.getDate()} `;
-    const fromDate = (new Date(`${date}`)).toDateString();
-    const toDate = new Date();
+  
+    const { fromDate, toDate } = DateRange();
+    
     const search = {
         q:  searchParams.q || '',
         page:  searchParams.page || 1,

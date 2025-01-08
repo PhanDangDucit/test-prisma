@@ -19,7 +19,7 @@ export const AdminInfoContextProvider = function({
 
     const changeAdminInfo = useCallback((user: User) => {
         setAdminInfo(user)
-    }, [adminInfo])
+    }, [])
 
     const context = useMemo(() => {
         return {

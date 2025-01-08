@@ -3,6 +3,7 @@
 import { getFielBySearchParam } from "@/helpers/http.helper";
 import { catchError } from "@/helpers/response.helper";
 import { getAllPosts } from "@/lib/posts/posts.lib";
+import { createPost } from "@/utils/admin/manage-post/createPost";
 
 /**
  * @url /api/posts?limit=5&offset=1
@@ -25,5 +26,35 @@ export async function GET(request: Request) {
     return Response.json({
         status: 201,
         data
+    });
+}
+
+export async function POST(request: Request) {
+
+    const {  
+        title,
+        content,
+        thumbnail,
+        email,
+        userId,
+        categoryName,
+        // categoryId
+    } = await request.json();
+
+    await catchError(
+        createPost({
+            title,
+            content,
+            thumbnail,
+            email,
+            userId,
+            name_post_type: categoryName,
+            // categoryId
+        })
+    );
+    
+    return Response.json({
+        status: 201,
+        message: "add post successfully!"
     });
 }
