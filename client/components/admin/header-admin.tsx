@@ -4,7 +4,6 @@ import logo from "@/public/logo.png";
 import Link from "next/link";
 import { Session } from "next-auth";
 import { NavUserAdmin } from "./nav-user-admin";
-import { MenubarAdmin } from "./menubar-admin";
 
 export default function  HeaderAdmin ({
     session,
