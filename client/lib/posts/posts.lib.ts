@@ -101,16 +101,18 @@ export async function fetchLatestPostsForPostType(post_type_id: number, limit: n
 }
 
 /**
- * 
- * @param post_type_id
+ * @param {String} name_post_type
  * @returns 
  */
-export async function fetchManyViewsEachPost(post_type_id: number, quantity: number) {
+export async function getPosts(
+    name_post_type: string, 
+) {
     try {
         const posts = await prisma.post.findMany({
-            take: quantity,
             where: {
-                post_type_id
+                post_type: {
+                    name_post_type
+                }
             },
             orderBy: {
                 views: 'desc'
@@ -118,7 +120,7 @@ export async function fetchManyViewsEachPost(post_type_id: number, quantity: num
         })
         return posts;
     } catch (error) {
-        console.log("Get post that has the best views is failed!");
+        console.log("Get posts failed!");
     }
 }
 
