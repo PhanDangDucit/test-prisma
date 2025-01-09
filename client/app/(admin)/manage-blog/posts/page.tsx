@@ -3,9 +3,7 @@ import PostSearchBar from "@/components/admin/manage-post/post-search";
 import SideBar from "@/components/admin/manage-post/sidebar";
 import { getAllCategories } from "@/lib/categories/categories.lib";
 import { getPostsByFilter } from "@/lib/data-filter-post";
-import { getRangeView } from "@/lib/posts/posts.lib";
 import { PostCategoriesType, SearchQuery } from "@/types";
-import { DateRange } from "@/utils/admin/manage-post/date.util";
 import { BadgePlus } from "lucide-react";
 import Link from "next/link";
 
@@ -29,7 +27,7 @@ export default async function Page({
     const categories: PostCategoriesType[] = results[1];
     
     return (
-        <div className="grid grid-cols-12 g-4 px-4 bg-gray-200">
+        <div className="grid grid-cols-12 g-4 px-4">
             <div 
                 className="col-start-1 col-end-3 mt-12 border-[1px] shadow-gray-300"
             >
