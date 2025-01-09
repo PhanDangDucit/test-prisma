@@ -1,5 +1,4 @@
 import express from 'express';
-
 import { config } from "dotenv";
 import { postApi } from './routes';
 import compression from 'compression';

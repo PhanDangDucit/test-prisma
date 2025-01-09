@@ -1,9 +1,9 @@
 # Global
 ARG NODE_VERSION="22.12.0"
 ARG ALPINE_VERION="3.21"
-ARG WID_BUILD_STAGE="/app/server/comment_service"
-ARG WID_DEPENDENCIES_STAGE="/app/server/comment_service"
-ARG WID_PRODUCTION_STAGE="/app/server/comment_service"
+ARG WID_BUILD_STAGE="/app/server/post_service"
+ARG WID_DEPENDENCIES_STAGE="/app/server/post_service"
+ARG WID_PRODUCTION_STAGE="/app/server/post_service"
 ARG TYPESCRIPT_VERSION=5.7.2
 
 #  Stage 1: build
@@ -54,7 +54,5 @@ COPY --from=build ${WID_BUILD_STAGE}/build ${WID_PRODUCTION_STAGE}/build
 COPY --from=dependencies ${WID_DEPENDENCIES_STAGE}/package.json ${WID_PRODUCTION_STAGE}/package.json
 
 COPY --from=dependencies ${WID_DEPENDENCIES_STAGE}/node_modules ${WID_PRODUCTION_STAGE}/node_modules
-
-EXPOSE 8003
 
 CMD [ "npm", "start" ]
