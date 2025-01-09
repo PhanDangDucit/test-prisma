@@ -19,12 +19,6 @@ export const metadata: Metadata = {
  * @returns 
  */
 
-// async function getAllCategories () {
-//   return (await fetch(`${getURL()}/api/categories`, {
-//       cache: "no-cache"
-//   })).json()   
-// }
-
 export default async function RootLayout({
   children,
 }: {

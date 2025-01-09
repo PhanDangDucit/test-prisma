@@ -1,16 +1,16 @@
-'use client'
 import Image from "next/image";
 import logo from "@/public/logo.png";
 import Link from "next/link";
 import { Session } from "next-auth";
 import { UserMenu } from "./user-menu";
+import { getAllCategories } from "@/lib/categories/categories.lib";
 
-export default function Header({
-    session,
+export default async function Header({
+    session
 }:{
     session?:Session|null,
 }) {
-
+    const categories = await getAllCategories();
     return ( 
         <nav className="bg-black border-gray-200 dark:bg-gray-900">
             <div className="max-w-screen-xl flex flex-wrap items-center justify-between mx-auto p-4">
@@ -27,7 +27,7 @@ export default function Header({
                     </Link>
                 </div>
                 {/* Nav-main */}
-                {/* <div className="items-center justify-between hidden w-full md:flex md:w-auto" id="navbar-user">
+                <div className="items-center justify-between hidden w-full md:flex md:w-auto" id="navbar-user">
                     <ul 
                         className="flex text-white flex-col font-medium p-4 md:p-0 mt-4 border border-gray-100 rounded-lg bg-gray-50 md:space-x-8 rtl:space-x-reverse md:flex-row md:mt-0 md:border-0 md:bg-black dark:bg-gray-800 md:dark:bg-gray-900 dark:border-gray-700"
                     >
@@ -39,7 +39,7 @@ export default function Header({
                             ))
                         }
                     </ul>
-                </div> */}
+                </div>
                 {/* User-menu */}
                 <UserMenu session={session}/>
                
