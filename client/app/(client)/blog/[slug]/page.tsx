@@ -26,7 +26,7 @@ export default async function Page({
         <>
             {/* Main */}
             <PostContextProvider slug={slug}>
-                <div className="grid grid-cols-3 gap-3">
+                <div className="mx-auto">
                     <Suspense fallback={<ContentMainDetailPostSkeleton/>}>
                         <ContentMainDetailPost
                             author={author}
@@ -35,7 +35,6 @@ export default async function Page({
                         />
                     </Suspense>
                 </div>
-                <hr className="w-full h-1 mx-auto my-12 bg-gray-300 border-0 rounded md:my-8 dark:bg-gray-300"/>
             </PostContextProvider>
         </>
     )

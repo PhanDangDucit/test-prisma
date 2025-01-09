@@ -92,13 +92,8 @@ export type MultiRangeSliderProps = {
 
 export type SearchQuery = {
     q: string,
-    status: string
     category:string,
     page: number,
-    'to-date':Date,
-    'from-date':Date,
-    'max-view':string,
-    'min-view':string,
 }
 
 export type TComment = {

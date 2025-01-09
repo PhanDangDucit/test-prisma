@@ -14,27 +14,11 @@ export default async function Page({
 }: {
     searchParams: SearchQuery
 }) {
-    let {
-        maxViews,
-        minViews
-    } = await getRangeView();
-
-    if(!maxViews && !minViews) {
-        maxViews = 0;
-        minViews = 0;
-    }
   
-    const { fromDate, toDate } = DateRange();
-    
     const search = {
         q:  searchParams.q || '',
         page:  searchParams.page || 1,
-        status: searchParams.status === "hidden" ? "hidden": "show",
         category: searchParams.category || '',
-        'min-view': searchParams['min-view'] || `${minViews}`,
-        'max-view': searchParams['max-view'] || `${maxViews}`,
-        'from-date': searchParams['from-date'] || fromDate,
-        'to-date': searchParams['to-date'] || toDate,
     }
 
     const results = await Promise.all([
@@ -43,7 +27,6 @@ export default async function Page({
     ]);
     const posts:PostType[] = results[0];
     const categories: PostCategoriesType[] = results[1];
-    const allStatusPost = [{id: 1, value:"show"}, {id: 2, value:"hidden"}];
     
     return (
         <div className="grid grid-cols-12 g-4 px-4 bg-gray-200">
@@ -52,19 +35,20 @@ export default async function Page({
             >
                 <SideBar
                     categories={categories}
-                    allStatus={allStatusPost}
-                    maxViews={maxViews!}
-                    minViews={minViews!}
                 />
             </div>
             <div className="col-start-3 col-end-12 mt-12">
                 <div className="flex">
                     <PostSearchBar/>
-                    <Link href="/manage-blog/posts/create" role="button" className="btn text-orange-500">
+                    <Link 
+                        href="/manage-blog/posts/create" 
+                        role="button" 
+                        className="btn text-orange-500"
+                    >
                         <BadgePlus/>
                     </Link>
                 </div>
-                <PostResult posts={posts} status={search.status}/>
+                <PostResult posts={posts}/>
             </div>
         </div>
     );

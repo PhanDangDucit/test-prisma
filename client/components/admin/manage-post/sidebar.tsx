@@ -1,21 +1,13 @@
 'use client'
-import MultiRangeSlider, { 
-    DateFilter,
+import { 
     PostCategoriesFilter,
-    PostStatusFilter,
 } from './filter';
-import { PostCategoriesType, StatusPost } from '@/types';
+import { PostCategoriesType } from '@/types';
 
 export default function SideBar({
     categories,
-    allStatus,
-    maxViews,
-    minViews
 }: {
     categories: PostCategoriesType[],
-    allStatus: StatusPost[],
-    maxViews:number,
-    minViews:number,
 }) {
     return (    
         <aside 
@@ -29,12 +21,6 @@ export default function SideBar({
                 <div className="space-y-2 font-medium">
                     {/* Categories */}
                     <PostCategoriesFilter categories={categories}/>
-                    <PostStatusFilter allStatus={allStatus}/>
-                    <DateFilter/>
-                    <MultiRangeSlider
-                        min={minViews}
-                        max={maxViews}
-                    />
                 </div>
             </div>
         </aside>

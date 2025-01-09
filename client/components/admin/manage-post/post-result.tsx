@@ -4,10 +4,8 @@ import { FormChangeIsShowPost } from "./form";
 
 const PostResult = ({
     posts,
-    status
 }: {
     posts:PostType[],
-    status:string
 }) => {
     return (
         <div className="border-[1px] border-gray-100 w-3/4 mx-auto m-12 bg-white">
@@ -20,23 +18,11 @@ const PostResult = ({
                         <div
                             className="relative mb-2 flex flex-col items-center md:flex-row md:max-w-xl"
                         >
-                            <div className="w-24 h-24 relative">
-                                <Image
-                                    src={post.thumbnail || ''}
-                                    // width={100}
-                                    // height={120}
-                                    fill
-                                    alt="thumnail"
-                                    className="object-cover p-2"
-                                    priority
-                                />
-                            </div>
                             <div className="flex flex-col justify-between p-4 leading-normal">
                                 <h5 className="mb-2 text-sm font-bold tracking-tight text-gray-900 dark:text-white">{post.title}</h5>
                             </div>
                             <Link href={`/manage-blog/posts/${post.slug}/edit`} className="absolute inset-0">{''}</Link>
                         </div>
-                        <FormChangeIsShowPost status={status} post={post}/>
                     </div>
                 )) : (
                     <div className="w-full h-12 mt-10">

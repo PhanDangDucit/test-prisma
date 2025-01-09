@@ -9,18 +9,7 @@ import { SearchQuery } from "@/types";
 
 export async function getPostsByFilter(search:SearchQuery) {
     const q = search.q;
-    const fromDate = search['from-date'];
-    const toDate = search['to-date'];
-    const minViews = search['min-view'];
-    const maxViews = search['max-view'];
     const category = search['category'];
-    const status = search['status'];
-    if(status === "hidden") {
-        var statusFormat = "Hidden";
-    } else {
-        var statusFormat = "Show";
-    }
-
     try {
         const posts = await prisma.post.findMany({
             where: {
@@ -52,15 +41,6 @@ export async function getPostsByFilter(search:SearchQuery) {
                         },
                     }
                 ],
-                views: {
-                    lte:Number(maxViews),
-                    gte:Number(minViews)
-                },
-                created_at: {
-                    lte:toDate,
-                    gte:fromDate
-                },
-                is_show: statusFormat === "Hidden" ? "Hidden" : "Show",
             },
             orderBy: {
                 id: 'desc'
