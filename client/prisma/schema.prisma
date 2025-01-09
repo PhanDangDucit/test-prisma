@@ -11,10 +11,8 @@ generator client {
 
 datasource db {
   provider = "postgresql"
-  url      = env("POSTGRES_PRISMA_URL") // uses connection pooling
-  directUrl = env("POSTGRES_URL_NON_POOLING") // uses a direct connection
+  url      = env("DATABASE_URL_DEV")
 }
-
 
 model User {
   id         Int      @id @default(autoincrement())
@@ -51,23 +49,23 @@ model Post {
   created_at     DateTime    @default(now())
   updated_at     DateTime    @default(now()) @updatedAt
   content        String
-  thumbnail       String      @db.VarChar(255)
+  thumbnail      String      @db.VarChar(255)
   post_type      Post_Type   @relation(fields: [post_type_id], references: [id])
   post_type_id   Int
-  slug String   @unique
+  slug String    @unique
   views Int      @default(0)
-  is_show Show @default(Show)
-  user User @relation(fields: [author_id], references: [id])
-  author_id Int
-  comment_count Int @default(0)
-  comment Comment[]
+  is_show        Show       @default(Show)
+  user           User       @relation(fields: [author_id], references: [id])
+  author_id      Int
+  comment_count  Int        @default(0)
+  comment        Comment[]
 }
 
 model Post_Type {
-  id             Int @id @default(autoincrement())
-  name_post_type String @db.VarChar(30) @unique
-  created_at  DateTime @default(now())
-  priority Int   @default(0) @unique
+  id              Int        @id @default(autoincrement())
+  name_post_type  String     @db.VarChar(30) @unique
+  created_at      DateTime  @default(now())
+  priority        Int       @default(0) @unique
   icon String?
   post           Post[]
 }
